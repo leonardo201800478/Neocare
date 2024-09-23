@@ -42,15 +42,15 @@ const CadastroPaciente = () => {
         .values({
           id: uuid(), // Usando a função uuid para gerar o ID
           nome_patients: nome,
-          cpf_patients: Number(cpf),
+          cpf_patients: (cpf),
           data_nasc_patients: dataNasc,
           email_patients: email,
-          fone_patients: Number(telefone),
-          cep_patients: Number(cep),
+          fone_patients: (telefone),
+          cep_patients: (cep),
           uf_patients: uf,
           cidade_patients: cidade,
           bairro_patients: bairro,
-          numero_patients: Number(numero),
+          numero_patients: (numero),
           logradouro_patients: endereco,
           doctor_id: doctorId, // Vinculando o id do médico logado
           created_at: new Date().toISOString(),

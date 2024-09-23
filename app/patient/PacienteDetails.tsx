@@ -24,7 +24,7 @@ const PacienteDetails = () => {
       const result = await db
         .selectFrom('patients')
         .selectAll()
-        .where('cpf_patients', '=', Number(cpf))
+        .where('cpf_patients', '=', (cpf))
         .execute();
       setPaciente(result[0]);
     } catch (error) {
