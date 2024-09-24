@@ -12,8 +12,7 @@ const doctors = new Table(
   {
     id: column.text,
     created_at: column.text,
-    nome_user: column.text,
-    email_user: column.text,
+    name_user: column.text,
     owner_id: column.text, // Dono do registro (usuário)
     inserted_at: column.text,
     updated_at: column.text,
@@ -38,9 +37,7 @@ const patients = new Table(
     cep_patients: column.text,  // CEP como inteiro
     uf_patients: column.text,
     cidade_patients: column.text,
-    bairro_patients: column.text,
-    logradouro_patients: column.text,
-    numero_patients: column.text,
+    endereco_patients: column.text,
     inserted_at: column.text,
     updated_at: column.text,
     doctor_id: column.text,  // Médico responsável pelo paciente

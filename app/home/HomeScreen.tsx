@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator } from 'react-native';
+import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import styles from '../styles/HomeScreenStyles';
@@ -36,17 +36,26 @@ const HomeScreen: React.FC = () => {
     setNoResults(filteredPatients.length === 0 && searchQuery.length > 0); // Show "No results" message when search returns no results
   }, [filteredPatients]);
 
-  const renderRow = ({ item }: { item: Database[typeof PATIENTS_TABLE] }) => (
-    <TouchableOpacity
-      onPress={() => {
-        router.push(`./patient/PacienteDetails/${item.cpf_patients}`);
-      }}>
-      <View style={styles.row}>
-        <Text style={{ flex: 1 }}>{item.nome_patients}</Text>
-        <Text style={{ flex: 1 }}>{item.cpf_patients}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  // app/HomeScreen.tsx
+// app/HomeScreen.tsx
+const renderRow = ({ item }: { item: Database[typeof PATIENTS_TABLE] }) => (
+  <TouchableOpacity
+    onPress={() => {
+      if (item.cpf_patients) {
+        // Usando o formato correto de rota dinâmica
+        router.push(`/patient/${item.cpf_patients}`);
+      } else {
+        Alert.alert('Erro', 'CPF do paciente não encontrado.');
+      }
+    }}>
+
+      
+    <View style={styles.row}>
+      <Text style={{ flex: 1 }}>{item.nome_patients}</Text>
+      <Text style={{ flex: 1 }}>{item.cpf_patients}</Text>
+    </View>
+  </TouchableOpacity>
+);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

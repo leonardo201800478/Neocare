@@ -1,48 +1,58 @@
-// app/styles/CadastroPacienteStyles.ts
-
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#A8D5BA',
+    backgroundColor: '#c7e9e5', // Cor de fundo da tela
+    alignItems: 'center',
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
+    marginBottom: 20,
+    color: '#000',
   },
   input: {
-    backgroundColor: '#6FCF97',
+    width: '100%',
     padding: 10,
-    borderRadius: 8,
-    marginBottom: 12,
+    marginBottom: 15,
+    backgroundColor: '#90ee90', // Cor de fundo dos inputs
+    borderRadius: 10,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#008080', // Cor da borda
   },
   inputSmall: {
-    backgroundColor: '#6FCF97',
-    padding: 10,
-    borderRadius: 8,
-    fontSize: 16,
-    marginRight: 10,
     flex: 1,
+    padding: 10,
+    marginBottom: 15,
+    backgroundColor: '#90ee90',
+    borderRadius: 10,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#008080',
+    marginRight: 10,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: '#000',
-    padding: 15,
-    borderRadius: 8,
+    flex: 1,
+    backgroundColor: '#000', // Cor do botão
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginTop: 10,
     alignItems: 'center',
-    marginTop: 20,
+    justifyContent: 'center',
+    marginHorizontal: 5,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   overlay: {
@@ -51,13 +61,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   loadingText: {
     color: '#fff',
-    fontSize: 18,
     marginTop: 10,
   },
 });

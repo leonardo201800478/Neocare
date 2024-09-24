@@ -7,6 +7,7 @@ import { uuid } from '~/powersync/uuid';
 
 const Register = () => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,8 +53,7 @@ const Register = () => {
         await db.insertInto('doctors')
           .values({
             id: doctorId,
-            nome_user: email, // Supondo que o nome seja o email; ajustar conforme necessário
-            email_user: email,
+            name_user: name, // Supondo que o nome seja o email; ajustar conforme necessário
             owner_id: userID, // Vinculando ao Supabase auth user ID
             inserted_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -80,6 +80,12 @@ const Register = () => {
         </View>
       )}
       <Text style={styles.header}>Criar Conta</Text>
+      <TextInput
+        placeholder="Nome"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
       <TextInput
         placeholder="Email"
         value={email}

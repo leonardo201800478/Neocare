@@ -1,21 +1,24 @@
-// app/patient/PacienteDetails.tsx
-import { useRouter, useGlobalSearchParams } from 'expo-router';
+// app/patient/[cpf].tsx
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-
 import styles from '../styles/PacienteDetailsStyles';
-
 import { useSystem } from '~/powersync/PowerSync';
 
 const PacienteDetails = () => {
-  const { cpf } = useGlobalSearchParams();
+  const { cpf } = useLocalSearchParams(); // Pegando o parâmetro dinâmico da URL usando useLocalSearchParams
   const { db } = useSystem();
   const [paciente, setPaciente] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (cpf) loadPaciente(Array.isArray(cpf) ? cpf[0] : cpf);
+    if (cpf && typeof cpf === 'string') {
+      loadPaciente(cpf);
+    } else {
+      Alert.alert('Erro', 'CPF inválido ou não fornecido.');
+      router.replace('../home');
+    }
   }, [cpf]);
 
   const loadPaciente = async (cpf: string) => {
@@ -24,7 +27,7 @@ const PacienteDetails = () => {
       const result = await db
         .selectFrom('patients')
         .selectAll()
-        .where('cpf_patients', '=', (cpf))
+        .where('cpf_patients', '=', cpf)
         .execute();
       setPaciente(result[0]);
     } catch (error) {
@@ -86,11 +89,8 @@ const PacienteDetails = () => {
       <Text>CEP: {paciente.cep_patients}</Text>
       <Text>UF: {paciente.uf_patients}</Text>
       <Text>Cidade: {paciente.cidade_patients}</Text>
-      <Text>Bairro: {paciente.bairro_patients}</Text>
-      <Text>Número: {paciente.numero_patients}</Text>
-      <Text>Endereço: {paciente.logradouro_patients}</Text>
+      <Text>Endereço: {paciente.endereco_patients}</Text>
       <Text>Telefone: {paciente.fone_patients}</Text>
-
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.buttonDelete} onPress={deletePaciente}>
           <Text style={styles.buttonText}>Deletar Paciente</Text>

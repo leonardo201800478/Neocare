@@ -7,11 +7,11 @@ declare module "expo-router" {
   export * from 'expo-router/build';
 
   // prettier-ignore
-  type StaticRoutes = `/` | `/auth/ForgotPassword` | `/auth/Login` | `/auth/Register` | `/components/LoadingOverlay` | `/home/HomeScreen` | `/home/` | `/patient/CadastroPaciente` | `/patient/` | `/patient/PacienteDetails` | `/styles/AuthStyles` | `/styles/CadastroPacienteStyles` | `/styles/HomeScreenStyles` | `/styles/LoadingOverlayStyles` | `/styles/PacienteDetailsStyles`;
+  type StaticRoutes = `/` | `/auth/ForgotPassword` | `/auth/Login` | `/auth/Register` | `/components/CEPInput` | `/components/CPFValidator` | `/components/LoadingOverlay` | `/home/HomeScreen` | `/home/` | `/patient/CadastroPaciente` | `/patient/` | `/styles/AuthStyles` | `/styles/CadastroPacienteStyles` | `/styles/HomeScreenStyles` | `/styles/LoadingOverlayStyles` | `/styles/PacienteDetailsStyles` | `/utils/formatUtils`;
   // prettier-ignore
-  type DynamicRoutes<T extends string> = never;
+  type DynamicRoutes<T extends string> = `/patient/${SingleRoutePart<T>}`;
   // prettier-ignore
-  type DynamicRouteTemplate = never;
+  type DynamicRouteTemplate = `/patient/[cpf]`;
 
   type RelativePathString = `./${string}` | `../${string}` | '..';
   type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;

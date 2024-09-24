@@ -2,11 +2,18 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
-
 import styles from '../styles/CadastroPacienteStyles';
-
 import { useSystem } from '~/powersync/PowerSync';
 import { uuid } from '~/powersync/uuid';
+import {
+  formatDateForDatabase,
+  formatCPF,
+  removeCPFMask,
+  formatCEP,
+  removeCEPFormat,
+} from '../utils/formatUtils';
+import { isCPFValid } from '../components/CPFValidator';
+import CEPInput from '../components/CEPInput';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);
@@ -18,16 +25,29 @@ const CadastroPaciente = () => {
   const [cep, setCep] = useState('');
   const [uf, setUf] = useState('');
   const [cidade, setCidade] = useState('');
-  const [bairro, setBairro] = useState('');
-  const [numero, setNumero] = useState('');
   const [endereco, setEndereco] = useState('');
   const router = useRouter();
   const { db, supabaseConnector } = useSystem();
 
   const handleCadastro = async () => {
     setLoading(true);
-    if (!nome || !cpf || !dataNasc) {
-      Alert.alert('Erro', 'Nome, CPF e Data de Nascimento são obrigatórios');
+    if (!nome || !cpf || !dataNasc || !email || !telefone) {
+      Alert.alert('Erro', 'Todos os campos obrigatórios devem ser preenchidos');
+      setLoading(false);
+      return;
+    }
+
+    // Validação do CPF
+    if (!isCPFValid(cpf)) {
+      Alert.alert('Erro', 'CPF inválido');
+      setLoading(false);
+      return;
+    }
+
+    // Validação de e-mail
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Erro', 'E-mail inválido');
       setLoading(false);
       return;
     }
@@ -42,16 +62,14 @@ const CadastroPaciente = () => {
         .values({
           id: uuid(), // Usando a função uuid para gerar o ID
           nome_patients: nome,
-          cpf_patients: (cpf),
-          data_nasc_patients: dataNasc,
+          cpf_patients: removeCPFMask(cpf), // Armazenando CPF sem máscara
+          data_nasc_patients: formatDateForDatabase(dataNasc), // Formatando a data para aaaa-mm-dd
           email_patients: email,
-          fone_patients: (telefone),
-          cep_patients: (cep),
+          fone_patients: telefone,
+          cep_patients: removeCEPFormat(cep),
           uf_patients: uf,
           cidade_patients: cidade,
-          bairro_patients: bairro,
-          numero_patients: (numero),
-          logradouro_patients: endereco,
+          endereco_patients: endereco,
           doctor_id: doctorId, // Vinculando o id do médico logado
           created_at: new Date().toISOString(),
           inserted_at: new Date().toISOString(),
@@ -60,13 +78,39 @@ const CadastroPaciente = () => {
         .execute();
 
       Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
-      router.replace('../home');
+
+      // Redireciona automaticamente para a tela de detalhes do paciente
+      router.replace(`/patient/${removeCPFMask(cpf)}`);
     } catch (error) {
       console.error(error);
       Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o paciente');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Função para formatar o telefone no formato (DDD) xxx-xxxxxx
+  const formatTelefone = (value: string) => {
+    const onlyNums = value.replace(/\D/g, '');
+    if (onlyNums.length <= 10) {
+      return onlyNums.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    }
+    return onlyNums;
+  };
+
+  // Função para adicionar máscara à data de nascimento no formato dd/mm/aaaa
+  const formatDataNasc = (value: string) => {
+    const onlyNums = value.replace(/\D/g, '');
+    if (onlyNums.length <= 8) {
+      return onlyNums.replace(/(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
+    }
+    return onlyNums;
+  };
+
+  const handleAddressFound = (data: any) => {
+    setUf(data.uf);
+    setCidade(data.localidade);
+    setEndereco(data.logradouro);
   };
 
   return (
@@ -78,69 +122,46 @@ const CadastroPaciente = () => {
         </View>
       )}
       <Text style={styles.header}>Dados do Paciente</Text>
-      <TextInput placeholder="Nome" value={nome} onChangeText={setNome} style={styles.input} />
+      <TextInput placeholder="Nome*" value={nome} onChangeText={setNome} style={styles.input} />
       <TextInput
-        placeholder="CPF da criança ou do responsável"
+        placeholder="CPF da criança ou do responsável*"
         value={cpf}
-        onChangeText={setCpf}
+        onChangeText={(text) => setCpf(formatCPF(text))}
         style={styles.input}
         keyboardType="numeric"
       />
       <TextInput
-        placeholder="Data de Nascimento"
+        placeholder="Data nascimento*"
         value={dataNasc}
-        onChangeText={setDataNasc}
+        onChangeText={(text) => setDataNasc(formatDataNasc(text))}
         style={styles.input}
         keyboardType="numeric"
       />
-      <TextInput
-        placeholder="E-mail"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        keyboardType="email-address"
-      />
-
       <View style={styles.row}>
+        <TextInput
+          placeholder="E-mail"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.inputSmall}
+          keyboardType="email-address"
+        />
         <TextInput
           placeholder="Telefone"
           value={telefone}
-          onChangeText={setTelefone}
+          onChangeText={(text) => setTelefone(formatTelefone(text))}
           style={styles.inputSmall}
           keyboardType="phone-pad"
         />
-        <TextInput
-          placeholder="CEP"
-          value={cep}
-          onChangeText={setCep}
-          style={styles.inputSmall}
-          keyboardType="numeric"
-        />
       </View>
-
+      <View style={styles.row}>
+        <CEPInput onAddressFound={handleAddressFound} />
+      </View>
       <TextInput
-        placeholder="Logradouro"
+        placeholder="Endereço"
         value={endereco}
         onChangeText={setEndereco}
         style={styles.input}
       />
-
-      <View style={styles.row}>
-        <TextInput
-          placeholder="Número"
-          value={numero}
-          onChangeText={setNumero}
-          style={styles.inputSmall}
-          keyboardType="numeric"
-        />
-        <TextInput
-          placeholder="Bairro"
-          value={bairro}
-          onChangeText={setBairro}
-          style={styles.inputSmall}
-        />
-      </View>
-
       <View style={styles.row}>
         <TextInput
           placeholder="Cidade"
@@ -151,9 +172,14 @@ const CadastroPaciente = () => {
         <TextInput placeholder="UF" value={uf} onChangeText={setUf} style={styles.inputSmall} />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-        <Text style={styles.buttonText}>Próximo</Text>
-      </TouchableOpacity>
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('./home')}>
+          <Text style={styles.buttonText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+          <Text style={styles.buttonText}>Próximo</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

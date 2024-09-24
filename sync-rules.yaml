@@ -1,14 +1,37 @@
+# Define sync rules to control which data is synced to each user
 bucket_definitions:
-  user_doctors:
-    # Todos os médicos logados
-    parameters: select id as doctor_id from doctors where owner_id = request.user_id()
+  global_doctors:
     data:
-      # Sincronizar todos os médicos (sem restrição ao médico logado)
-      - select * from doctors
-      # Sincronizar todos os pacientes (sem restrição ao doctor_id)
-      - select * from patients
-      # Sincronizar todos os prontuários de todos os pacientes (sem restrição ao doctor_id)
-      - select * from attendances
-      
-      # Sincronizar também todos os pacientes modificados por qualquer médico (sem restrição ao doctor_id)
-      - select * from patients where modified_by is not null
+      # Todos os médicos podem visualizar os dados de outros médicos (sem restrição)
+      - SELECT * FROM doctors
+
+  doctor_specific:
+    # Sync rows only belonging to the logged-in doctor for update and delete
+    parameters: SELECT request.user_id() as user_id
+    data:
+      # Sincronizar apenas os dados do médico logado para alterações e exclusões
+      - SELECT * FROM doctors WHERE owner_id = bucket.user_id
+
+  global_patients:
+    data:
+      # Todos os médicos podem visualizar todos os pacientes (sem restrição)
+      - SELECT * FROM patients
+
+  patient_specific:
+    # Sync rows only belonging to the logged-in doctor for update and delete
+    parameters: SELECT request.user_id() as user_id
+    data:
+      # Sincronizar apenas os dados dos pacientes do médico logado para alterações e exclusões
+      - SELECT * FROM patients WHERE doctor_id = bucket.user_id
+
+  global_attendances:
+    data:
+      # Todos os médicos podem visualizar todos os prontuários (sem restrição)
+      - SELECT * FROM attendances
+
+  attendance_specific:
+    # Sync rows only belonging to the logged-in doctor for update and delete
+    parameters: SELECT request.user_id() as user_id
+    data:
+      # Sincronizar apenas os prontuários dos pacientes do médico logado para alterações e exclusões
+      - SELECT * FROM attendances WHERE doctor_id = bucket.user_id

@@ -1,122 +1,146 @@
--- Tabela doctors
-CREATE TABLE public.doctors (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  nome_user TEXT NOT NULL,
-  email_user TEXT,
-  owner_id uuid NOT NULL, -- O ID do usuário registrado (auth.users)
-  CONSTRAINT doctors_pkey PRIMARY KEY (id),
-  CONSTRAINT doctors_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES auth.users (id) ON DELETE CASCADE
-) TABLESPACE pg_default;
+-- Create tables
+create table
+  public.doctors (
+    id uuid not null default gen_random_uuid(),
+    created_at timestamp with time zone not null default now(),
+    name text not null,
+    owner_id uuid not null,
+    constraint doctors_pkey primary key (id),
+    constraint doctors_owner_id_fkey foreign key (owner_id) references auth.users (id) on delete cascade
+  ) tablespace pg_default;
 
+create table
+  public.patients (
+    id uuid not null default gen_random_uuid(),
+    created_at timestamp with time zone not null default now(),
+    nome_patients text not null,
+    cpf_patients text unique not null,
+    data_nasc_patients text,
+    email_patients text,
+    fone_patients text,
+    cep_patients text,
+    uf_patients text,
+    cidade_patients text,
+    endereco_patients text,
+    created_by uuid null,
+    doctor_id uuid not null,
+    constraint patients_pkey primary key (id),
+    constraint patients_created_by_fkey foreign key (created_by) references auth.users (id) on delete set null,
+    constraint patients_doctor_id_fkey foreign key (doctor_id) references doctors (id) on delete cascade
+  ) tablespace pg_default;
 
--- Tabela patients
-CREATE TABLE public.patients (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  nome_patients TEXT NOT NULL,
-  cpf_patients TEXT UNIQUE NOT NULL,
-  data_nasc_patients DATE NOT NULL, -- Alterado para DATE
-  email_patients TEXT, 
-  fone_patients TEXT,
-  cep_patients TEXT,
-  uf_patients TEXT,
-  cidade_patients TEXT,
-  bairro_patients TEXT,
-  logradouro_patients TEXT,
-  numero_patients TEXT,
-  inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  doctor_id uuid NOT NULL, -- Relacionado ao médico responsável
-  modified_by uuid NOT NULL, -- ID do médico que fez a última modificação
-  created_by uuid, -- Coluna criada para identificar quem criou o registro
-  CONSTRAINT patients_pkey PRIMARY KEY (id),
-  CONSTRAINT patients_created_by_fkey FOREIGN KEY (created_by) REFERENCES auth.users (id) ON DELETE SET NULL, -- Relacionamento com a tabela users para o usuário que criou
-  CONSTRAINT patients_doctor_id_fkey FOREIGN KEY (doctor_id) REFERENCES doctors (id) ON DELETE CASCADE, -- Relacionamento com a tabela doctors para o médico responsável
-  CONSTRAINT patients_modified_by_fkey FOREIGN KEY (modified_by) REFERENCES doctors (id) ON DELETE CASCADE -- Relacionamento com a tabela doctors para o médico que modificou
-) TABLESPACE pg_default;
+-- Create attendances table
+create table
+  public.attendances (
+    id uuid not null default gen_random_uuid(),
+    created_at timestamp with time zone not null default now(),
+    updated_at timestamp with time zone not null default now(),
+    tipo text not null, -- Tipo da consulta
+    tax_mae text,
+    peso_mae text,
+    estatura_mae text,
+    pa_mae text, -- Pressão arterial
+    tipo_sang_mae text,
+    tax text,
+    apgar_1 text,
+    apgar_5 text,
+    peso text,
+    comprimento text,
+    pc text,
+    gesta text,
+    para text,
+    cesareas text,
+    abortos text,
+    abot_espon text,
+    vacinas_mae text,
+    nasc_vivos text,
+    mort_neo text,
+    filhos text,
+    intern text,
+    cirg text,
+    quant_cirg text,
+    consul_pre text,
+    quant_consul_pre text,
+    trat_mae text,
+    descr_mae text,
+    patient_id uuid not null,
+    doctor_id uuid not null,
+    doctor_name text not null, -- Nome do doutor responsável
+    created_by uuid not null, -- ID do usuário que criou o prontuário
+    constraint attendances_pkey primary key (id),
+    constraint attendances_patient_id_fkey foreign key (patient_id) references patients (id) on delete cascade,
+    constraint attendances_doctor_id_fkey foreign key (doctor_id) references doctors (id) on delete cascade
+  ) tablespace pg_default;
 
+-- Create publication for powersync
+create publication powersync for table doctors, patients, attendances;
 
--- Tabela attendances (prontuários)
-CREATE TABLE public.attendances (
-  id uuid NOT NULL DEFAULT gen_random_uuid(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  created_by uuid NOT NULL, -- Quem criou o prontuário (doctor_id)
-  patient_id uuid NOT NULL, -- Relacionado ao paciente
-  tipo TEXT NOT NULL, -- Tipo da consulta
-  tax_mae TEXT,
-  peso_mae TEXT,
-  estatura_mae TEXT,
-  pa_mae TEXT, -- Corrigido nome para pa_mae
-  tipo_sang_mae TEXT,
-  tax TEXT,
-  apgar_1 TEXT,
-  apgar_5 TEXT,
-  peso TEXT,
-  comprimento TEXT,
-  pc TEXT,
-  gesta TEXT,
-  para TEXT,
-  cesareas TEXT,
-  abortos TEXT,
-  abot_espon TEXT,
-  vacinas_mae TEXT,
-  nasc_vivos TEXT,
-  mort_neo TEXT,
-  filhos TEXT,
-  intern TEXT,
-  cirg TEXT,
-  quant_cirg TEXT,
-  consul_pre TEXT,
-  quant_consul_pre TEXT,
-  trat_mae TEXT,
-  descr_mae TEXT,
-  inserted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  CONSTRAINT attendances_pkey PRIMARY KEY (id),
-  CONSTRAINT attendances_created_by_fkey FOREIGN KEY (created_by) REFERENCES doctors (id) ON DELETE CASCADE, -- Relacionamento com a tabela doctors para o médico que criou o prontuário
-  CONSTRAINT attendances_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES patients (id) ON DELETE CASCADE -- Relacionamento com a tabela patients
-) TABLESPACE pg_default;
+-- Set up Row Level Security (RLS)
+-- Enable RLS for the relevant tables
+alter table public.doctors enable row level security;
+alter table public.patients enable row level security;
+alter table public.attendances enable row level security;
 
+-- Policies for 'patients' table
+create policy "patients view" on public.patients for SELECT using (
+  true
+);
+create policy "patients update" on public.patients for UPDATE using (
+  auth.uid() = created_by
+);
+create policy "patients delete" on public.patients for DELETE using (
+  auth.uid() = created_by
+);
 
--- Publicação powersync para sincronizar as tabelas
-CREATE PUBLICATION powersync FOR TABLE doctors, patients, attendances;
-
--- Habilitar RLS (Row Level Security) nas tabelas
-ALTER TABLE public.doctors
- ENABLE ROW LEVEL SECURITY;
- 
-ALTER TABLE public.patients
- ENABLE ROW LEVEL SECURITY;
- 
-ALTER TABLE public.attendances
- ENABLE ROW LEVEL SECURITY;
-
--- Políticas de segurança para acesso e manipulação de dados
-
+-- Policies for 'attendances' table
+create policy "attendances view" on public.attendances for SELECT using (
+  true
+);
+create policy "attendances update" on public.attendances for UPDATE using (
+  auth.uid() = created_by
+);
+create policy "attendances delete" on public.attendances for DELETE using (
+  auth.uid() = created_by
+);
 
 -- This trigger automatically creates some sample data when a user registers.
 -- See https://supabase.com/docs/guides/auth/managing-user-data#using-triggers for more details.
-CREATE FUNCTION public.handle_new_user_sample_data()
-RETURNS TRIGGER AS $$
-DECLARE
-  new_doctors_id uuid;
-BEGIN
-  -- Inserir novo médico na tabela doctors, utilizando o campo correto nome_user
-  INSERT INTO public.doctors (nome_user, owner_id)
-    VALUES ('João', NEW.id) -- NEW.id refere-se ao novo usuário inserido
-    RETURNING id INTO new_doctors_id;
+create function public.handle_new_user_sample_data()
+returns trigger as $$
+declare
+  new_doctor_id uuid;
+begin
+  insert into public.doctors (name, owner_id)
+    values ('Doctor Sample', new.id)
+    returning id into new_doctor_id;
+  
+  insert into public.patients(nome_patients, cpf_patients, doctor_id, created_by)
+    values ('Patient 1', '12345678900', new_doctor_id, new.id);
 
-  -- Não insere pacientes automaticamente, pois CPF não é relevante nesse ponto
-  -- Se necessário, essa inserção será feita manualmente depois com CPF
+  insert into public.patients(nome_patients, cpf_patients, doctor_id, created_by)
+    values ('Patient 2', '09876543211', new_doctor_id, new.id);
 
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+  return new;
+end;
+$$ language plpgsql security definer;
 
+create trigger new_user_sample_data after insert on auth.users for each row execute procedure public.handle_new_user_sample_data();
 
--- Trigger que chama a função após a inserção de um novo usuário
-CREATE TRIGGER new_user_sample_data
-AFTER INSERT ON auth.users
-FOR EACH ROW 
-EXECUTE FUNCTION public.handle_new_user_sample_data();
+-- Trigger to update 'updated_at' on the 'attendances' table
+create function public.update_attendance_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger update_attendance_updated_at before update on public.attendances for each row execute procedure public.update_attendance_updated_at();
+
+-- Attachments
+-- Ensure you have created a storage bucket named: 'media'
+-- Policies for storage allowing users to read and write their own files
+CREATE POLICY "Select media" ON storage.objects FOR SELECT TO public USING (bucket_id = 'media');
+CREATE POLICY "Insert media" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'media');
+CREATE POLICY "Update media" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'media');
+CREATE POLICY "Delete media" ON storage.objects FOR DELETE TO public USING (bucket_id = 'media');
