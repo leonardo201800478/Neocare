@@ -33,7 +33,7 @@ const CadastroPaciente = () => {
 
   const handleCadastro = async () => {
     setLoading(true);
-    if (!nome || !cpf || !dataNasc || !email || !telefone) {
+    if (!nome || !cpf || !dataNasc) {
       Alert.alert('Erro', 'Todos os campos obrigatórios devem ser preenchidos');
       setLoading(false);
       return;

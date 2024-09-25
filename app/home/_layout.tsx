@@ -14,7 +14,7 @@ const Layout: React.FC = () => {
       await powersync.disconnectAndClear();
       await supabaseConnector.client.auth.signOut();
       // Redireciona para a tela de login após o logout
-      router.replace('/auth/Login');
+      router.replace('./auth/Login');
     } catch (error) {
       console.error('Erro ao deslogar:', error);
     }
