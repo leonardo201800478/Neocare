@@ -1,37 +1,39 @@
+// app/styles/CadastroPacienteStyles.ts
+
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1, // Para permitir rolagem
     padding: 20,
-    backgroundColor: '#c7e9e5', // Cor de fundo da tela
+    backgroundColor: '#98FB98', // Fundo verde claro
     alignItems: 'center',
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#000',
+    color: '#4B0082',
   },
   input: {
     width: '100%',
     padding: 10,
     marginBottom: 15,
-    backgroundColor: '#90ee90', // Cor de fundo dos inputs
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#008080', // Cor da borda
+    borderColor: '#4B0082',
   },
   inputSmall: {
     flex: 1,
     padding: 10,
     marginBottom: 15,
-    backgroundColor: '#90ee90',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#008080',
+    borderColor: '#4B0082',
     marginRight: 10,
   },
   row: {
@@ -40,9 +42,21 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 10,
   },
+  pickerContainer: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#4B0082',
+    marginBottom: 15,
+  },
+  picker: {
+    height: 50,
+    color: '#000000',
+  },
   button: {
-    flex: 1,
-    backgroundColor: '#000', // Cor do botão
+    width: '48%',
+    backgroundColor: '#4B0082',
     paddingVertical: 15,
     borderRadius: 10,
     marginTop: 10,
@@ -51,7 +65,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -66,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: '#fff',
+    color: '#FFFFFF',
     marginTop: 10,
   },
 });

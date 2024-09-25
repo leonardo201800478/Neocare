@@ -1,4 +1,4 @@
-// components/CEPInput.tsx
+// app/components/CEPInput.tsx
 import React, { useState } from 'react';
 import { TextInput, Alert } from 'react-native';
 

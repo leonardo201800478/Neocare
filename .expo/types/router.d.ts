@@ -7,7 +7,7 @@ declare module "expo-router" {
   export * from 'expo-router/build';
 
   // prettier-ignore
-  type StaticRoutes = `/` | `/auth/ForgotPassword` | `/auth/Login` | `/auth/Register` | `/components/CEPInput` | `/components/CPFValidator` | `/components/LoadingOverlay` | `/home/HomeScreen` | `/home/` | `/patient/CadastroPaciente` | `/patient/` | `/styles/AuthStyles` | `/styles/CadastroPacienteStyles` | `/styles/HomeScreenStyles` | `/styles/LoadingOverlayStyles` | `/styles/PacienteDetailsStyles` | `/utils/formatUtils`;
+  type StaticRoutes = `/` | `/auth/ForgotPassword` | `/auth/Login` | `/auth/Register` | `/components/CEPInput` | `/components/CPFValidator` | `/components/LoadingOverlay` | `/home/HomeScreen` | `/home/` | `/patient/CadastroPaciente` | `/patient/` | `/styles/AuthStyles` | `/styles/CadastroPacienteStyles` | `/styles/HomeScreenStyles` | `/styles/LoadingOverlayStyles` | `/styles/PacienteDetailsStyles` | `/utils/formatUtils` | `/utils/idadeCalculator`;
   // prettier-ignore
   type DynamicRoutes<T extends string> = `/patient/${SingleRoutePart<T>}`;
   // prettier-ignore

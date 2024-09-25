@@ -35,12 +35,14 @@ const patients = new Table(
     nome_patients: column.text, // Nome do paciente
     cpf_patients: column.text, // CPF como string
     data_nasc_patients: column.text, // Data de nascimento como string
+    sexo_patients: column.text, // Sexo como string
     email_patients: column.text, // Email como string
     fone_patients: column.text, // Telefone como string
     cep_patients: column.text, // CEP como string
     uf_patients: column.text, // UF como string
     cidade_patients: column.text, // Cidade como string
     endereco_patients: column.text, // Endereço como string
+    numero_endereco_patients: column.text, // Número do endereço como string
     created_by: uuid, // UUID do criador como string
     updated_at: timestamp, // Timestamp como string
     doctor_id: uuid, // UUID do médico responsável como string
