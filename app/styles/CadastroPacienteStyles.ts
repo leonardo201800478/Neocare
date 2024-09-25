@@ -1,10 +1,9 @@
 // app/styles/CadastroPacienteStyles.ts
-
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet, StatusBar } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1, // Para permitir rolagem
+    flexGrow: 1,
     padding: 20,
     backgroundColor: '#98FB98', // Fundo verde claro
     alignItems: 'center',
@@ -12,21 +11,28 @@ const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-  },
-  scrollView: {
-    backgroundColor: 'pink',
-    marginHorizontal: 20,
+    backgroundColor: '#98FB98', // Fundo verde claro
   },
   header: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#4B0082', // Roxo
+    textAlign: 'center',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
     color: '#4B0082',
+    textAlign: 'left',
+    alignSelf: 'flex-start',
   },
   input: {
     width: '100%',
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     fontSize: 16,
@@ -34,15 +40,14 @@ const styles = StyleSheet.create({
     borderColor: '#4B0082',
   },
   inputSmall: {
-    flex: 1,
+    width: '48%',
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     fontSize: 16,
     borderWidth: 1,
     borderColor: '#4B0082',
-    marginRight: 10,
   },
   row: {
     flexDirection: 'row',
@@ -51,7 +56,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   pickerContainer: {
-    width: '100%',
+    width: '45%',
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     borderWidth: 1,
@@ -62,6 +67,11 @@ const styles = StyleSheet.create({
     height: 50,
     color: '#000000',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
   button: {
     width: '48%',
     backgroundColor: '#4B0082',
@@ -70,7 +80,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 5,
   },
   buttonText: {
     color: '#FFFFFF',

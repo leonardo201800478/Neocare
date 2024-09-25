@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   SafeAreaView,
   ScrollView,
-  StatusBar,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import CEPInput from '../components/CEPInput';
@@ -20,26 +19,22 @@ import {
   formatDateForDatabase,
   formatCPF,
   removeCPFMask,
-  formatCEP,
   removeCEPFormat,
 } from '../utils/formatUtils';
 import { useSystem } from '~/powersync/PowerSync';
 import { uuid } from '~/powersync/uuid';
-import { calcularIdade } from '../utils/idadeCalculator'; 
-// Função para calcular idade
-
+import { calcularIdade } from '../utils/idadeCalculator';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
   const [dataNasc, setDataNasc] = useState('');
-  const [sexo, setSexo] = useState('Masculino'); // Default para Masculino
-  const [idade, setIdade] = useState(''); // Idade calculada
-  const [email, setEmail] = useState('');
+  const [sexo, setSexo] = useState('Masculino');
+  const [idade, setIdade] = useState('');
   const [telefone, setTelefone] = useState('');
   const [cep, setCep] = useState('');
-  const [uf, setUf] = useState(''); // Estado (UF)
+  const [uf, setUf] = useState('');
   const [cidade, setCidade] = useState('');
   const [endereco, setEndereco] = useState('');
   const [numero, setNumero] = useState('');
@@ -54,7 +49,6 @@ const CadastroPaciente = () => {
       return;
     }
 
-    // Validação do CPF
     if (!isCPFValid(cpf)) {
       Alert.alert('Erro', 'CPF inválido');
       setLoading(false);
@@ -72,7 +66,6 @@ const CadastroPaciente = () => {
           nome_patients: nome,
           cpf_patients: removeCPFMask(cpf),
           data_nasc_patients: formatDateForDatabase(dataNasc),
-          email_patients: email,
           fone_patients: telefone,
           sexo_patients: sexo,
           cep_patients: removeCEPFormat(cep),
@@ -96,26 +89,15 @@ const CadastroPaciente = () => {
     }
   };
 
-  const handleAddressFound = (data: any) => {
-    setUf(data.uf);
-    setCidade(data.localidade);
-    setEndereco(data.logradouro);
-  };
-
   const handleDataNascChange = (value: string) => {
     setDataNasc(value);
-    const idadeCalculada = calcularIdade(new Date(value)); // Calcula a idade automaticamente
+    const idadeCalculada = calcularIdade(new Date(value));
     setIdade(idadeCalculada);
   };
 
-  function formatTelefone(text: string): React.SetStateAction<string> {
-    throw new Error('Function not implemented.');
-  }
-
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         {loading && (
           <View style={styles.overlay}>
             <ActivityIndicator size="large" color="#fff" />
@@ -123,8 +105,11 @@ const CadastroPaciente = () => {
           </View>
         )}
         <Text style={styles.header}>Cadastro do Paciente</Text>
+
+        {/* Informações Pessoais */}
+        <Text style={styles.sectionTitle}>Informações pessoais:</Text>
         <TextInput
-          placeholder="Nome (obrigatório)"
+          placeholder="Nome Completo: (obrigatório)"
           value={nome}
           onChangeText={setNome}
           style={styles.input}
@@ -137,99 +122,83 @@ const CadastroPaciente = () => {
           keyboardType="numeric"
         />
         <TextInput
-          placeholder="Data de nascimento (obrigatório)"
+          placeholder="Data nascimento: (obrigatório)"
           value={dataNasc}
           onChangeText={handleDataNascChange}
           style={styles.input}
           keyboardType="numeric"
         />
-        <TextInput
-          placeholder="Idade (calculada automaticamente)"
-          value={idade}
-          editable={false}
-          style={styles.input}
-        />
+        <TextInput placeholder="Idade:" value={idade} editable={false} style={styles.input} />
 
         <View style={styles.row}>
-          <Picker
-            selectedValue={sexo}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSexo(itemValue)}>
-            <Picker.Item label="Masculino" value="Masculino" />
-            <Picker.Item label="Feminino" value="Feminino" />
-          </Picker>
+          <TextInput
+            placeholder="Celular:"
+            value={telefone}
+            onChangeText={setTelefone}
+            style={styles.inputSmall}
+            keyboardType="phone-pad"
+          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={sexo}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSexo(itemValue)}>
+              <Picker.Item label="Masculino" value="Masculino" />
+              <Picker.Item label="Feminino" value="Feminino" />
+            </Picker>
+          </View>
         </View>
 
-        <TextInput
-          placeholder="Celular"
-          value={telefone}
-          onChangeText={(text) => setTelefone(formatTelefone(text))}
-          style={styles.input}
-          keyboardType="phone-pad"
-        />
-
-        <CEPInput onAddressFound={handleAddressFound} />
-
-        <TextInput
-          placeholder="Endereço"
-          value={endereco}
-          onChangeText={setEndereco}
-          style={styles.input}
-        />
-
+        {/* Endereço */}
+        <View style={styles.container}>
+          <Text style={styles.sectionTitle}>Endereço:</Text>
+          <CEPInput
+            cep={cep}
+            setCep={setCep}
+            onAddressFound={(data) => {
+              setUf(data.uf);
+              setCidade(data.localidade);
+              setEndereco(data.logradouro);
+            }}
+          />
+        </View>
+        <View style={styles.row}>
+          <TextInput
+            placeholder="Logradouro"
+            value={endereco}
+            onChangeText={setEndereco}
+            style={styles.input}
+          />
+        </View>
         <View style={styles.row}>
           <TextInput
             placeholder="Número"
             value={numero}
             onChangeText={setNumero}
             style={styles.inputSmall}
-            keyboardType="numeric" // Aceita apenas números
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={styles.row}>
+          <TextInput placeholder="UF" value={uf} onChangeText={setUf} style={styles.inputSmall} />
+          <TextInput
+            placeholder="Cidade"
+            value={cidade}
+            onChangeText={setCidade}
+            style={styles.inputSmall}
           />
         </View>
 
-        <Picker
-          selectedValue={uf}
-          style={styles.picker}
-          onValueChange={(itemValue) => setUf(itemValue)}>
-          {/* Lista de UFs */}
-          {[
-            'AC',
-            'AL',
-            'AM',
-            'AP',
-            'BA',
-            'CE',
-            'DF',
-            'ES',
-            'GO',
-            'MA',
-            'MG',
-            'MS',
-            'MT',
-            'PA',
-            'PB',
-            'PE',
-            'PI',
-            'PR',
-            'RJ',
-            'RN',
-            'RO',
-            'RR',
-            'RS',
-            'SC',
-            'SE',
-            'SP',
-            'TO',
-          ].map((uf) => (
-            <Picker.Item key={uf} label={uf} value={uf} />
-          ))}
-        </Picker>
-
-        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Botões */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => router.replace('/')}>
+            <Text style={styles.buttonText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+            <Text style={styles.buttonText}>Adicionar</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

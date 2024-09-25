@@ -1,12 +1,18 @@
 // app/components/CEPInput.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { TextInput, Alert } from 'react-native';
-
 import { formatCEP, removeCEPFormat } from '../utils/formatUtils';
+import styles from '../styles/CadastroPacienteStyles';
 
-const CEPInput = ({ onAddressFound }: { onAddressFound: (data: any) => void }) => {
-  const [cep, setCep] = useState('');
-
+const CEPInput = ({
+  cep,
+  setCep,
+  onAddressFound,
+}: {
+  cep: string;
+  setCep: (cep: string) => void;
+  onAddressFound: (data: any) => void;
+}) => {
   const handleCepChange = async (value: string) => {
     const formattedCep = formatCEP(value);
     setCep(formattedCep);
@@ -33,6 +39,7 @@ const CEPInput = ({ onAddressFound }: { onAddressFound: (data: any) => void }) =
     <TextInput
       placeholder="CEP"
       value={cep}
+      style={styles.input}
       onChangeText={handleCepChange}
       keyboardType="numeric"
     />
