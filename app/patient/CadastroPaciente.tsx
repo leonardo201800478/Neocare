@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import { PATIENTS_TABLE, DOCTORS_TABLE } from '~/powersync/AppSchema'; 
 import { Picker } from '@react-native-picker/picker';
 import CEPInput from '../components/CEPInput';
 import { isCPFValid } from '../components/CPFValidator';

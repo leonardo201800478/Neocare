@@ -15,7 +15,7 @@ create table
     created_at timestamp with time zone not null default now(),
     nome_patients text not null,
     cpf_patients text unique not null,
-    data_nasc_patients text,
+    data_nasc_patients date,
     sexo_patients text,
     email_patients text,
     fone_patients text,
@@ -70,12 +70,13 @@ create table
     doctor_name text not null, -- Nome do doutor responsável
     created_by uuid not null, -- ID do usuário que criou o prontuário
     constraint attendances_pkey primary key (id),
+    constraint attendances_created_by_fkey foreign key (created_by) references auth.users (id) on delete set null,
     constraint attendances_patient_id_fkey foreign key (patient_id) references patients (id) on delete cascade,
     constraint attendances_doctor_id_fkey foreign key (doctor_id) references doctors (id) on delete cascade
   ) tablespace pg_default;
 
 -- Create publication for powersync
-create publication powersync for table doctors, patients, attendances;
+create publication powersync for table public.doctors, public.patients, public.attendances;
 
 -- Set up Row Level Security (RLS)
 -- Enable RLS for the relevant tables

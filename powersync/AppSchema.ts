@@ -1,6 +1,6 @@
 // powersync/AppSchema.ts
-
-import { column, Schema, Table } from '@powersync/react-native';
+import { AttachmentTable } from '@powersync/attachments';
+import { Column, ColumnType, Index, IndexedColumn, Schema, Table } from '@powersync/react-native';
 
 // Nome das tabelas
 export const DOCTORS_TABLE = 'doctors';
