@@ -2,7 +2,9 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+
 import styles from '../styles/PacienteDetailsStyles';
+
 import { useSystem } from '~/powersync/PowerSync';
 
 const PacienteDetails = () => {

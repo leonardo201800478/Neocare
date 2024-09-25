@@ -30,17 +30,17 @@ const patients = new Table(
     id: column.text,
     created_at: column.text,
     nome_patients: column.text,
-    cpf_patients: column.text,  // CPF como inteiro
+    cpf_patients: column.text, // CPF como inteiro
     data_nasc_patients: column.text,
     email_patients: column.text,
     fone_patients: column.text, // Telefone como inteiro
-    cep_patients: column.text,  // CEP como inteiro
+    cep_patients: column.text, // CEP como inteiro
     uf_patients: column.text,
     cidade_patients: column.text,
     endereco_patients: column.text,
     inserted_at: column.text,
     updated_at: column.text,
-    doctor_id: column.text,  // Médico responsável pelo paciente
+    doctor_id: column.text, // Médico responsável pelo paciente
     modified_by: column.text, // Último médico que modificou o registro
   },
   {
@@ -56,9 +56,9 @@ const attendances = new Table(
   {
     id: column.text,
     created_at: column.text,
-    created_by: column.text,  // Médico que criou o prontuário
-    doctor_id: column.text,   // Médico responsável pelo paciente
-    patient_id: column.text,  // Paciente relacionado ao prontuário
+    created_by: column.text, // Médico que criou o prontuário
+    doctor_id: column.text, // Médico responsável pelo paciente
+    patient_id: column.text, // Paciente relacionado ao prontuário
     consultation_id: column.text,
     tipo: column.text,
     tax_mae: column.text,

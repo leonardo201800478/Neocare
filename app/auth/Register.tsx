@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
-import { useSystem } from '~/powersync/PowerSync';
+
 import styles from '../styles/AuthStyles';
+
+import { useSystem } from '~/powersync/PowerSync';
 import { uuid } from '~/powersync/uuid';
 
 const Register = () => {
@@ -50,7 +52,8 @@ const Register = () => {
         // Registrando o novo médico na tabela "doctors"
         const doctorId = uuid(); // Gerando um UUID para o médico
 
-        await db.insertInto('doctors')
+        await db
+          .insertInto('doctors')
           .values({
             id: doctorId,
             name_user: name, // Supondo que o nome seja o email; ajustar conforme necessário
@@ -80,12 +83,7 @@ const Register = () => {
         </View>
       )}
       <Text style={styles.header}>Criar Conta</Text>
-      <TextInput
-        placeholder="Nome"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
+      <TextInput placeholder="Nome" value={name} onChangeText={setName} style={styles.input} />
       <TextInput
         placeholder="Email"
         value={email}

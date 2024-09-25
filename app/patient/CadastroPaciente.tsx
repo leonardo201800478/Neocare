@@ -2,9 +2,10 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
+
+import CEPInput from '../components/CEPInput';
+import { isCPFValid } from '../components/CPFValidator';
 import styles from '../styles/CadastroPacienteStyles';
-import { useSystem } from '~/powersync/PowerSync';
-import { uuid } from '~/powersync/uuid';
 import {
   formatDateForDatabase,
   formatCPF,
@@ -12,8 +13,9 @@ import {
   formatCEP,
   removeCEPFormat,
 } from '../utils/formatUtils';
-import { isCPFValid } from '../components/CPFValidator';
-import CEPInput from '../components/CEPInput';
+
+import { useSystem } from '~/powersync/PowerSync';
+import { uuid } from '~/powersync/uuid';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);

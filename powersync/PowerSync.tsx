@@ -2,7 +2,9 @@ import 'react-native-polyfill-globals/auto';
 import { Kysely, wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
 import { PowerSyncDatabase } from '@powersync/react-native';
 import React from 'react';
+
 import { AppSchema, Database } from './AppSchema';
+
 import { SupabaseConnector } from '~/powersync/SupabaseConnector';
 
 export class System {

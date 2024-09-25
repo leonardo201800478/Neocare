@@ -1,4 +1,5 @@
 import * as Crypto from 'expo-crypto';
+
 import { system } from '~/powersync/PowerSync'; // Importa o system diretamente
 
 export const insertPatient = async (patientData: {

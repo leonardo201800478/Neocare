@@ -1,6 +1,7 @@
 // components/CEPInput.tsx
 import React, { useState } from 'react';
 import { TextInput, Alert } from 'react-native';
+
 import { formatCEP, removeCEPFormat } from '../utils/formatUtils';
 
 const CEPInput = ({ onAddressFound }: { onAddressFound: (data: any) => void }) => {
