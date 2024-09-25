@@ -31,9 +31,9 @@ const Layout = () => {
     const inAuthGroup = segments[0] === 'auth';
 
     if (!session && !inAuthGroup) {
-      router.replace('./auth/Login'); // Redireciona para a tela de login se não houver sessão
+      router.replace('/auth/Login'); // Redireciona para a tela de login se não houver sessão
     } else if (session && inAuthGroup) {
-      router.replace('./home/HomeScreen'); // Redireciona para a tela Home se já estiver logado
+      router.replace('/home/HomeScreen'); // Redireciona para a tela Home se já estiver logado
     }
   }, [session, segments, router, loading]);
 

@@ -1,28 +1,32 @@
-import * as Crypto from 'expo-crypto';
+// insertPatient.ts
 
-import { system } from '~/powersync/PowerSync'; // Importa o system diretamente
+import { system } from '~/powersync/PowerSync';
+import { uuid } from '~/powersync/uuid';
 
 export const insertPatient = async (patientData: {
   nome_patients: string;
   cpf_patients: string;
   doctor_id: string;
+  created_by: string;
 }) => {
   const { db } = system;
+
   try {
     await db
       .insertInto('patients')
       .values({
-        id: Crypto.randomUUID(), // Gera UUID usando expo-crypto
+        id: uuid(),
         nome_patients: patientData.nome_patients,
         cpf_patients: patientData.cpf_patients,
         doctor_id: patientData.doctor_id,
+        created_by: patientData.created_by,
         created_at: new Date().toISOString(),
-        inserted_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .execute();
-    console.log('Paciente inserido com sucesso');
-  } catch (error) {
-    console.error('Erro ao inserir paciente:', error);
+
+    console.log('Paciente registrado com sucesso');
+  } catch (error: any) {
+    console.error('Erro ao registrar paciente:', (error as Error).message);
   }
 };

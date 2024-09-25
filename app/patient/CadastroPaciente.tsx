@@ -74,7 +74,6 @@ const CadastroPaciente = () => {
           endereco_patients: endereco,
           doctor_id: doctorId, // Vinculando o id do médico logado
           created_at: new Date().toISOString(),
-          inserted_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
         .execute();
@@ -175,7 +174,7 @@ const CadastroPaciente = () => {
       </View>
 
       <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./home')}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/')}>
           <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleCadastro}>

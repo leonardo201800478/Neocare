@@ -56,9 +56,8 @@ const Register = () => {
           .insertInto('doctors')
           .values({
             id: doctorId,
-            name_user: name, // Supondo que o nome seja o email; ajustar conforme necessário
+            name: name, // Supondo que o nome seja o email; ajustar conforme necessário
             owner_id: userID, // Vinculando ao Supabase auth user ID
-            inserted_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
           .execute();

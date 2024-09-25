@@ -47,7 +47,7 @@ const ForgotPassword = () => {
         <Text style={styles.buttonText}>Enviar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('./Login')}>
+      <TouchableOpacity onPress={() => router.replace('/')}>
         <Text style={styles.linkText}>Voltar para o login</Text>
       </TouchableOpacity>
     </View>

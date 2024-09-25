@@ -12,7 +12,7 @@ const Index = () => {
 
   useEffect(() => {
     if (isMounted) {
-      router.replace('./auth/Login'); // Redireciona para a tela de Login
+      router.replace('/auth/Login'); // Redireciona para a tela de Login
     }
   }, [isMounted, router]);
 

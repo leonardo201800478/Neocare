@@ -51,7 +51,7 @@ const HomeScreen: React.FC = () => {
       onPress={() => {
         if (item.cpf_patients) {
           // Usando o formato correto de rota dinâmica
-          router.push('./patient/${item.cpf_patients}');
+          router.push(`/patient/${item.cpf_patients}`);
         } else {
           Alert.alert('Erro', 'CPF do paciente não encontrado.');
         }
@@ -82,7 +82,7 @@ const HomeScreen: React.FC = () => {
         {/* Botão para ir para a tela de cadastro de paciente */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('./patient/CadastroPaciente')}>
+          onPress={() => router.push(`/patient/CadastroPaciente`)}>
           <Text style={styles.buttonText}>Cadastrar Novo Paciente</Text>
         </TouchableOpacity>
 

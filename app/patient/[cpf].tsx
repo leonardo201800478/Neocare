@@ -52,7 +52,7 @@ const PacienteDetails = () => {
             try {
               await db.deleteFrom('patients').where('id', '=', paciente.id).execute();
               Alert.alert('Sucesso', 'Paciente deletado com sucesso');
-              router.replace('../home');
+              router.replace('/home/HomeScreen');
             } catch (error) {
               console.error('Erro ao deletar paciente:', error);
               Alert.alert('Erro', 'Não foi possível deletar o paciente.');

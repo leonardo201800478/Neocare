@@ -52,10 +52,10 @@ const Login = () => {
       <TouchableOpacity style={styles.button} onPress={onSignInPress}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('./auth/Register')}>
+      <TouchableOpacity onPress={() => router.push('/auth/Register')}>
         <Text style={styles.linkText}>Criar novo usuário</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('./auth/ForgotPassword')}>
+      <TouchableOpacity onPress={() => router.push('/auth/ForgotPassword')}>
         <Text style={styles.linkText}>Esqueci a senha</Text>
       </TouchableOpacity>
     </View>

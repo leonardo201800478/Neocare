@@ -9,10 +9,9 @@ export const insertDoctor = async (doctorData: { nome_user: string; owner_id: st
       .insertInto('doctors')
       .values({
         id: Crypto.randomUUID(), // Gera UUID usando expo-crypto
-        name_user: doctorData.nome_user,
+        name: doctorData.nome_user,
         owner_id: doctorData.owner_id,
         created_at: new Date().toISOString(),
-        inserted_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
       .execute();
