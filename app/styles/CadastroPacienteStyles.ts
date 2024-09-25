@@ -1,6 +1,6 @@
 // app/styles/CadastroPacienteStyles.ts
 
-import { StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -8,6 +8,14 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#98FB98', // Fundo verde claro
     alignItems: 'center',
+  },
+  safeAreaView: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+  },
+  scrollView: {
+    backgroundColor: 'pink',
+    marginHorizontal: 20,
   },
   header: {
     fontSize: 24,

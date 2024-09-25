@@ -8,6 +8,9 @@ import {
   Text,
   Alert,
   ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import CEPInput from '../components/CEPInput';
@@ -22,7 +25,9 @@ import {
 } from '../utils/formatUtils';
 import { useSystem } from '~/powersync/PowerSync';
 import { uuid } from '~/powersync/uuid';
-import { calcularIdade } from '../utils/idadeCalculator'; // Função para calcular idade
+import { calcularIdade } from '../utils/idadeCalculator'; 
+// Função para calcular idade
+
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);
@@ -108,120 +113,124 @@ const CadastroPaciente = () => {
   }
 
   return (
-    <View style={styles.container}>
-      {loading && (
-        <View style={styles.overlay}>
-          <ActivityIndicator size="large" color="#fff" />
-          <Text style={styles.loadingText}>Carregando...</Text>
-        </View>
-      )}
-      <Text style={styles.header}>Cadastro do Paciente</Text>
-      <TextInput
-        placeholder="Nome (obrigatório)"
-        value={nome}
-        onChangeText={setNome}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="CPF da criança ou do responsável (obrigatório)"
-        value={cpf}
-        onChangeText={(text) => setCpf(formatCPF(text))}
-        style={styles.input}
-        keyboardType="numeric"
-      />
-      <TextInput
-        placeholder="Data de nascimento (obrigatório)"
-        value={dataNasc}
-        onChangeText={handleDataNascChange}
-        style={styles.input}
-        keyboardType="numeric"
-      />
-      <TextInput
-        placeholder="Idade (calculada automaticamente)"
-        value={idade}
-        editable={false}
-        style={styles.input}
-      />
-
-      <View style={styles.row}>
-        <Picker
-          selectedValue={sexo}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSexo(itemValue)}>
-          <Picker.Item label="Masculino" value="Masculino" />
-          <Picker.Item label="Feminino" value="Feminino" />
-        </Picker>
-      </View>
-
-      <TextInput
-        placeholder="Celular"
-        value={telefone}
-        onChangeText={(text) => setTelefone(formatTelefone(text))}
-        style={styles.input}
-        keyboardType="phone-pad"
-      />
-
-      <CEPInput onAddressFound={handleAddressFound} />
-
-      <TextInput
-        placeholder="Endereço"
-        value={endereco}
-        onChangeText={setEndereco}
-        style={styles.input}
-      />
-
-      <View style={styles.row}>
+    <SafeAreaView style={styles.safeAreaView}>
+      <ScrollView style={styles.scrollView}>
+      <View style={styles.container}>
+        {loading && (
+          <View style={styles.overlay}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loadingText}>Carregando...</Text>
+          </View>
+        )}
+        <Text style={styles.header}>Cadastro do Paciente</Text>
         <TextInput
-          placeholder="Número"
-          value={numero}
-          onChangeText={setNumero}
-          style={styles.inputSmall}
-          keyboardType="numeric" // Aceita apenas números
+          placeholder="Nome (obrigatório)"
+          value={nome}
+          onChangeText={setNome}
+          style={styles.input}
         />
+        <TextInput
+          placeholder="CPF da criança ou do responsável (obrigatório)"
+          value={cpf}
+          onChangeText={(text) => setCpf(formatCPF(text))}
+          style={styles.input}
+          keyboardType="numeric"
+        />
+        <TextInput
+          placeholder="Data de nascimento (obrigatório)"
+          value={dataNasc}
+          onChangeText={handleDataNascChange}
+          style={styles.input}
+          keyboardType="numeric"
+        />
+        <TextInput
+          placeholder="Idade (calculada automaticamente)"
+          value={idade}
+          editable={false}
+          style={styles.input}
+        />
+
+        <View style={styles.row}>
+          <Picker
+            selectedValue={sexo}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSexo(itemValue)}>
+            <Picker.Item label="Masculino" value="Masculino" />
+            <Picker.Item label="Feminino" value="Feminino" />
+          </Picker>
+        </View>
+
+        <TextInput
+          placeholder="Celular"
+          value={telefone}
+          onChangeText={(text) => setTelefone(formatTelefone(text))}
+          style={styles.input}
+          keyboardType="phone-pad"
+        />
+
+        <CEPInput onAddressFound={handleAddressFound} />
+
+        <TextInput
+          placeholder="Endereço"
+          value={endereco}
+          onChangeText={setEndereco}
+          style={styles.input}
+        />
+
+        <View style={styles.row}>
+          <TextInput
+            placeholder="Número"
+            value={numero}
+            onChangeText={setNumero}
+            style={styles.inputSmall}
+            keyboardType="numeric" // Aceita apenas números
+          />
+        </View>
+
+        <Picker
+          selectedValue={uf}
+          style={styles.picker}
+          onValueChange={(itemValue) => setUf(itemValue)}>
+          {/* Lista de UFs */}
+          {[
+            'AC',
+            'AL',
+            'AM',
+            'AP',
+            'BA',
+            'CE',
+            'DF',
+            'ES',
+            'GO',
+            'MA',
+            'MG',
+            'MS',
+            'MT',
+            'PA',
+            'PB',
+            'PE',
+            'PI',
+            'PR',
+            'RJ',
+            'RN',
+            'RO',
+            'RR',
+            'RS',
+            'SC',
+            'SE',
+            'SP',
+            'TO',
+          ].map((uf) => (
+            <Picker.Item key={uf} label={uf} value={uf} />
+          ))}
+        </Picker>
+
+        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        </TouchableOpacity>
       </View>
-
-      <Picker
-        selectedValue={uf}
-        style={styles.picker}
-        onValueChange={(itemValue) => setUf(itemValue)}>
-        {/* Lista de UFs */}
-        {[
-          'AC',
-          'AL',
-          'AM',
-          'AP',
-          'BA',
-          'CE',
-          'DF',
-          'ES',
-          'GO',
-          'MA',
-          'MG',
-          'MS',
-          'MT',
-          'PA',
-          'PB',
-          'PE',
-          'PI',
-          'PR',
-          'RJ',
-          'RN',
-          'RO',
-          'RR',
-          'RS',
-          'SC',
-          'SE',
-          'SP',
-          'TO',
-        ].map((uf) => (
-          <Picker.Item key={uf} label={uf} value={uf} />
-        ))}
-      </Picker>
-
-      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-    </View>
+    </ScrollView>
+    </SafeAreaView>
   );
 };
 
