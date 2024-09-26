@@ -2,10 +2,11 @@ import { Slot } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-const HomeLayout = () => {
+const DoctorsLayout = () => {
   return (
     <View style={styles.container}>
-      <Slot /> {/* O Slot renderiza as páginas internas da pasta "home" */}
+      {/* Renderiza as rotas internas (index, update, etc.) */}
+      <Slot />
     </View>
   );
 };
@@ -13,9 +14,9 @@ const HomeLayout = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
     padding: 16,
+    backgroundColor: '#f4f4f4',
   },
 });
 
-export default HomeLayout;
+export default DoctorsLayout;

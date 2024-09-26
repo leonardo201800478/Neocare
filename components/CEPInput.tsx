@@ -1,8 +1,9 @@
 // app/components/CEPInput.tsx
 import React from 'react';
 import { TextInput, Alert } from 'react-native';
+
+import styles from '../app/styles/CadastroPacienteStyles';
 import { formatCEP, removeCEPFormat } from '../utils/formatUtils';
-import styles from '../styles/CadastroPacienteStyles';
 
 const CEPInput = ({
   cep,

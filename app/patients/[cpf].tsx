@@ -1,6 +1,5 @@
-// app/patient/[cpf].tsx
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 
 import styles from '../styles/PacienteDetailsStyles';
@@ -19,7 +18,7 @@ const PacienteDetails = () => {
       loadPaciente(cpf);
     } else {
       Alert.alert('Erro', 'CPF inválido ou não fornecido.');
-      router.replace('../home');
+      router.replace('./home');
     }
   }, [cpf]);
 
@@ -52,7 +51,7 @@ const PacienteDetails = () => {
             try {
               await db.deleteFrom('patients').where('id', '=', paciente.id).execute();
               Alert.alert('Sucesso', 'Paciente deletado com sucesso');
-              router.replace('/home/HomeScreen');
+              router.replace('./home');
             } catch (error) {
               console.error('Erro ao deletar paciente:', error);
               Alert.alert('Erro', 'Não foi possível deletar o paciente.');
@@ -87,7 +86,6 @@ const PacienteDetails = () => {
       <Text>Nome: {paciente.nome_patients}</Text>
       <Text>CPF: {paciente.cpf_patients}</Text>
       <Text>Data de Nascimento: {paciente.data_nasc_patients}</Text>
-      <Text>Email: {paciente.email_patients}</Text>
       <Text>CEP: {paciente.cep_patients}</Text>
       <Text>UF: {paciente.uf_patients}</Text>
       <Text>Cidade: {paciente.cidade_patients}</Text>
@@ -97,7 +95,7 @@ const PacienteDetails = () => {
         <TouchableOpacity style={styles.buttonDelete} onPress={deletePaciente}>
           <Text style={styles.buttonText}>Deletar Paciente</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonBack} onPress={() => router.replace('../home')}>
+        <TouchableOpacity style={styles.buttonBack} onPress={() => router.replace('./home')}>
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
       </View>

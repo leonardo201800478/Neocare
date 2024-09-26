@@ -1,3 +1,4 @@
+// powersync/SupabaseConnector.ts
 import {
   AbstractPowerSyncDatabase,
   CrudEntry,
@@ -6,8 +7,16 @@ import {
 } from '@powersync/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import 'react-native-url-polyfill/auto';
+import 'react-native-url-polyfill/auto'; // Necessário para lidar com URLs no React Native
 
+// Define códigos de erro fatais do Postgres que não podem ser resolvidos por tentativas
+const FATAL_RESPONSE_CODES = [
+  new RegExp('^22...$'), // Data Exception (exemplo: tipo de dado incorreto)
+  new RegExp('^23...$'), // Violação de restrição de integridade (exemplo: UNIQUE, NOT NULL)
+  new RegExp('^42501$'), // Privilegios insuficientes
+];
+
+// URLs e chaves do Supabase e PowerSync
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
 const powersyncUrl = process.env.EXPO_PUBLIC_POWERSYNC_URL as string;
@@ -16,6 +25,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
 
   constructor() {
+    // Inicializa o cliente Supabase com o armazenamento de sessão no AsyncStorage
     this.client = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         storage: AsyncStorage,
@@ -23,9 +33,10 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     });
   }
 
-  async login(username: string, password: string) {
+  // Realiza login com email e senha
+  async login(email: string, password: string) {
     const { error } = await this.client.auth.signInWithPassword({
-      email: username,
+      email,
       password,
     });
 
@@ -34,6 +45,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     }
   }
 
+  // Obtem as credenciais do Supabase para autenticação
   async fetchCredentials() {
     const {
       data: { session },
@@ -41,7 +53,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     } = await this.client.auth.getSession();
 
     if (!session || error) {
-      throw new Error(`Could not fetch Supabase credentials: ${error}`);
+      throw new Error(`Erro ao obter sessão do Supabase: ${error}`);
     }
 
     return {
@@ -53,11 +65,12 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     };
   }
 
-  // Função uploadData agora implementada corretamente
+  // Envia dados para o Supabase a partir do banco de dados local gerido pelo PowerSync
   async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
     const transaction = await database.getNextCrudTransaction();
+
     if (!transaction) {
-      return;
+      return; // Sem transações pendentes
     }
 
     let lastOp: CrudEntry | null = null;
@@ -66,6 +79,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         lastOp = op;
         const table = this.client.from(op.table);
         let result: any = null;
+
         switch (op.op) {
           case UpdateType.PUT:
             const record = { ...op.opData, id: op.id };
@@ -80,13 +94,29 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         }
 
         if (result.error) {
-          throw new Error(`Erro ao ${op.op} dados para Supabase: ${JSON.stringify(result)}`);
+          throw new Error(`Erro ao ${op.op} dados no Supabase: ${JSON.stringify(result)}`);
         }
       }
+
+      // Marca a transação como completa
       await transaction.complete();
     } catch (ex: any) {
-      console.error(ex);
-      await transaction.complete();
+      console.error('Erro durante a transação PowerSync:', ex);
+      if (
+        typeof ex.code === 'string' &&
+        FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))
+      ) {
+        // Erro fatal - descarta a operação e completa a transação
+        console.error(`Erro fatal ao processar operação: ${lastOp?.op}`, ex);
+        await transaction.complete();
+      } else {
+        throw ex; // Outros erros são propagados
+      }
     }
+  }
+
+  // Desconecta e limpa as credenciais do usuário
+  async logout() {
+    await this.client.auth.signOut();
   }
 }

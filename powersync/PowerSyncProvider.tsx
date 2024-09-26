@@ -1,16 +1,21 @@
 // powersync/PowerSyncProvider.tsx
-
 import { PowerSyncContext } from '@powersync/react-native';
-import { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 
 import { useSystem } from '~/powersync/PowerSync';
 
-export const PowerSyncProvider = ({ children }: { children: ReactNode }) => {
-  const { powersync } = useSystem();
+interface PowerSyncProviderProps {
+  children: ReactNode;
+}
 
-  const db = useMemo(() => {
-    return powersync;
-  }, [powersync]);
+// Provedor de contexto para o PowerSync
+export const PowerSyncProvider = ({ children }: PowerSyncProviderProps) => {
+  const { powersync } = useSystem(); // Acessa o sistema PowerSync
+
+  // Memoiza o valor do contexto para evitar renderizações desnecessárias
+  const db = useMemo(() => powersync, [powersync]);
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
 };
+
+export default PowerSyncProvider;

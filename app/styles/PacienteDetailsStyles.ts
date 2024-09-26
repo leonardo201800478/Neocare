@@ -1,3 +1,4 @@
+
 // app/styles/PacienteDetailsStyles.ts
 
 import { StyleSheet } from 'react-native';

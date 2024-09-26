@@ -1,37 +1,18 @@
-# Define sync rules to control which data is synced to each user
 bucket_definitions:
-  global_doctors:
+  user_doctors:
+    # Syncs data based on the user_id (doctor_id)
+    parameters: SELECT token_parameters.user_id as user_id
     data:
-      # Todos os médicos podem visualizar os dados de outros médicos (sem restrição)
-      - SELECT * FROM doctors
+      - select * from doctors where owner_id = bucket.user_id
 
-  doctor_specific:
-    # Sync rows only belonging to the logged-in doctor for update and delete
-    parameters: SELECT request.user_id() as user_id
+  user_patients:
+    # Syncs patients based on doctor_id
+    parameters: SELECT token_parameters.user_id as user_id
     data:
-      # Sincronizar apenas os dados do médico logado para alterações e exclusões
-      - SELECT * FROM doctors WHERE owner_id = bucket.user_id
+      - select * from patients where doctor_id = bucket.user_id
 
-  global_patients:
+  user_attendances:
+    # Syncs attendances based on doctor_id (last updated doctor)
+    parameters: SELECT token_parameters.user_id as user_id
     data:
-      # Todos os médicos podem visualizar todos os pacientes (sem restrição)
-      - SELECT * FROM patients
-
-  patient_specific:
-    # Sync rows only belonging to the logged-in doctor for update and delete
-    parameters: SELECT request.user_id() as user_id
-    data:
-      # Sincronizar apenas os dados dos pacientes do médico logado para alterações e exclusões
-      - SELECT * FROM patients WHERE doctor_id = bucket.user_id
-
-  global_attendances:
-    data:
-      # Todos os médicos podem visualizar todos os prontuários (sem restrição)
-      - SELECT * FROM attendances
-
-  attendance_specific:
-    # Sync rows only belonging to the logged-in doctor for update and delete
-    parameters: SELECT request.user_id() as user_id
-    data:
-      # Sincronizar apenas os prontuários dos pacientes do médico logado para alterações e exclusões
-      - SELECT * FROM attendances WHERE doctor_id = bucket.user_id
+      - select * from attendances where doctor_id = bucket.user_id

@@ -1,57 +1,54 @@
+// HomeScreenStyles.ts
+
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#f4f4f4',
   },
   header: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 24,
-    color: '#005F9E',
+    textAlign: 'center',
   },
   input: {
-    backgroundColor: '#f0f0f0',
     padding: 12,
+    borderColor: '#ccc',
+    borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 12,
-    fontSize: 16,
+    marginBottom: 16,
+    width: '100%',
   },
   button: {
-    backgroundColor: '#005F9E',
-    padding: 16,
+    backgroundColor: '#A700FF',
+    padding: 12,
     borderRadius: 8,
+    marginBottom: 16,
     alignItems: 'center',
-    marginBottom: 12,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: '#ccc',
-    marginVertical: 10,
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
     borderRadius: 8,
+    marginBottom: 8,
   },
   noResultsText: {
-    textAlign: 'center',
+    color: '#777',
     fontSize: 16,
-    color: '#ff0000',
-    marginTop: 20,
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 8,
   },
 });
-
-export default styles;

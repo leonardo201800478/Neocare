@@ -2,21 +2,19 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-const RegisterPage = () => {
+const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const handleRegister = () => {
-    // Adicionar lógica de registro de usuário
-    console.log('Conta registrada');
+  const handleResetPassword = () => {
+    // Adicionar lógica de recuperação de senha
+    console.log('Solicitação de recuperação de senha enviada');
     router.replace('./auth');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Criar Conta</Text>
+      <Text style={styles.header}>Recuperar Senha</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -25,26 +23,12 @@ const RegisterPage = () => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmar Senha"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+        <Text style={styles.buttonText}>Enviar Email de Recuperação</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.replace('./auth')}>
-        <Text style={styles.linkText}>Já tenho uma conta. Entrar</Text>
+        <Text style={styles.linkText}>Voltar para Login</Text>
       </TouchableOpacity>
     </View>
   );
@@ -89,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterPage;
+export default ResetPasswordPage;

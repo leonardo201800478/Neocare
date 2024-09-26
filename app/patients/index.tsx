@@ -1,6 +1,5 @@
-// app/patient/index.tsx
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 
 const PatientIndex = () => {
@@ -9,8 +8,7 @@ const PatientIndex = () => {
   useEffect(() => {
     // Simulando carregamento antes de redirecionar para a tela de detalhes de pacientes ou outra rota
     setTimeout(() => {
-      // Por exemplo, se não houver paciente selecionado, poderia redirecionar para a Home
-      router.replace('./home');
+      router.replace('./home'); // Redireciona para a tela Home ou para a rota de pacientes.
     }, 2000); // Simulação de atraso de 2 segundos
   }, [router]);
 

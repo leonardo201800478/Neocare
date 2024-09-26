@@ -2,21 +2,21 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-const RegisterPage = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const handleRegister = () => {
-    // Adicionar lógica de registro de usuário
-    console.log('Conta registrada');
-    router.replace('./auth');
+  const handleLogin = () => {
+    // Adicionar lógica de autenticação
+    console.log('Login realizado');
+    // Redirecionar para a Home Page após o login
+    router.replace('./home');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Criar Conta</Text>
+      <Text style={styles.header}>Login</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -32,19 +32,16 @@ const RegisterPage = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmar Senha"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('./auth')}>
-        <Text style={styles.linkText}>Já tenho uma conta. Entrar</Text>
+      <TouchableOpacity onPress={() => router.push('/auth/register')}>
+        <Text style={styles.linkText}>Criar uma conta</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/auth/reset-password')}>
+        <Text style={styles.linkText}>Esqueci minha senha</Text>
       </TouchableOpacity>
     </View>
   );
@@ -89,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterPage;
+export default LoginPage;

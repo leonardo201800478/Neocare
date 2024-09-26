@@ -1,4 +1,4 @@
-// app/patient/CadastroPaciente.tsx
+import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -11,20 +11,21 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import { PATIENTS_TABLE, DOCTORS_TABLE } from '~/powersync/AppSchema'; 
-import { Picker } from '@react-native-picker/picker';
-import CEPInput from '../components/CEPInput';
-import { isCPFValid } from '../components/CPFValidator';
-import styles from '../styles/CadastroPacienteStyles';
+
+import CEPInput from '../../components/CEPInput';
+import { isCPFValid } from '../../components/CPFValidator';
 import {
   formatDateForDatabase,
   formatCPF,
   removeCPFMask,
   removeCEPFormat,
-} from '../utils/formatUtils';
+} from '../../utils/formatUtils';
+import { calcularIdade } from '../../utils/idadeCalculator';
+import { uuid } from '../../utils/uuid';
+import styles from '../styles/CadastroPacienteStyles';
+
+import { PATIENTS_TABLE } from '~/powersync/AppSchema';
 import { useSystem } from '~/powersync/PowerSync';
-import { uuid } from '~/powersync/uuid';
-import { calcularIdade } from '../utils/idadeCalculator';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);
@@ -76,12 +77,12 @@ const CadastroPaciente = () => {
           numero_endereco_patients: numero,
           doctor_id: doctorId,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          // updated_at: new Date().toISOString(), // Removed as it is not a known property
         })
         .execute();
 
       Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
-      router.replace(`/patient/${removeCPFMask(cpf)}`);
+      router.replace(`/patients/${removeCPFMask(cpf)}`);
     } catch (error) {
       console.error(error);
       Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o paciente');
@@ -192,7 +193,7 @@ const CadastroPaciente = () => {
 
         {/* Botões */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => router.replace('/')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.replace('./home')}>
             <Text style={styles.buttonText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>
