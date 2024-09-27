@@ -1,47 +1,52 @@
-import { Slot } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+// app/_layout.tsx
+import { Session } from '@supabase/supabase-js'; // Import the Session type
+import { Slot, useRouter, useSegments } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
-import { useSystem } from '~/powersync/PowerSync';
-import { PowerSyncProvider } from '~/powersync/PowerSyncProvider';
+import { useSystem } from '../powersync/PowerSync';
 
-const RootLayout = () => {
-  const { init } = useSystem();
-  const [loading, setLoading] = useState(true);
+const Layout = () => {
+  const [session, setSession] = useState<Session | null>(null); // Estado para a sessão do usuário
+  const [loading, setLoading] = useState(true); // Estado de carregamento
+  const router = useRouter();
+  const segments = useSegments();
+  const { supabaseConnector } = useSystem();
 
   useEffect(() => {
-    // Inicializa o sistema PowerSync assim que o layout é carregado
-    const initializeSystem = async () => {
-      try {
-        await init(); // Inicializa o PowerSync
-      } catch (error) {
-        console.error('Erro ao inicializar o sistema:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Verifica o estado da sessão de autenticação
+    const {
+      data: { subscription },
+    } = supabaseConnector.client.auth.onAuthStateChange((_, session) => {
+      setSession(session);
+      setLoading(false); // Finaliza o estado de carregamento quando a sessão é definida
+    });
 
-    initializeSystem();
-  }, []);
+    return () => subscription?.unsubscribe();
+  }, [supabaseConnector]);
 
-  // Exibe um indicador de carregamento enquanto o sistema PowerSync está inicializando
+  useEffect(() => {
+    if (loading) return; // Garante que não haja navegação durante o carregamento
+
+    const inAuthGroup = segments[0] === 'auth';
+
+    if (!session && !inAuthGroup) {
+      router.replace('/auth/'); // Redireciona para a tela de login se não houver sessão
+    } else if (session && inAuthGroup) {
+      router.replace('/home/'); // Redireciona para a tela Home se já estiver logado
+    }
+  }, [session, segments, router, loading]);
+
+  // Exibe um indicador de carregamento enquanto o layout está inicializando
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#A700FF" />
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
-  return <Slot />;
+  return <Slot />; // Garante que o Slot está sempre presente para renderizar as rotas
 };
 
-const AppLayout = () => {
-  return (
-    <PowerSyncProvider>
-      <RootLayout />
-    </PowerSyncProvider>
-  );
-};
-
-export default AppLayout;
+export default Layout;

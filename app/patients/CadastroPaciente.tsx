@@ -14,6 +14,8 @@ import {
 
 import CEPInput from '../../components/CEPInput';
 import { isCPFValid } from '../../components/CPFValidator';
+import { PATIENTS_TABLE } from '../../powersync/AppSchema';
+import { useSystem } from '../../powersync/PowerSync';
 import {
   formatDateForDatabase,
   formatCPF,
@@ -23,9 +25,6 @@ import {
 import { calcularIdade } from '../../utils/idadeCalculator';
 import { uuid } from '../../utils/uuid';
 import styles from '../styles/CadastroPacienteStyles';
-
-import { PATIENTS_TABLE } from '~/powersync/AppSchema';
-import { useSystem } from '~/powersync/PowerSync';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);
@@ -193,7 +192,7 @@ const CadastroPaciente = () => {
 
         {/* Botões */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => router.replace('./home')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.replace('/home/')}>
             <Text style={styles.buttonText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>

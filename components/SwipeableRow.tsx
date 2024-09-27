@@ -4,10 +4,10 @@ import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
-import { Doctor, Patient } from '~/powersync/AppSchema';  // Importa os tipos Doctor e Patient
+import { Doctor, Patient } from '../powersync/AppSchema'; // Importa os tipos Doctor e Patient
 
 interface Props {
-  item: Doctor | Patient;  // O item pode ser um médico (Doctor) ou paciente (Patient)
+  item: Doctor | Patient; // O item pode ser um médico (Doctor) ou paciente (Patient)
   onToggle: () => void;
   onDelete: () => void;
 }

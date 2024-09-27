@@ -1,89 +1,64 @@
+// app/auth/Login.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Alert, View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 
-const LoginPage = () => {
+import { useSystem } from '../../powersync/PowerSync';
+import styles from '../styles/AuthStyles';
+
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { supabaseConnector } = useSystem();
   const router = useRouter();
 
-  const handleLogin = () => {
-    // Adicionar lógica de autenticação
-    console.log('Login realizado');
-    // Redirecionar para a Home Page após o login
-    router.replace('./home');
+  const onSignInPress = async () => {
+    setLoading(true);
+    try {
+      // Use the PowerSync specific login method
+      await supabaseConnector.login(email, password);
+    } catch (error: any) {
+      Alert.alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Login</Text>
+      {loading && (
+        <View style={styles.overlay}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={styles.loadingText}>Carregando...</Text>
+        </View>
+      )}
+      <Text style={styles.header}>Neo Care - Login</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Email"
+        placeholder="john@doe.com"
         value={email}
         onChangeText={setEmail}
+        style={styles.input}
         keyboardType="email-address"
-        autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
         placeholder="Senha"
         value={password}
         onChangeText={setPassword}
+        style={styles.input}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity style={styles.button} onPress={onSignInPress}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => router.push('/auth/register')}>
-        <Text style={styles.linkText}>Criar uma conta</Text>
+        <Text style={styles.linkText}>Criar novo usuário</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => router.push('/auth/reset-password')}>
-        <Text style={styles.linkText}>Esqueci minha senha</Text>
+        <Text style={styles.linkText}>Esqueci a senha</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 32,
-  },
-  input: {
-    width: '100%',
-    padding: 12,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  button: {
-    width: '100%',
-    padding: 12,
-    backgroundColor: '#A700FF',
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  linkText: {
-    color: '#A700FF',
-    fontSize: 16,
-    marginTop: 8,
-  },
-});
-
-export default LoginPage;
+export default Login;

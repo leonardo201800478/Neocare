@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
-import { DOCTORS_TABLE, Database, db } from '~/powersync/AppSchema';
-import { useSystem } from '~/powersync/PowerSync';
+import { DOCTORS_TABLE, Database } from '../../powersync/AppSchema';
+import { useSystem } from '../../powersync/PowerSync';
 
 const UpdateDoctorProfile: React.FC = () => {
   const { supabaseConnector } = useSystem();
@@ -45,7 +45,7 @@ const UpdateDoctorProfile: React.FC = () => {
       .execute();
 
     Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
-    router.push('./doctors'); // Volta para a página principal de perfil do médico
+    router.push('/doctors/'); // Volta para a página principal de perfil do médico
   };
 
   return (
@@ -63,7 +63,7 @@ const UpdateDoctorProfile: React.FC = () => {
         <Text style={styles.buttonText}>Salvar Alterações</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('./doctors')}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/doctors/')}>
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
     </View>

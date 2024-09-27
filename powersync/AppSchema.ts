@@ -73,7 +73,7 @@ const attendances = new TableV2({
   consul_pre: column.text, // Consultas pré-natais
   quant_consul_pre: column.text, // Quantidade de consultas pré-natais
   trat_mae: column.text, // Tratamentos da mãe
-  descr_mae: column.text, // Descrição médica
+  descr_mae: column.text, // Descrição da mãe
 });
 
 // Criando o esquema com as tabelas definidas

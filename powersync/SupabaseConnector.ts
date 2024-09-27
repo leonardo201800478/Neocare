@@ -22,6 +22,15 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
 const powersyncUrl = process.env.EXPO_PUBLIC_POWERSYNC_URL as string;
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
+  from(DOCTORS_TABLE: string) {
+    throw new Error('Method not implemented.');
+  }
+  updateTable(DOCTORS_TABLE: string) {
+    throw new Error('Method not implemented.');
+  }
+  selectFrom(DOCTORS_TABLE: string) {
+    throw new Error('Method not implemented.');
+  }
   client: SupabaseClient;
 
   constructor() {
@@ -82,8 +91,10 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
 
         switch (op.op) {
           case UpdateType.PUT:
-            const record = { ...op.opData, id: op.id };
-            result = await table.upsert(record);
+            {
+              const record = { ...op.opData, id: op.id };
+              result = await table.upsert(record);
+            }
             break;
           case UpdateType.PATCH:
             result = await table.update(op.opData).eq('id', op.id);

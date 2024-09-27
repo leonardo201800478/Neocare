@@ -1,6 +1,6 @@
 // app/+not-found.tsx
+
 import { Link, Stack } from 'expo-router';
-import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 export default function NotFoundScreen() {
@@ -8,7 +8,7 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ title: "Oops! This screen doesn't exist." }} />
       <View style={styles.container}>
-        <Link href="../auth/index">Vá para a tela de Login</Link>
+        <Link href="/auth/">Vá para a tela de Login</Link>
       </View>
     </>
   );

@@ -2,7 +2,7 @@
 import { PowerSyncContext } from '@powersync/react-native';
 import React, { ReactNode, useMemo } from 'react';
 
-import { useSystem } from '~/powersync/PowerSync';
+import { useSystem } from '../powersync/PowerSync';
 
 interface PowerSyncProviderProps {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface PowerSyncProviderProps {
 export const PowerSyncProvider = ({ children }: PowerSyncProviderProps) => {
   const { powersync } = useSystem(); // Acessa o sistema PowerSync
 
-  // Memoiza o valor do contexto para evitar renderizações desnecessárias
+  // Memoriza o valor do contexto para evitar renderizações desnecessárias
   const db = useMemo(() => powersync, [powersync]);
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;

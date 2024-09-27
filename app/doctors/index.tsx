@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
-import { DOCTORS_TABLE, Doctor, Database } from '~/powersync/AppSchema';
-import { useSystem } from '~/powersync/PowerSync';
+import { DOCTORS_TABLE, Doctor } from '../../powersync/AppSchema';
+import { useSystem } from '../../powersync/PowerSync';
 
 const DoctorProfile: React.FC = () => {
   const { supabaseConnector, db } = useSystem();
@@ -60,7 +60,7 @@ const DoctorProfile: React.FC = () => {
           </TouchableOpacity>
 
           {/* Botão para voltar à tela Home */}
-          <TouchableOpacity style={styles.button} onPress={() => router.push('./home')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/home/')}>
             <Text style={styles.buttonText}>Voltar para Home</Text>
           </TouchableOpacity>
         </>

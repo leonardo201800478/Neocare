@@ -1,92 +1,124 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Alert, View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 
-const RegisterPage = () => {
+import { useSystem } from '../../powersync/PowerSync';
+import { uuid } from '../../utils/uuid';
+import styles from '../styles/AuthStyles';
+
+const Register = () => {
+  const [name, setName] = useState(''); // Novo estado para o nome do usuário
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { supabaseConnector, db } = useSystem();
   const router = useRouter();
 
-  const handleRegister = () => {
-    // Adicionar lógica de registro de usuário
-    console.log('Conta registrada');
-    router.replace('./auth');
+  const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+
+  const handleRegister = async () => {
+    if (!validateEmail(email)) {
+      Alert.alert('Erro', 'Email inválido');
+      return;
+    }
+    if (password.length < 6 || password.length > 15) {
+      Alert.alert('Erro', 'A senha deve conter entre 6 a 15 caracteres');
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não conferem');
+      return;
+    }
+    if (name.trim() === '') {
+      Alert.alert('Erro', 'O nome não pode estar vazio');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Realizando o registro no Supabase
+      const { data, error } = await supabaseConnector.client.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Recuperando o ID do usuário criado
+      const userID = data?.user?.id;
+
+      if (userID) {
+        // Registrando o novo médico na tabela "doctors"
+        const doctorId = uuid(); // Gerando um UUID para o médico
+
+        await db
+          .insertInto('doctors')
+          .values({
+            id: doctorId,
+            name, // Usando o nome coletado no input
+            owner_id: userID, // Vinculando ao Supabase auth user ID
+            created_at: new Date().toISOString(),
+          })
+          .execute();
+
+        console.log('Usuário registrado com sucesso na tabela doctors');
+        Alert.alert('Sucesso', 'Usuário registrado com sucesso!');
+        router.replace('/'); // Voltar para a tela de login
+      }
+    } catch (error: any) {
+      console.error('Erro ao registrar o usuário:', error.message);
+      Alert.alert('Erro', 'Ocorreu um erro ao registrar o usuário.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      )}
       <Text style={styles.header}>Criar Conta</Text>
+
+      {/* Novo campo de entrada para o nome */}
+      <TextInput placeholder="Nome" value={name} onChangeText={setName} style={styles.input} />
+
       <TextInput
-        style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        style={styles.input}
         keyboardType="email-address"
-        autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
         placeholder="Senha"
         value={password}
         onChangeText={setPassword}
+        style={styles.input}
         secureTextEntry
       />
       <TextInput
-        style={styles.input}
         placeholder="Confirmar Senha"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
+        style={[styles.input, password !== confirmPassword ? styles.errorInput : null]}
         secureTextEntry
       />
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrar</Text>
+        <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('./auth')}>
-        <Text style={styles.linkText}>Já tenho uma conta. Entrar</Text>
+      <TouchableOpacity onPress={() => router.replace('/auth/')}>
+        <Text style={styles.linkText}>Voltar para o login</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 32,
-  },
-  input: {
-    width: '100%',
-    padding: 12,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  button: {
-    width: '100%',
-    padding: 12,
-    backgroundColor: '#A700FF',
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  linkText: {
-    color: '#A700FF',
-    fontSize: 16,
-    marginTop: 8,
-  },
-});
-
-export default RegisterPage;
+export default Register;

@@ -9,7 +9,7 @@ const ResetPasswordPage = () => {
   const handleResetPassword = () => {
     // Adicionar lógica de recuperação de senha
     console.log('Solicitação de recuperação de senha enviada');
-    router.replace('./auth');
+    router.replace('/auth/');
   };
 
   return (
@@ -27,7 +27,7 @@ const ResetPasswordPage = () => {
         <Text style={styles.buttonText}>Enviar Email de Recuperação</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('./auth')}>
+      <TouchableOpacity onPress={() => router.replace('/auth/')}>
         <Text style={styles.linkText}>Voltar para Login</Text>
       </TouchableOpacity>
     </View>

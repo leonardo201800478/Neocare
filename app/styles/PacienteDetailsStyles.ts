@@ -1,4 +1,3 @@
-
 // app/styles/PacienteDetailsStyles.ts
 
 import { StyleSheet } from 'react-native';
@@ -30,6 +29,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
   },
+  buttonprontuario: {
+    backgroundColor: '#green',
+    padding: 16,
+    borderRadius: 8,
+  },
+
   buttonBack: {
     backgroundColor: '#005F9E',
     padding: 16,

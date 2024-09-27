@@ -1886,39 +1886,32 @@
   resolved "https://registry.npmjs.org/@powersync/attachments/-/attachments-2.1.2.tgz"
   integrity sha512-ts/skSTtdIqrRSoDbByBYYrDB9WkLNOxcO04uIBCHY25acpZv1A0pL8cdWNVaEz2QV7OyHY8kFQePT+EvUnZew==
 
-"@powersync/common@^1.14.0", "@powersync/common@^1.17.0", "@powersync/common@^1.18.1":
+"@powersync/common@^1.18.1", "@powersync/common@1.18.1":
   version "1.18.1"
   resolved "https://registry.npmjs.org/@powersync/common/-/common-1.18.1.tgz"
   integrity sha512-DgeoQmLirysU7D3csB/bukzzye/jrN6pjp+mw/YLL2xoeUGYTg3ozA2v3M8dwoEwedVOFQxow2OSk36rGSlkTw==
   dependencies:
     js-logger "^1.6.1"
 
-"@powersync/common@1.17.0":
-  version "1.17.0"
-  resolved "https://registry.npmjs.org/@powersync/common/-/common-1.17.0.tgz"
-  integrity sha512-FSTgG2t9nwrgLMkPyc8egwy7MfyRS29GU2kPeZYnpnmF7Sxo0F0osCwBtomJzAotamvN4F7o8s+Zzkfpsus0Sw==
-  dependencies:
-    js-logger "^1.6.1"
-
-"@powersync/kysely-driver@^0.2.0":
-  version "0.2.9"
-  resolved "https://registry.npmjs.org/@powersync/kysely-driver/-/kysely-driver-0.2.9.tgz"
-  integrity sha512-bQ+81qI2W9jTA8EeFZOmEDhVWwgN0Rb4DXHbO5YvFx6Ga6MuQc2PvbrrYIsPjeHGslsRx98Q6YkCd0iHrexWRQ==
+"@powersync/kysely-driver@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.npmjs.org/@powersync/kysely-driver/-/kysely-driver-0.4.2.tgz"
+  integrity sha512-EPs1WQhIh6zYpFJulW69kq4LYU4c+UjuTbx9eAfrk5p3YTeR4xbZZZDMe0k8gQ+oFVqezNq4g7TOzBpsj7WwFw==
   dependencies:
     kysely "^0.27.2"
 
-"@powersync/react-native@^1.4.5":
-  version "1.12.0"
-  resolved "https://registry.npmjs.org/@powersync/react-native/-/react-native-1.12.0.tgz"
-  integrity sha512-gQqxMvPKSH77LeS3M9mPU5swkHpBdgkwR9tA0CuitY/QW3HKbLbqBpp8eXFmHiaRpTOFtWGzFPXHcQ3Bv06a8A==
+"@powersync/react-native@^1.12.2":
+  version "1.12.2"
+  resolved "https://registry.npmjs.org/@powersync/react-native/-/react-native-1.12.2.tgz"
+  integrity sha512-0G7gkrWcwKJkzegwNJF6uPyC+Sby3mmstWRb2VOMuUB44F+xKO0/NsS5Zs6H406e1ofc7Cy22KCqyHqs+1wayA==
   dependencies:
-    "@powersync/common" "1.17.0"
-    "@powersync/react" "1.4.1"
+    "@powersync/common" "1.18.1"
+    "@powersync/react" "1.4.3"
 
-"@powersync/react@1.4.1":
-  version "1.4.1"
-  resolved "https://registry.npmjs.org/@powersync/react/-/react-1.4.1.tgz"
-  integrity sha512-cwhdj8YB4s486EukQmDh3HcKK1Gio5YN0N2pj5qczXf/hDbIgnPk09PFE03nUCJJiDR7JDdX38FX9cYV1Fse4Q==
+"@powersync/react@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.npmjs.org/@powersync/react/-/react-1.4.3.tgz"
+  integrity sha512-NyGLqthpIRmBXKd47jp9OwyxUKXIlsKeIpLk5iAKw9odokuobZS4RmjCR8V81/HXnpO43OjHFVzpPp/gcOo6Kw==
 
 "@radix-ui/react-compose-refs@1.0.0":
   version "1.0.0"
