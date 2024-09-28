@@ -7,11 +7,11 @@ declare module "expo-router" {
   export * from 'expo-router/build';
 
   // prettier-ignore
-  type StaticRoutes = `/` | `/attendences/AtualizarProntuario` | `/attendences/CadastroProntuario` | `/attendences/` | `/auth/` | `/auth/register` | `/auth/reset-password` | `/doctors/` | `/doctors/update` | `/home/HomeScreen` | `/home/` | `/patients/CadastroPaciente` | `/patients/` | `/styles/AuthStyles` | `/styles/CadastroPacienteStyles` | `/styles/HomeScreenStyles` | `/styles/LoadingOverlayStyles` | `/styles/PacienteDetailsStyles`;
+  type StaticRoutes = `/` | `/attendences/cadastro` | `/attendences/consulta` | `/attendences/` | `/attendences/update` | `/auth/` | `/auth/register` | `/auth/reset-password` | `/doctors/` | `/doctors/update` | `/home/HomeScreen` | `/home/` | `/patients/CadastroPaciente` | `/patients/` | `/styles/AuthStyles` | `/styles/CadastroPacienteStyles` | `/styles/HomeScreenStyles` | `/styles/LoadingOverlayStyles` | `/styles/PacienteDetailsStyles`;
   // prettier-ignore
-  type DynamicRoutes<T extends string> = `/patients/${SingleRoutePart<T>}`;
+  type DynamicRoutes<T extends string> = `/attendences/${SingleRoutePart<T>}` | `/patients/${SingleRoutePart<T>}`;
   // prettier-ignore
-  type DynamicRouteTemplate = `/patients/[cpf]`;
+  type DynamicRouteTemplate = `/attendences/[cpf]` | `/patients/[cpf]`;
 
   type RelativePathString = `./${string}` | `../${string}` | '..';
   type AbsoluteRoute = DynamicRouteTemplate | StaticRoutes;

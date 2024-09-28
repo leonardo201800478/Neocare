@@ -1,90 +1,111 @@
-// powersync/AppSchema.ts
+import { column, Schema, Table } from '@powersync/react-native';
 
-import { column, Schema, TableV2 } from '@powersync/react-native';
+// Definindo a tabela de usuários (users)
+// Esta tabela representará tanto os usuários quanto as informações dos médicos
+export const USERS_TABLE = 'users';
 
-// Nome da tabela doctors
-export const DOCTORS_TABLE = 'doctors';
+const users = new Table(
+  {
+    id: column.text, // ID do usuário (UUID)
+    created_at: column.text, // Data de criação armazenada como texto (ISO format)
+    name: column.text, // Nome do usuário
+    email: column.text, // Email do usuário, único
+    password: column.text, // Senha do usuário (criptografada)
+    role: column.text, // Papel do usuário (e.g., 'doctor', 'admin')
+  },
+  {
+    indexes: {
+      emailIndex: ['email'], // Índice para acelerar buscas por email
+    },
+  }
+);
 
-// Definindo a tabela de médicos (doctors)
-const doctors = new TableV2({
-  id: column.text, // ID do médico
-  name: column.text, // Nome do médico
-  owner_id: column.text, // ID do usuário dono (owner) do médico
-  created_at: column.text, // Data de criação armazenada como texto
-});
-
-// Nome da tabela patients
+// Nome da tabela patients (pacientes)
 export const PATIENTS_TABLE = 'patients';
 
 // Definindo a tabela de pacientes (patients)
-const patients = new TableV2({
-  id: column.text, // ID do paciente
-  nome_patients: column.text, // Nome do paciente
-  cpf_patients: column.text, // CPF do paciente
-  data_nasc_patients: column.text, // Data de nascimento como string (ISO format)
-  sexo_patients: column.text, // Sexo do paciente
-  email_patients: column.text, // Email do paciente
-  fone_patients: column.text, // Telefone do paciente
-  cep_patients: column.text, // CEP do paciente
-  uf_patients: column.text, // Estado (UF) do paciente
-  cidade_patients: column.text, // Cidade do paciente
-  endereco_patients: column.text, // Endereço do paciente
-  numero_endereco_patients: column.text, // Número do endereço
-  created_by: column.text, // ID do médico que criou o paciente
-  doctor_id: column.text, // ID do médico responsável pelo paciente
-  created_at: column.text, // Data de criação como texto
-});
+const patients = new Table(
+  {
+    id: column.text, // ID do paciente
+    created_at: column.text, // Data de criação como texto
+    updated_at: column.text, // Data de atualização como texto
+    name: column.text, // Nome do paciente
+    cpf: column.text, // CPF do paciente, único
+    birth_date: column.text, // Data de nascimento como string (ISO format)
+    gender: column.text, // Sexo do paciente
+    email: column.text, // Email do paciente
+    phone_number: column.text, // Telefone do paciente
+    address: column.text, // Endereço do paciente
+    city: column.text, // Cidade do paciente
+    state: column.text, // Estado (UF) do paciente
+    zip_code: column.text, // CEP do paciente
+    created_by: column.text, // ID do médico (usuário) que criou o paciente
+  },
+  {
+    indexes: {
+      cpfIndex: ['cpf'], // Índice para acelerar buscas por CPF
+      createdByIndex: ['created_by'], // Índice para acelerar buscas por quem criou
+    },
+  }
+);
 
 // Nome da tabela attendances (prontuários)
 export const ATTENDANCES_TABLE = 'attendances';
 
 // Definindo a tabela de prontuários (attendances)
-const attendances = new TableV2({
-  id: column.text, // ID do prontuário
-  patient_id: column.text, // ID do paciente relacionado
-  doctor_id: column.text, // ID do médico responsável
-  doctor_name: column.text, // Nome do médico responsável
-  created_by: column.text, // ID do médico que criou o prontuário
-  created_at: column.text, // Data de criação do prontuário como texto
-  updated_at: column.text, // Data da última atualização como texto
-  tax_mae: column.text, // Dados médicos (exemplo: tax_mae)
-  peso_mae: column.text, // Peso da mãe
-  estatura_mae: column.text, // Estatura da mãe
-  pa_mae: column.text, // Pressão arterial da mãe
-  tipo_sang_mae: column.text, // Tipo sanguíneo da mãe
-  tax: column.text, // Dados médicos do bebê (exemplo: tax)
-  apgar_1: column.text, // Apgar 1 minuto
-  apgar_5: column.text, // Apgar 5 minutos
-  peso: column.text, // Peso do bebê
-  comprimento: column.text, // Comprimento do bebê
-  pc: column.text, // Perímetro cefálico do bebê
-  gesta: column.text, // Número de gestações
-  para: column.text, // Número de partos
-  cesareas: column.text, // Número de cesáreas
-  abortos: column.text, // Número de abortos
-  abot_espon: column.text, // Abortos espontâneos
-  vacinas_mae: column.text, // Vacinas da mãe
-  nasc_vivos: column.text, // Nascidos vivos
-  mort_neo: column.text, // Mortalidade neonatal
-  filhos: column.text, // Número de filhos
-  intern: column.text, // Histórico de internações
-  cirg: column.text, // Histórico de cirurgias
-  quant_cirg: column.text, // Quantidade de cirurgias
-  consul_pre: column.text, // Consultas pré-natais
-  quant_consul_pre: column.text, // Quantidade de consultas pré-natais
-  trat_mae: column.text, // Tratamentos da mãe
-  descr_mae: column.text, // Descrição da mãe
-});
+const attendances = new Table(
+  {
+    id: column.text, // ID do prontuário
+    created_at: column.text, // Data de criação do prontuário como texto
+    updated_at: column.text, // Data da última atualização como texto
+    patient_id: column.text, // ID do paciente relacionado
+    doctor_id: column.text, // ID do médico responsável (usuário)
+    doctor_name: column.text, // Nome do médico responsável
+    appointment_date: column.text, // Data e hora da consulta como texto (ISO format)
+    weight: column.text, // Peso do paciente
+    height: column.text, // Altura do paciente
+    blood_pressure: column.text, // Pressão arterial do paciente
+    apgar_score_at_one_minute: column.text, // Pontuação Apgar após 1 minuto
+    apgar_score_at_five_minutes: column.text, // Pontuação Apgar após 5 minutos
+    maternal_tax: column.text, // Dados médicos relacionados à mãe
+    maternal_weight: column.text, // Peso da mãe
+    maternal_height: column.text, // Altura da mãe
+    maternal_blood_pressure: column.text, // Pressão arterial da mãe
+    maternal_blood_type: column.text, // Tipo sanguíneo da mãe
+    number_of_previous_pregnancies: column.text, // Número de gestações anteriores da mãe
+    number_of_previous_births: column.text, // Número de partos anteriores
+    number_of_cesarean_sections: column.text, // Número de cesarianas
+    number_of_abortions: column.text, // Número de abortos
+    spontaneous_abortions: column.text, // Abortos espontâneos
+    maternal_vaccines: column.text, // Vacinas tomadas pela mãe
+    number_of_living_children: column.text, // Número de filhos vivos
+    number_of_neonatal_deaths: column.text, // Número de mortes neonatais
+    number_of_children: column.text, // Número total de filhos
+    maternal_hospitalizations: column.text, // Histórico de hospitalizações da mãe
+    maternal_surgeries: column.text, // Histórico de cirurgias da mãe
+    number_of_surgeries: column.text, // Quantidade de cirurgias realizadas
+    prenatal_consultations: column.text, // Informações sobre consultas pré-natais
+    number_of_prenatal_consultations: column.text, // Número de consultas pré-natais
+    maternal_treatments: column.text, // Tratamentos realizados pela mãe
+    maternal_description: column.text, // Descrição adicional sobre a saúde materna
+  },
+  {
+    indexes: {
+      patientIdIndex: ['patient_id'], // Índice para acelerar buscas por paciente
+      doctorIdIndex: ['doctor_id'], // Índice para acelerar buscas por médico
+    },
+  }
+);
 
 // Criando o esquema com as tabelas definidas
 export const AppSchema = new Schema({
-  doctors,
+  users,
   patients,
   attendances,
 });
 
 // Definindo o tipo Database com base no esquema
 export type Database = (typeof AppSchema)['types'];
-export type Doctor = Database['doctors']; // Tipagem para a tabela doctors
+export type User = Database['users']; // Tipagem para a tabela users
 export type Patient = Database['patients']; // Tipagem para a tabela patients
 export type Attendance = Database['attendances']; // Tipagem para a tabela attendances
