@@ -1,21 +1,37 @@
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Definindo a tabela de usuários (users)
-// Esta tabela representará tanto os usuários quanto as informações dos médicos
 export const USERS_TABLE = 'users';
 
 const users = new Table(
   {
     id: column.text, // ID do usuário (UUID)
     created_at: column.text, // Data de criação armazenada como texto (ISO format)
-    name: column.text, // Nome do usuário
     email: column.text, // Email do usuário, único
     password: column.text, // Senha do usuário (criptografada)
-    role: column.text, // Papel do usuário (e.g., 'doctor', 'admin')
   },
   {
     indexes: {
       emailIndex: ['email'], // Índice para acelerar buscas por email
+    },
+  }
+);
+
+// Nome da tabela doctors (médicos)
+export const DOCTORS_TABLE = 'doctors';
+
+// Definindo a tabela de médicos (doctors)
+const doctors = new Table(
+  {
+    id: column.text, // ID do médico (UUID)
+    created_at: column.text, // Data de criação como texto
+    email: column.text, // Email do médico
+    name: column.text, // Nome do médico
+    user_id: column.text, // ID do usuário relacionado (chave estrangeira)
+  },
+  {
+    indexes: {
+      userIdIndex: ['user_id'], // Índice para acelerar buscas por ID de usuário
     },
   }
 );
@@ -33,13 +49,12 @@ const patients = new Table(
     cpf: column.text, // CPF do paciente, único
     birth_date: column.text, // Data de nascimento como string (ISO format)
     gender: column.text, // Sexo do paciente
-    email: column.text, // Email do paciente
     phone_number: column.text, // Telefone do paciente
     address: column.text, // Endereço do paciente
     city: column.text, // Cidade do paciente
-    state: column.text, // Estado (UF) do paciente
+    uf: column.text, // Estado (UF) do paciente
     zip_code: column.text, // CEP do paciente
-    created_by: column.text, // ID do médico (usuário) que criou o paciente
+    created_by: column.text, // ID do médico (chave estrangeira) que criou o paciente
   },
   {
     indexes: {
@@ -100,6 +115,7 @@ const attendances = new Table(
 // Criando o esquema com as tabelas definidas
 export const AppSchema = new Schema({
   users,
+  doctors,
   patients,
   attendances,
 });
@@ -107,5 +123,6 @@ export const AppSchema = new Schema({
 // Definindo o tipo Database com base no esquema
 export type Database = (typeof AppSchema)['types'];
 export type User = Database['users']; // Tipagem para a tabela users
+export type Doctor = Database['doctors']; // Tipagem para a tabela doctors
 export type Patient = Database['patients']; // Tipagem para a tabela patients
 export type Attendance = Database['attendances']; // Tipagem para a tabela attendances
