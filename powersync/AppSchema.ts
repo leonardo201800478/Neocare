@@ -1,3 +1,5 @@
+//powersync/AppSchema.ts
+
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Definindo a tabela de usuários (users)
@@ -59,6 +61,7 @@ const patients = new Table(
   {
     indexes: {
       cpfIndex: ['cpf'], // Índice para acelerar buscas por CPF
+      nameIndex: ['name'], // Índice para acelerar buscas por nome
       createdByIndex: ['created_by'], // Índice para acelerar buscas por quem criou
     },
   }

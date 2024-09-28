@@ -21,6 +21,8 @@ import {
   formatCPF,
   removeCPFMask,
   removeCEPFormat,
+  formatPhoneNumber,
+  countryCodes,
 } from '../../utils/formatUtils';
 import { calcularIdade } from '../../utils/idadeCalculator';
 import { uuid } from '../../utils/uuid';
@@ -34,6 +36,7 @@ const CadastroPaciente = () => {
   const [sexo, setSexo] = useState('Masculino');
   const [idade, setIdade] = useState('');
   const [telefone, setTelefone] = useState('');
+  const [codigoPais, setCodigoPais] = useState('+55'); // Código do país, default Brasil
   const [cep, setCep] = useState('');
   const [uf, setUf] = useState('');
   const [cidade, setCidade] = useState('');
@@ -56,6 +59,9 @@ const CadastroPaciente = () => {
       return;
     }
 
+    // Formatar o telefone no formato +00-00-00000-0000
+    const formattedPhoneNumber = formatPhoneNumber(codigoPais, telefone);
+
     try {
       const { userID } = await supabaseConnector.fetchCredentials();
       const doctorId = userID;
@@ -64,19 +70,18 @@ const CadastroPaciente = () => {
         .insertInto('patients')
         .values({
           id: uuid(),
-          nome_patients: nome,
-          cpf_patients: removeCPFMask(cpf),
-          data_nasc_patients: formatDateForDatabase(dataNasc),
-          fone_patients: telefone,
-          sexo_patients: sexo,
-          cep_patients: removeCEPFormat(cep),
-          uf_patients: uf,
-          cidade_patients: cidade,
-          endereco_patients: endereco,
-          numero_endereco_patients: numero,
-          doctor_id: doctorId,
+          name: nome,
+          cpf: removeCPFMask(cpf),
+          birth_date: formatDateForDatabase(dataNasc),
+          phone_number: formattedPhoneNumber,
+          gender: sexo,
+          zip_code: removeCEPFormat(cep),
+          uf: uf,
+          city: cidade,
+          address: endereco,
+          created_by: doctorId,
           created_at: new Date().toISOString(),
-          // updated_at: new Date().toISOString(), // Removed as it is not a known property
+          updated_at: new Date().toISOString(),
         })
         .execute();
 
@@ -91,9 +96,19 @@ const CadastroPaciente = () => {
   };
 
   const handleDataNascChange = (value: string) => {
-    setDataNasc(value);
-    const idadeCalculada = calcularIdade(new Date(value));
-    setIdade(idadeCalculada);
+    if (value.length === 8) {
+      const formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
+      setDataNasc(formattedValue);
+      const birthDate = new Date(
+        parseInt(value.slice(4)), // ano
+        parseInt(value.slice(2, 4)) - 1, // mês (0-11)
+        parseInt(value.slice(0, 2)) // dia
+      );
+      const idadeCalculada = calcularIdade(birthDate);
+      setIdade(idadeCalculada);
+    } else {
+      setDataNasc(value);
+    }
   };
 
   return (
@@ -123,7 +138,7 @@ const CadastroPaciente = () => {
           keyboardType="numeric"
         />
         <TextInput
-          placeholder="Data nascimento: (obrigatório)"
+          placeholder="Data nascimento (ddmmaaaa): (obrigatório)"
           value={dataNasc}
           onChangeText={handleDataNascChange}
           style={styles.input}
@@ -131,23 +146,26 @@ const CadastroPaciente = () => {
         />
         <TextInput placeholder="Idade:" value={idade} editable={false} style={styles.input} />
 
+        {/* Telefone com Código do País */}
         <View style={styles.row}>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={codigoPais}
+              style={styles.picker}
+              onValueChange={(itemValue) => setCodigoPais(itemValue)}
+            >
+              {countryCodes.map(({ code, country }) => (
+                <Picker.Item key={code} label={`${country} ${code}`} value={code} />
+              ))}
+            </Picker>
+          </View>
           <TextInput
-            placeholder="Celular:"
+            placeholder="Telefone:"
             value={telefone}
             onChangeText={setTelefone}
             style={styles.inputSmall}
             keyboardType="phone-pad"
           />
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={sexo}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSexo(itemValue)}>
-              <Picker.Item label="Masculino" value="Masculino" />
-              <Picker.Item label="Feminino" value="Feminino" />
-            </Picker>
-          </View>
         </View>
 
         {/* Endereço */}

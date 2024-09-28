@@ -28,7 +28,7 @@ const PacienteDetails = () => {
       const result = await db
         .selectFrom('patients')
         .selectAll()
-        .where('cpf_patients', '=', cpf)
+        .where('cpf', '=', cpf)
         .execute();
       setPaciente(result[0]);
     } catch (error) {
@@ -66,14 +66,15 @@ const PacienteDetails = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Detalhes do Paciente</Text>
-      <Text>Nome: {paciente.nome_patients}</Text>
-      <Text>CPF: {paciente.cpf_patients}</Text>
-      <Text>Data de Nascimento: {paciente.data_nasc_patients}</Text>
-      <Text>CEP: {paciente.cep_patients}</Text>
-      <Text>UF: {paciente.uf_patients}</Text>
-      <Text>Cidade: {paciente.cidade_patients}</Text>
-      <Text>Endereço: {paciente.endereco_patients}</Text>
-      <Text>Telefone: {paciente.fone_patients}</Text>
+      <Text>Nome: {paciente.name}</Text>
+      <Text>CPF: {paciente.cpf}</Text>
+      <Text>Data de Nascimento: {paciente.birth_date}</Text>
+      <Text>Sexo: {paciente.gender}</Text>
+      <Text>Telefone: {paciente.phone_number}</Text>
+      <Text>CEP: {paciente.zip_code}</Text>
+      <Text>UF: {paciente.uf}</Text>
+      <Text>Cidade: {paciente.city}</Text>
+      <Text>Endereço: {paciente.address}</Text>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.buttonprontuario} onPress={handleConsulta}>
           <Text style={styles.buttonText}>Abrir Consulta</Text>

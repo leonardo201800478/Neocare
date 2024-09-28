@@ -60,7 +60,7 @@ const Register = () => {
           .values({
             id: doctorId,
             name, // Usando o nome coletado no input
-            owner_id: userID, // Vinculando ao Supabase auth user ID
+            email: email, // Vinculando ao Supabase auth user ID
             created_at: new Date().toISOString(),
           })
           .execute();
