@@ -4,11 +4,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-<<<<<<< HEAD
 import { useSystem } from '../powersync/PowerSync';
-=======
-import { useSystem } from '~/powersync/PowerSync';
->>>>>>> 183f846fe8588ec1ea96a15ef666119c2aee64dc
 
 const Layout = () => {
   const [session, setSession] = useState<Session | null>(null); // Estado para a sessão do usuário
@@ -35,15 +31,9 @@ const Layout = () => {
     const inAuthGroup = segments[0] === 'auth';
 
     if (!session && !inAuthGroup) {
-<<<<<<< HEAD
       router.replace('/auth/'); // Redireciona para a tela de login se não houver sessão
     } else if (session && inAuthGroup) {
       router.replace('/home/'); // Redireciona para a tela Home se já estiver logado
-=======
-      router.replace('/auth/Login'); // Redireciona para a tela de login se não houver sessão
-    } else if (session && inAuthGroup) {
-      router.replace('/home/HomeScreen'); // Redireciona para a tela Home se já estiver logado
->>>>>>> 183f846fe8588ec1ea96a15ef666119c2aee64dc
     }
   }, [session, segments, router, loading]);
 
@@ -59,8 +49,4 @@ const Layout = () => {
   return <Slot />; // Garante que o Slot está sempre presente para renderizar as rotas
 };
 
-<<<<<<< HEAD
 export default Layout;
-=======
-export default Layout;
->>>>>>> 183f846fe8588ec1ea96a15ef666119c2aee64dc
