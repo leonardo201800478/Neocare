@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#f4f4f4',
+    padding: 20,
+    backgroundColor: '#f7f7f7', // Fundo claro para um design moderno e limpo
   },
 });
 

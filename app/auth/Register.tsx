@@ -40,7 +40,6 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Realizando o registro no Supabase
       const { data, error } = await supabaseConnector.client.auth.signUp({
         email,
         password,
@@ -50,8 +49,7 @@ const Register = () => {
         throw new Error(error.message);
       }
 
-      // Caso o usuário seja registrado com sucesso, redireciona para a página de registro de médico
-      router.replace('/doctors/'); // Redirecionando para a tela de cadastro de médico
+      router.replace('/doctors/register'); // Redirecionando para a tela de cadastro de médico
     } catch (error: any) {
       console.error('Erro ao registrar o usuário:', error.message);
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o usuário.');
@@ -71,6 +69,7 @@ const Register = () => {
 
       <TextInput
         placeholder="Email"
+        placeholderTextColor="#999"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
@@ -78,6 +77,7 @@ const Register = () => {
       />
       <TextInput
         placeholder="Senha"
+        placeholderTextColor="#999"
         value={password}
         onChangeText={setPassword}
         style={styles.input}
@@ -85,11 +85,13 @@ const Register = () => {
       />
       <TextInput
         placeholder="Confirmar Senha"
+        placeholderTextColor="#999"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         style={[styles.input, password !== confirmPassword ? styles.errorInput : null]}
         secureTextEntry
       />
+
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
@@ -104,48 +106,59 @@ const Register = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 100,
     padding: 20,
-    backgroundColor: '#151515',
+    backgroundColor: '#eef2f3',
   },
   header: {
     fontSize: 30,
     textAlign: 'center',
-    margin: 50,
-    color: '#fff',
+    marginBottom: 50,
+    color: '#333',
+    fontWeight: 'bold',
   },
   input: {
-    marginVertical: 4,
+    marginVertical: 10,
     height: 50,
-    borderWidth: 1,
-    borderColor: '#A700FF',
-    borderRadius: 4,
+    borderRadius: 10,
     padding: 10,
-    color: '#fff',
-    backgroundColor: '#363636',
+    borderColor: '#dcdcdc',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    color: '#000',
   },
   button: {
-    marginVertical: 15,
+    marginVertical: 20,
     alignItems: 'center',
-    backgroundColor: '#A700FF',
-    padding: 12,
-    borderRadius: 4,
-  },
-  errorInput: {
-    borderColor: 'red',
+    backgroundColor: '#6200ee',
+    padding: 15,
+    borderRadius: 30,
+    shadowColor: '#6200ee',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
   linkText: {
-    color: '#fff',
+    color: '#6200ee',
     textAlign: 'center',
-    marginTop: 15,
+    marginTop: 20,
+    fontSize: 16,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  errorInput: {
+    borderColor: 'red',
   },
 });
 

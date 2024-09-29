@@ -1,7 +1,5 @@
-// app/patients/PacienteDetails.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 
 import { Patient } from '../../powersync/AppSchema';
@@ -10,18 +8,35 @@ import { useSystem } from '../../powersync/PowerSync';
 const PacienteDetails = () => {
   const { patient } = useLocalSearchParams(); // Recebe o registro do paciente selecionado
   const parsedPatient: Patient = patient ? JSON.parse(decodeURIComponent(patient as string)) : null;
-  const { db, supabaseConnector } = useSystem();
+  const { supabaseConnector } = useSystem();
   const [loading, setLoading] = useState(false);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     if (!parsedPatient) {
       Alert.alert('Erro', 'Paciente não encontrado.');
       router.replace('/home/');
+    } else if (!doctorId) {
+      fetchDoctorId();
     }
-  }, [parsedPatient]);
+  }, [parsedPatient, doctorId]);
 
-  const handleDeletePaciente = async () => {
+  // Função para buscar o ID do médico logado
+  const fetchDoctorId = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { userID } = await supabaseConnector.fetchCredentials();
+      setDoctorId(userID);
+    } catch (error) {
+      console.error('Erro ao obter o ID do médico:', error);
+      Alert.alert('Erro', 'Não foi possível obter o ID do médico.');
+    } finally {
+      setLoading(false);
+    }
+  }, [supabaseConnector]);
+
+  const handleDeletePaciente = useCallback(async () => {
     Alert.alert('Confirmar Exclusão', 'Tem certeza de que deseja excluir este paciente?', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -40,8 +55,6 @@ const PacienteDetails = () => {
               console.error('Erro ao excluir paciente do Supabase:', error);
               Alert.alert('Erro', 'Erro ao excluir o paciente do Supabase.');
             } else {
-              // Deletando o paciente do banco de dados local
-              await db.deleteFrom('patients').where('cpf', '=', parsedPatient.cpf).execute();
               Alert.alert('Sucesso', 'Paciente excluído com sucesso.');
               router.replace('/home/');
             }
@@ -54,21 +67,26 @@ const PacienteDetails = () => {
         },
       },
     ]);
-  };
+  }, [parsedPatient, supabaseConnector, router]);
 
-  const handleOpenConsulta = () => {
-    // Redirecionar para a página de registro do prontuário do paciente
-    const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
-    router.push(
-      `/attendences/RegisterAttendance?patient=${encodedPatient}` as unknown as `${string}:${string}`
-    );
-  };
+  const handleOpenConsulta = useCallback(() => {
+    // Redirecionar para a página de registro do prontuário do paciente com os dados do paciente e médico
+    if (doctorId) {
+      const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
+      router.push({
+        pathname: '/attendences/RegisterAttendance',
+        params: { patient: encodedPatient, doctorId: doctorId },
+      });
+    } else {
+      Alert.alert('Erro', 'Não foi possível identificar o médico. Tente novamente.');
+    }
+  }, [doctorId, parsedPatient, router]);
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#32CD32" />
-        <Text>Carregando...</Text>
+        <ActivityIndicator size="large" color="#A700FF" />
+        <Text style={styles.loadingText}>Carregando...</Text>
       </View>
     );
   }
@@ -107,23 +125,27 @@ const PacienteDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#e8f5e9', // Verde claro
+    padding: 20,
+    backgroundColor: '#151515', // Fundo escuro para manter consistência
   },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#2e7d32', // Verde escuro
+    color: '#A700FF', // Roxo para destaque
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingText: {
+    color: '#fff',
+    fontSize: 20,
+  },
   detailsContainer: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#363636',
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
@@ -135,22 +157,22 @@ const styles = StyleSheet.create({
   },
   detailItem: {
     fontSize: 18,
-    color: '#2e7d32', // Verde escuro
+    color: '#fff',
     marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: 'column',
-    gap: 10,
+    gap: 15,
   },
   buttonDelete: {
-    backgroundColor: '#ff5252', // Vermelho
+    backgroundColor: '#ff5252',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 10,
   },
   buttonConsulta: {
-    backgroundColor: '#4CAF50', // Verde mais escuro para contraste
+    backgroundColor: '#4CAF50',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',

@@ -3,12 +3,11 @@ import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
-import { DOCTORS_TABLE, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 
 const UpdateDoctorProfile: React.FC = () => {
-  const { supabaseConnector, db } = useSystem();
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const { supabaseConnector } = useSystem();
+  const [doctor, setDoctor] = useState<any | null>(null);
   const [newName, setNewName] = useState('');
   const router = useRouter();
 
@@ -18,16 +17,22 @@ const UpdateDoctorProfile: React.FC = () => {
 
   const loadDoctorData = async () => {
     try {
-      const { userID } = await supabaseConnector.fetchCredentials(); // Pegar o ID do usuário autenticado
-      const doctorData = await db
-        .selectFrom(DOCTORS_TABLE)
-        .selectAll()
-        .where('user_id', '=', userID)
-        .execute();
+      const { userID, client } = await supabaseConnector.fetchCredentials();
 
-      if (doctorData.length > 0) {
-        setDoctor(doctorData[0]);
-        setNewName(doctorData[0].name ?? ''); // Inicializa o campo com o nome atual
+      if (!userID) {
+        throw new Error('Usuário não autenticado ou credenciais inválidas.');
+      }
+
+      // Buscar os dados do médico no Supabase utilizando o userID
+      const { data, error } = await client.from('doctors').select('*').eq('id', userID).single();
+
+      if (error) {
+        throw new Error(`Erro ao buscar dados do médico: ${error.message}`);
+      }
+
+      if (data) {
+        setDoctor(data);
+        setNewName(data.name ?? ''); // Inicializa o campo com o nome atual
       }
     } catch (error) {
       console.error('Erro ao carregar os dados do médico:', error);
@@ -36,19 +41,24 @@ const UpdateDoctorProfile: React.FC = () => {
   };
 
   const handleUpdate = async () => {
-    if (!newName) {
+    if (!newName.trim()) {
       Alert.alert('Erro', 'O nome não pode estar vazio.');
       return;
     }
 
     try {
-      const { userID } = await supabaseConnector.fetchCredentials();
+      const { userID, client } = await supabaseConnector.fetchCredentials();
 
-      await db
-        .updateTable(DOCTORS_TABLE)
-        .set({ name: newName })
-        .where('user_id', '=', userID)
-        .execute();
+      if (!userID) {
+        throw new Error('Usuário não autenticado ou credenciais inválidas.');
+      }
+
+      // Atualizar o nome do médico no Supabase
+      const { error } = await client.from('doctors').update({ name: newName }).eq('id', userID);
+
+      if (error) {
+        throw new Error(`Erro ao atualizar os dados do médico: ${error.message}`);
+      }
 
       Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
       router.push('/doctors/'); // Volta para a página principal de perfil do médico

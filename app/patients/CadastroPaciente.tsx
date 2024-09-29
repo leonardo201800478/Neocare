@@ -26,14 +26,14 @@ import {
 } from '../../utils/formatUtils';
 import { calcularIdade } from '../../utils/idadeCalculator';
 import { uuid } from '../../utils/uuid';
-import styles from '../styles/CadastroPacienteStyles';
+import styles from '../styles/Styles';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
   const [dataNasc, setDataNasc] = useState('');
-  const [sexo, setSexo] = useState('Masculino');
+  const [sexo, setSexo] = useState('Feminino'); // Sexo padrão como 'Feminino'
   const [idade, setIdade] = useState('');
   const [telefone, setTelefone] = useState('');
   const [codigoPais, setCodigoPais] = useState('+55'); // Código do país, default Brasil
@@ -63,8 +63,12 @@ const CadastroPaciente = () => {
     const formattedPhoneNumber = formatPhoneNumber(codigoPais, telefone);
 
     try {
-      // Obtendo o ID do usuário conectado
+      // Obtendo o ID do médico logado
       const { userID } = await supabaseConnector.fetchCredentials();
+
+      if (!userID) {
+        throw new Error('Não foi possível obter o ID do médico logado.');
+      }
 
       const newPatient = {
         id: uuid(),
@@ -76,10 +80,11 @@ const CadastroPaciente = () => {
         zip_code: removeCEPFormat(cep),
         uf,
         city: cidade,
-        address: endereco,
+        address: `${endereco}, ${numero}`,
         created_by: userID, // Relacionando o paciente ao médico criador
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        doctor_id: userID, // Relacionando ao médico que cadastrou o paciente
       };
 
       console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
@@ -122,7 +127,7 @@ const CadastroPaciente = () => {
     <SafeAreaView style={styles.safeAreaView}>
       <ScrollView contentContainerStyle={styles.container}>
         {loading && (
-          <View style={styles.overlay}>
+          <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color="#fff" />
             <Text style={styles.loadingText}>Carregando...</Text>
           </View>
@@ -130,12 +135,12 @@ const CadastroPaciente = () => {
         <Text style={styles.header}>Cadastro do Paciente</Text>
 
         {/* Informações Pessoais */}
-        <Text style={styles.sectionTitle}>Informações pessoais:</Text>
         <TextInput
           placeholder="Nome Completo: (obrigatório)"
           value={nome}
           onChangeText={setNome}
           style={styles.input}
+          placeholderTextColor="#ccc"
         />
         <TextInput
           placeholder="CPF da criança ou do responsável (obrigatório)"
@@ -143,15 +148,28 @@ const CadastroPaciente = () => {
           onChangeText={(text) => setCpf(formatCPF(text))}
           style={styles.input}
           keyboardType="numeric"
+          placeholderTextColor="#ccc"
         />
         <TextInput
-          placeholder="Data nascimento (ddmmaaaa): (obrigatório)"
+          placeholder="Data de nascimento (ddmmaaaa): (obrigatório)"
           value={dataNasc}
           onChangeText={handleDataNascChange}
           style={styles.input}
           keyboardType="numeric"
+          placeholderTextColor="#ccc"
         />
         <TextInput placeholder="Idade:" value={idade} editable={false} style={styles.input} />
+
+        {/* Campo de Sexo com Picker */}
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={sexo}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSexo(itemValue)}>
+            <Picker.Item label="Masculino" value="Masculino" />
+            <Picker.Item label="Feminino" value="Feminino" />
+          </Picker>
+        </View>
 
         {/* Telefone com Código do País */}
         <View style={styles.row}>
@@ -171,12 +189,12 @@ const CadastroPaciente = () => {
             onChangeText={setTelefone}
             style={styles.inputSmall}
             keyboardType="phone-pad"
+            placeholderTextColor="#ccc"
           />
         </View>
 
         {/* Endereço */}
         <View style={styles.container}>
-          <Text style={styles.sectionTitle}>Endereço:</Text>
           <CEPInput
             cep={cep}
             setCep={setCep}
@@ -193,6 +211,7 @@ const CadastroPaciente = () => {
             value={endereco}
             onChangeText={setEndereco}
             style={styles.input}
+            placeholderTextColor="#ccc"
           />
         </View>
         <View style={styles.row}>
@@ -202,15 +221,23 @@ const CadastroPaciente = () => {
             onChangeText={setNumero}
             style={styles.inputSmall}
             keyboardType="numeric"
+            placeholderTextColor="#ccc"
           />
         </View>
         <View style={styles.row}>
-          <TextInput placeholder="UF" value={uf} onChangeText={setUf} style={styles.inputSmall} />
+          <TextInput
+            placeholder="UF"
+            value={uf}
+            onChangeText={setUf}
+            style={styles.inputSmall}
+            placeholderTextColor="#ccc"
+          />
           <TextInput
             placeholder="Cidade"
             value={cidade}
             onChangeText={setCidade}
             style={styles.inputSmall}
+            placeholderTextColor="#ccc"
           />
         </View>
 

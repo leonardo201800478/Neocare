@@ -2,13 +2,13 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   View,
   TextInput,
   StyleSheet,
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -32,31 +32,20 @@ const Login = () => {
     }
   };
 
-  // Função para redirecionar para a tela de cadastro
   const onSignUpPress = () => {
     router.push('/auth/register');
   };
 
-  // Função para redirecionar para a tela de redefinição de senha
   const onForgotPasswordPress = () => {
-    router.push('/auth/reset-password'); // Supondo que exista uma tela para redefinir senha em `/reset-password`
+    router.push('/auth/reset-password');
   };
 
   return (
     <View style={styles.container}>
       {loading && (
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1,
-            elevation: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            gap: 10,
-          }}>
-          <ActivityIndicator size="large" color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 20 }}>Loading...</Text>
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#00f" />
+          <Text style={styles.loadingText}>Carregando...</Text>
         </View>
       )}
 
@@ -64,7 +53,8 @@ const Login = () => {
 
       <TextInput
         autoCapitalize="none"
-        placeholder="john@doe.com"
+        placeholder="Email"
+        placeholderTextColor="#999"
         value={email}
         onChangeText={setEmail}
         style={styles.inputField}
@@ -72,6 +62,7 @@ const Login = () => {
       />
       <TextInput
         placeholder="Senha"
+        placeholderTextColor="#999"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -82,12 +73,10 @@ const Login = () => {
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-      {/* Botão para Criar Conta */}
-      <TouchableOpacity onPress={onSignUpPress} style={[styles.linkButton, { marginTop: 20 }]}>
+      <TouchableOpacity onPress={onSignUpPress} style={styles.linkButton}>
         <Text style={styles.linkText}>Criar uma conta</Text>
       </TouchableOpacity>
 
-      {/* Botão para Redefinir Senha */}
       <TouchableOpacity onPress={onForgotPasswordPress} style={styles.linkButton}>
         <Text style={styles.linkText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
@@ -98,43 +87,64 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 200,
+    paddingTop: 100,
     padding: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: '#eef2f3',
   },
   header: {
-    fontSize: 30,
+    fontSize: 36,
     textAlign: 'center',
-    margin: 100,
-    color: '#151515',
+    marginBottom: 50,
+    color: '#333',
+    fontWeight: 'bold',
   },
   inputField: {
-    marginVertical: 4,
+    marginVertical: 10,
     height: 50,
-    borderWidth: 1,
-    borderColor: '#A700FF',
-    borderRadius: 4,
+    borderRadius: 10,
     padding: 10,
-    color: '#151515',
-    backgroundColor: '#363636',
+    borderColor: '#dcdcdc',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    color: '#000',
   },
   button: {
-    marginVertical: 15,
+    marginVertical: 20,
     alignItems: 'center',
-    backgroundColor: '#A700FF',
-    padding: 12,
-    borderRadius: 4,
+    backgroundColor: '#6200ee',
+    padding: 15,
+    borderRadius: 30,
+    shadowColor: '#6200ee',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
   buttonText: {
-    color: '#151515',
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
   linkButton: {
-    marginVertical: 5,
+    marginVertical: 10,
     alignItems: 'center',
   },
   linkText: {
-    color: '#151515',
+    color: '#6200ee',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 10,
   },
 });
 

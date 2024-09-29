@@ -3,12 +3,11 @@ import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 
-import { DOCTORS_TABLE, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 
 const DoctorProfile: React.FC = () => {
-  const { supabaseConnector, db } = useSystem();
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const { supabaseConnector } = useSystem();
+  const [doctor, setDoctor] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -20,21 +19,21 @@ const DoctorProfile: React.FC = () => {
     setLoading(true);
     try {
       // Obtendo as credenciais do usuário autenticado
-      const credentials = await supabaseConnector.fetchCredentials();
-      if (!credentials?.userID) {
+      const { userID, client } = await supabaseConnector.fetchCredentials();
+
+      if (!userID) {
         throw new Error('Usuário não autenticado ou credenciais inválidas.');
       }
-      const userID = credentials.userID;
 
-      // Buscar os dados do médico no banco de dados utilizando o userID
-      const doctorData = await db
-        .selectFrom(DOCTORS_TABLE)
-        .selectAll()
-        .where('id', '=', userID) // Buscando pelo ID do usuário autenticado
-        .execute();
+      // Buscar os dados do médico no Supabase utilizando o userID
+      const { data, error } = await client.from('doctors').select('*').eq('id', userID).single();
 
-      if (doctorData.length > 0) {
-        setDoctor(doctorData[0]);
+      if (error) {
+        throw new Error(`Erro ao buscar dados do médico: ${error.message}`);
+      }
+
+      if (data) {
+        setDoctor(data);
       } else {
         console.warn('Dados do médico não encontrados para o ID:', userID);
       }
@@ -82,7 +81,9 @@ const DoctorProfile: React.FC = () => {
           </TouchableOpacity>
         </>
       ) : (
-        <Text style={styles.errorText}>Dados do médico não encontrados. Tente novamente mais tarde.</Text>
+        <Text style={styles.errorText}>
+          Dados do médico não encontrados. Tente novamente mais tarde.
+        </Text>
       )}
     </View>
   );
