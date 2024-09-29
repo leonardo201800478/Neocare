@@ -2,63 +2,33 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-
-import { DOCTORS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 
 const RegisterDoctor = () => {
   const [name, setName] = useState('');
-  const { supabaseConnector, db } = useSystem();
+  const { supabaseConnector } = useSystem();
   const router = useRouter();
 
   const handleRegisterDoctor = async () => {
-    if (!name) {
+    if (!name.trim()) {
       Alert.alert('Erro', 'O nome não pode estar vazio');
       return;
     }
 
     try {
-      // Pegando as credenciais do usuário autenticado
+      // Obter ID do usuário logado
       const { userID, client } = await supabaseConnector.fetchCredentials();
-      const { data, error } = await client.auth.getUser();
+      const { error } = await client
+        .from('doctors')
+        .update({ name })
+        .eq('id', userID);
 
-      if (error || !data.user) {
-        throw new Error('Não foi possível obter o usuário autenticado.');
-      }
-
-      const userEmail = data.user.email;
-
-      // Verificar diretamente no Supabase se o médico já está registrado
-      const { data: existingDoctor, error: fetchError } = await client
-        .from(DOCTORS_TABLE)
-        .select('id')
-        .eq('email', userEmail)
-        .single();
-
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        throw new Error(`Erro ao verificar o médico no Supabase: ${fetchError.message}`);
-      }
-
-      if (existingDoctor) {
-        Alert.alert('Atenção', 'Este médico já está registrado.');
-        router.replace('/home/HomeScreen'); // Redireciona para a tela Home se o médico já estiver registrado
-        return;
-      }
-
-      // Inserindo o novo médico na tabela "doctors" no Supabase
-      const { error: insertError } = await client.from(DOCTORS_TABLE).insert({
-        id: userID, // Utilizando o mesmo ID do usuário autenticado
-        name, // Nome inserido pelo médico
-        email: userEmail, // Email do usuário autenticado
-        created_at: new Date().toISOString(), // Data de criação
-      });
-
-      if (insertError) {
-        throw new Error(`Erro ao inserir o médico no Supabase: ${insertError.message}`);
+      if (error) {
+        throw new Error(`Erro ao atualizar o nome do médico: ${error.message}`);
       }
 
       Alert.alert('Sucesso', 'Médico registrado com sucesso!');
-      router.replace('/home/HomeScreen'); // Redireciona para a tela Home após o registro
+      router.replace('/home/');
     } catch (error) {
       console.error('Erro ao registrar o médico:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o médico.');

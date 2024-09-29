@@ -1,7 +1,7 @@
 // app/doctors/index.tsx
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 
 import { DOCTORS_TABLE, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
@@ -17,24 +17,30 @@ const DoctorProfile: React.FC = () => {
   }, []);
 
   const loadDoctorData = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { userID, client } = await supabaseConnector.fetchCredentials(); // Pegar o ID do usuário autenticado
-      const { data: user } = await client.auth.getUser();
+      // Obtendo as credenciais do usuário autenticado
+      const credentials = await supabaseConnector.fetchCredentials();
+      if (!credentials?.userID) {
+        throw new Error('Usuário não autenticado ou credenciais inválidas.');
+      }
+      const userID = credentials.userID;
 
-      if (user) {
-        const doctorData = await db
-          .selectFrom(DOCTORS_TABLE)
-          .selectAll()
-          .where('id', '=', userID) // Buscando pelo ID do usuário autenticado
-          .execute();
+      // Buscar os dados do médico no banco de dados utilizando o userID
+      const doctorData = await db
+        .selectFrom(DOCTORS_TABLE)
+        .selectAll()
+        .where('id', '=', userID) // Buscando pelo ID do usuário autenticado
+        .execute();
 
-        if (doctorData.length > 0) {
-          setDoctor(doctorData[0]);
-        }
+      if (doctorData.length > 0) {
+        setDoctor(doctorData[0]);
+      } else {
+        console.warn('Dados do médico não encontrados para o ID:', userID);
       }
     } catch (error) {
       console.error('Erro ao carregar os dados do médico:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os dados do médico. Verifique sua conexão.');
     } finally {
       setLoading(false);
     }
@@ -54,8 +60,8 @@ const DoctorProfile: React.FC = () => {
       {doctor ? (
         <>
           <Text style={styles.header}>Perfil do Médico</Text>
-          <Text style={styles.text}>Nome: {doctor.name}</Text>
-          <Text style={styles.text}>Email: {doctor.email}</Text>
+          <Text style={styles.text}>Nome: {doctor.name ?? 'Nome não disponível'}</Text>
+          <Text style={styles.text}>Email: {doctor.email ?? 'Email não disponível'}</Text>
           <Text style={styles.text}>
             Data de Criação:{' '}
             {doctor.created_at
@@ -76,7 +82,7 @@ const DoctorProfile: React.FC = () => {
           </TouchableOpacity>
         </>
       ) : (
-        <Text style={styles.errorText}>Dados do médico não encontrados.</Text>
+        <Text style={styles.errorText}>Dados do médico não encontrados. Tente novamente mais tarde.</Text>
       )}
     </View>
   );

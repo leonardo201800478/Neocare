@@ -2,14 +2,7 @@
 
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  Text,
-  ActivityIndicator,
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { PATIENTS_TABLE, Patient } from '../../powersync/AppSchema';
@@ -61,13 +54,14 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const filteredPatients = searchQuery.length >= 3
-    ? patients.filter(
-        (patient: Patient) =>
-          (patient.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-          (patient.cpf?.includes(searchQuery) ?? false)
-      )
-    : [];
+  const filteredPatients =
+    searchQuery.length >= 3
+      ? patients.filter(
+          (patient: Patient) =>
+            (patient.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+            (patient.cpf?.includes(searchQuery) ?? false)
+        )
+      : [];
 
   const renderRow = ({ item }: { item: Patient }) => (
     <TouchableOpacity
@@ -76,8 +70,7 @@ const HomeScreen: React.FC = () => {
           pathname: '/patients/PacienteDetails',
           params: { patient: encodeURIComponent(JSON.stringify(item)) },
         });
-      }}
-    >
+      }}>
       <View style={styles.row}>
         <Text style={{ flex: 1 }}>{item.name}</Text>
         <Text style={{ flex: 1 }}>{item.cpf}</Text>
@@ -101,24 +94,28 @@ const HomeScreen: React.FC = () => {
         {/* Botão para ir para a tela de cadastro de paciente */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/patients/CadastroPaciente')}
-        >
+          onPress={() => router.push('/patients/CadastroPaciente')}>
           <Text style={styles.buttonText}>Cadastrar Novo Paciente</Text>
         </TouchableOpacity>
 
         {/* Botão para ir para a tela de Perfil */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/doctors/')}
-        >
+          onPress={() => router.push('/doctors/')}>
           <Text style={styles.buttonText}>Perfil</Text>
+        </TouchableOpacity>
+
+        {/* Botão para ir para a tela de Atualização de Perfil */}
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#007BFF' }]}
+          onPress={() => router.push('/doctors/update')}>
+          <Text style={styles.buttonText}>Atualizar Perfil</Text>
         </TouchableOpacity>
 
         {/* Botão para ir para a tela de registro de médicos */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/doctors/register')}
-        >
+          onPress={() => router.push('/doctors/register')}>
           <Text style={styles.buttonText}>Cadastrar Médico</Text>
         </TouchableOpacity>
 
