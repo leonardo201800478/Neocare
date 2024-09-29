@@ -20,22 +20,45 @@ const RegisterDoctor = () => {
     try {
       // Pegando as credenciais do usuário autenticado
       const { userID, client } = await supabaseConnector.fetchCredentials();
-      const { data: user } = await client.auth.getUser();
+      const { data, error } = await client.auth.getUser();
 
-      if (user) {
-        await db
-          .insertInto(DOCTORS_TABLE)
-          .values({
-            id: userID,
-            name,
-            email: user.user?.email,
-            created_at: new Date().toISOString(),
-          })
-          .execute();
-
-        Alert.alert('Sucesso', 'Médico registrado com sucesso!');
-        router.replace('/doctors'); // Redireciona para a tela Home após o registro
+      if (error || !data.user) {
+        throw new Error('Não foi possível obter o usuário autenticado.');
       }
+
+      const userEmail = data.user.email;
+
+      // Verificar diretamente no Supabase se o médico já está registrado
+      const { data: existingDoctor, error: fetchError } = await client
+        .from(DOCTORS_TABLE)
+        .select('id')
+        .eq('email', userEmail)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        throw new Error(`Erro ao verificar o médico no Supabase: ${fetchError.message}`);
+      }
+
+      if (existingDoctor) {
+        Alert.alert('Atenção', 'Este médico já está registrado.');
+        router.replace('/home/HomeScreen'); // Redireciona para a tela Home se o médico já estiver registrado
+        return;
+      }
+
+      // Inserindo o novo médico na tabela "doctors" no Supabase
+      const { error: insertError } = await client.from(DOCTORS_TABLE).insert({
+        id: userID, // Utilizando o mesmo ID do usuário autenticado
+        name, // Nome inserido pelo médico
+        email: userEmail, // Email do usuário autenticado
+        created_at: new Date().toISOString(), // Data de criação
+      });
+
+      if (insertError) {
+        throw new Error(`Erro ao inserir o médico no Supabase: ${insertError.message}`);
+      }
+
+      Alert.alert('Sucesso', 'Médico registrado com sucesso!');
+      router.replace('/home/HomeScreen'); // Redireciona para a tela Home após o registro
     } catch (error) {
       console.error('Erro ao registrar o médico:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o médico.');

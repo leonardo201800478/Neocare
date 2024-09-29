@@ -77,6 +77,13 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.buttonText}>Perfil</Text>
         </TouchableOpacity>
 
+        {/* Botão para ir para a tela de registro de medicos */}
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#007BFF' }]}
+          onPress={() => router.push('/doctors/register')}>
+          <Text style={styles.buttonText}>Cadastrar Médico</Text>
+        </TouchableOpacity>
+
         {/* Mostra um indicador de loading durante a pesquisa */}
         {loading && <ActivityIndicator size="large" color="#005F9E" />}
 

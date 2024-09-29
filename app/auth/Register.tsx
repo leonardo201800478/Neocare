@@ -1,7 +1,15 @@
 // app/register.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, View, TextInput, TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import {
+  Alert,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 
 import { useSystem } from '../../powersync/PowerSync';
 

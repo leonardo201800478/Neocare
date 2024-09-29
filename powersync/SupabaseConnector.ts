@@ -76,6 +76,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
 
     let lastOp: CrudEntry | null = null;
     try {
+
       for (const op of transaction.crud) {
         lastOp = op;
         const table = this.client.from(op.table);
@@ -102,9 +103,11 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     } catch (ex: any) {
       console.debug(ex);
       if (typeof ex.code == 'string' && FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))) {
+
         console.error(`Data upload error - discarding ${lastOp}`, ex);
         await transaction.complete();
       } else {
+
         throw ex;
       }
     }
