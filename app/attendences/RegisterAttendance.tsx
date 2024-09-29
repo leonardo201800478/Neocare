@@ -6,7 +6,6 @@ import {
   TextInput,
   ScrollView,
   Button,
-  StyleSheet,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -16,6 +15,7 @@ import { useSystem } from '../../powersync/PowerSync';
 import { formatCPF } from '../../utils/formatUtils';
 import { calcularIdade } from '../../utils/idadeCalculator';
 import { uuid } from '../../utils/uuid';
+import styles from '../styles/Styles';
 
 const RegisterAttendance = () => {
   const params = useLocalSearchParams();
@@ -163,10 +163,11 @@ const RegisterAttendance = () => {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#32CD32" />
-          <Text>Carregando...</Text>
+          <Text style={styles.loadingText}>Carregando...</Text>
         </View>
       ) : (
         <>
+          {/* Informações do Paciente */}
           <View style={styles.infoContainer}>
             <Text style={styles.title}>Dados do Paciente</Text>
             <Text>Nome: {patientData?.name ?? 'Nome não disponível'}</Text>
@@ -178,131 +179,195 @@ const RegisterAttendance = () => {
                 : 'Data de nascimento não disponível'}
             </Text>
           </View>
-
+  
+          {/* Informações do Médico */}
           <View style={styles.infoContainer}>
             <Text style={styles.title}>Médico Responsável</Text>
             <Text>Nome: {doctorData?.name ?? 'Nome não disponível'}</Text>
             <Text>Email: {doctorData?.email ?? 'Email não disponível'}</Text>
           </View>
-
+  
+          {/* Cadastro do Prontuário */}
           <View style={styles.attendanceContainer}>
             <Text style={styles.title}>Cadastro do Prontuário</Text>
+  
+            {/* Peso do Paciente */}
             <TextInput
               style={styles.input}
-              placeholder="Peso do Paciente"
+              placeholder="Peso do Paciente (kg)"
               value={attendanceData.weight}
               onChangeText={(text) => handleInputChange('weight', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Altura do Paciente */}
             <TextInput
               style={styles.input}
-              placeholder="Altura do Paciente"
+              placeholder="Altura do Paciente (m)"
               value={attendanceData.height}
               onChangeText={(text) => handleInputChange('height', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Pressão Arterial */}
             <TextInput
               style={styles.input}
-              placeholder="Pressão Arterial"
+              placeholder="Pressão Arterial (mmHg)"
               value={attendanceData.blood_pressure}
               onChangeText={(text) => handleInputChange('blood_pressure', text)}
+              keyboardType="default"
             />
+  
+            {/* Apgar após 1 minuto */}
             <TextInput
               style={styles.input}
-              placeholder="Apgar após 1 minuto"
+              placeholder="Apgar após 1 minuto (0-10)"
               value={attendanceData.apgar_score_at_one_minute}
               onChangeText={(text) => handleInputChange('apgar_score_at_one_minute', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Apgar após 5 minutos */}
             <TextInput
               style={styles.input}
-              placeholder="Apgar após 5 minutos"
+              placeholder="Apgar após 5 minutos (0-10)"
               value={attendanceData.apgar_score_at_five_minutes}
               onChangeText={(text) => handleInputChange('apgar_score_at_five_minutes', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Peso da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Peso da Mãe"
+              placeholder="Peso da Mãe (kg)"
               value={attendanceData.maternal_weight}
               onChangeText={(text) => handleInputChange('maternal_weight', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Altura da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Altura da Mãe"
+              placeholder="Altura da Mãe (m)"
               value={attendanceData.maternal_height}
               onChangeText={(text) => handleInputChange('maternal_height', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Pressão Arterial da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Pressão Arterial da Mãe"
+              placeholder="Pressão Arterial da Mãe (mmHg)"
               value={attendanceData.maternal_blood_pressure}
               onChangeText={(text) => handleInputChange('maternal_blood_pressure', text)}
+              keyboardType="default"
             />
+  
+            {/* Tipo Sanguíneo da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Tipo Sanguíneo da Mãe"
+              placeholder="Tipo Sanguíneo da Mãe (ex.: O+)"
               value={attendanceData.maternal_blood_type}
               onChangeText={(text) => handleInputChange('maternal_blood_type', text)}
+              keyboardType="default"
             />
-            {/* Campos adicionais para o cadastro */}
+  
+            {/* Número de Gestações Anteriores */}
             <TextInput
               style={styles.input}
               placeholder="Número de Gestações Anteriores"
               value={attendanceData.number_of_previous_pregnancies}
               onChangeText={(text) => handleInputChange('number_of_previous_pregnancies', text)}
+              keyboardType="numeric"
             />
+  
+            {/* Número de Partos Anteriores */}
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Partos Anteriores"
+              value={attendanceData.number_of_previous_births}
+              onChangeText={(text) => handleInputChange('number_of_previous_births', text)}
+              keyboardType="numeric"
+            />
+  
+            {/* Número de Cesáreas */}
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Cesáreas"
+              value={attendanceData.number_of_cesarean_sections}
+              onChangeText={(text) => handleInputChange('number_of_cesarean_sections', text)}
+              keyboardType="numeric"
+            />
+  
+            {/* Abortos */}
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Abortos"
+              value={attendanceData.number_of_abortions}
+              onChangeText={(text) => handleInputChange('number_of_abortions', text)}
+              keyboardType="numeric"
+            />
+  
+            {/* Abortos Espontâneos */}
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Abortos Espontâneos"
+              value={attendanceData.spontaneous_abortions}
+              onChangeText={(text) => handleInputChange('spontaneous_abortions', text)}
+              keyboardType="numeric"
+            />
+  
+            {/* Vacinas Maternas */}
+            <TextInput
+              style={styles.input}
+              placeholder="Vacinas Maternas"
+              value={attendanceData.maternal_vaccines}
+              onChangeText={(text) => handleInputChange('maternal_vaccines', text)}
+              keyboardType="default"
+            />
+  
+            {/* Número de Filhos Vivos */}
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Filhos Vivos"
+              value={attendanceData.number_of_living_children}
+              onChangeText={(text) => handleInputChange('number_of_living_children', text)}
+              keyboardType="numeric"
+            />
+  
+            {/* Consultas Pré-natais */}
             <TextInput
               style={styles.input}
               placeholder="Número de Consultas Pré-natais"
               value={attendanceData.number_of_prenatal_consultations}
               onChangeText={(text) => handleInputChange('number_of_prenatal_consultations', text)}
+              keyboardType="numeric"
             />
-            {/* Continue adicionando os demais campos conforme a necessidade */}
+  
+            {/* Descrição Adicional */}
+            <TextInput
+              style={styles.inputMultiline}
+              placeholder="Descrição Adicional"
+              value={attendanceData.maternal_description}
+              onChangeText={(text) => handleInputChange('maternal_description', text)}
+              multiline={true}
+              numberOfLines={4}
+            />
           </View>
-
-          <Button title="Salvar Prontuário" onPress={handleSaveAttendance} disabled={saving} />
+  
+          {/* Botão para salvar o prontuário */}
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Salvar Prontuário"
+              onPress={handleSaveAttendance}
+              disabled={saving}
+              color="#4CAF50"
+            />
+          </View>
         </>
       )}
     </ScrollView>
-  );
+  );  
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: '#f8f9fa',
-  },
-  infoContainer: {
-    marginBottom: 16,
-    padding: 16,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  attendanceContainer: {
-    padding: 16,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ced4da',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default RegisterAttendance;

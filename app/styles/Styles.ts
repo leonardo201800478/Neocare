@@ -42,6 +42,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 5,
   },
+  inputMultiline: {
+    width: '100%',
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    color: '#E0E0E0',
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#444',
+    textAlignVertical: 'top', // Para manter o texto no topo em campos multilinha
+  },
   pickerContainer: {
     flex: 1,
     marginBottom: 15,
@@ -80,33 +92,86 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loadingOverlay: {
-
     position: 'absolute',
-
     top: 0,
-
     left: 0,
-
     right: 0,
-
     bottom: 0,
-
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-
     justifyContent: 'center',
-
     alignItems: 'center',
-
   },
-
   loadingText: {
-
     color: '#fff',
-
     marginTop: 10,
-
   },
-
+  // Adicionando a estilização específica para a tela de cadastro de prontuário
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1E1E1E',
+  },
+  attendanceContainer: {
+    padding: 20,
+    backgroundColor: '#282828',
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#444',
+  },
+  infoContainer: {
+    marginBottom: 20,
+    padding: 20,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#444',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  detailsContainer: {
+    marginBottom: 20,
+    padding: 20,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#444',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#A700FF',
+    marginBottom: 15,
+  },
+  scrollViewContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  buttonDelete: {
+    backgroundColor: '#ff5252',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonConsulta: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  detailItem: {
+    fontSize: 18,
+    color: '#2e7d32',
+    marginBottom: 10,
+  },
 });
 
 export default styles;

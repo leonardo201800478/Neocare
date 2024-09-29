@@ -98,11 +98,33 @@ const attendances = new Table(
   }
 );
 
+// Nome da tabela vaccinations (vacinações)
+export const VACCINATIONS_TABLE = 'vaccinations';
+
+// Definindo a tabela de vacinações (vaccinations)
+const vaccinations = new Table(
+  {
+    id: column.text, // ID da vacinação (UUID)
+    patient_id: column.text, // ID do paciente (chave estrangeira)
+    vaccine_name: column.text, // Nome da vacina
+    dose_number: column.text, // Número da dose
+    administered_at: column.text, // Data e hora da vacinação
+    created_at: column.text, // Data de criação da vacinação
+    doctor_id: column.text, // ID do médico que administrou a vacina (chave estrangeira)
+  },
+  {
+    indexes: {
+      patientIdVaccineIndex: ['patient_id', 'vaccine_name', 'dose_number'], // Índice para garantir unicidade por paciente, vacina e dose
+    },
+  }
+);
+
 // Criando o esquema com as tabelas definidas
 export const AppSchema = new Schema({
   doctors,
   patients,
   attendances,
+  vaccinations, // Adicionando a tabela de vacinações ao esquema
 });
 
 // Definindo o tipo Database com base no esquema
@@ -110,3 +132,4 @@ export type Database = (typeof AppSchema)['types'];
 export type Doctor = Database['doctors']; // Tipagem para a tabela doctors
 export type Patient = Database['patients']; // Tipagem para a tabela patients
 export type Attendance = Database['attendances']; // Tipagem para a tabela attendances
+export type Vaccination = Database['vaccinations']; // Tipagem para a tabela vaccinations
