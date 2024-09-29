@@ -10,13 +10,13 @@ import {
   Alert,
 } from 'react-native';
 
-import { Database, ATTENDANCES_TABLE } from '../../powersync/AppSchema';
+import { Attendance, ATTENDANCES_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 
 const AttendanceList = () => {
   const router = useRouter();
   const { db } = useSystem();
-  const [attendances, setAttendances] = useState<Database[typeof ATTENDANCES_TABLE][]>([]);
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,20 +42,20 @@ const AttendanceList = () => {
     }
   };
 
-  const renderItem = ({ item }: { item: Database[typeof ATTENDANCES_TABLE] }) => (
+  const renderItem = ({ item }: { item: Attendance }) => (
     <TouchableOpacity
       style={styles.attendanceItem}
       onPress={() => {
         if (item.patient_id) {
           router.push({
-            pathname: '/attendences/[cpf]', // Corrige para usar pathname
-            params: { cpf: item.patient_id }, // Passa o patient_id como cpf
+            pathname: '/attendences/RegisterAttendance',
+            params: { patientId: item.patient_id },
           });
         } else {
           Alert.alert('Erro', 'ID do paciente não encontrado.');
         }
       }}>
-      <Text style={styles.text}>Médico: {item.doctor_name}</Text>
+      <Text style={styles.text}>Médico: {item.doctor_name ?? 'Médico não informado'}</Text>
       <Text style={styles.text}>
         Data:{' '}
         {item.updated_at ? new Date(item.updated_at).toLocaleDateString() : 'Data não disponível'}
@@ -65,7 +65,12 @@ const AttendanceList = () => {
   );
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#A700FF" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#A700FF" />
+        <Text>Carregando prontuários...</Text>
+      </View>
+    );
   }
 
   if (attendances.length === 0) {
@@ -94,6 +99,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#f9f9f9',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     fontSize: 24,

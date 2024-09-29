@@ -3,204 +3,305 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  ActivityIndicator,
+  TextInput,
+  ScrollView,
+  Button,
   StyleSheet,
   Alert,
-  TextInput,
+  ActivityIndicator,
 } from 'react-native';
 
-import { Patient } from '../../powersync/AppSchema';
+import { Patient, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
+import { formatCPF } from '../../utils/formatUtils';
+import { calcularIdade } from '../../utils/idadeCalculator';
+import { uuid } from '../../utils/uuid';
 
 const RegisterAttendance = () => {
-  const { patientId } = useLocalSearchParams(); // Recebe o ID do paciente como parâmetro da URL
-  const { db, supabaseConnector } = useSystem();
-  const [paciente, setPaciente] = useState<Patient | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [formData, setFormData] = useState({ weight: '', height: '' });
+  const params = useLocalSearchParams();
+  console.log('Raw useLocalSearchParams output:', params);
+
+  // Capturando os dados do paciente diretamente dos parâmetros fornecidos
+  const parsedPatient: Patient = params.patient
+    ? JSON.parse(decodeURIComponent(params.patient as string))
+    : null;
+
+  // Capturando o ID do médico e garantindo que ele seja uma string
+  let doctorId: string | null = null;
+  if (params.doctorId) {
+    doctorId = Array.isArray(params.doctorId) ? params.doctorId[0] : params.doctorId;
+  }
+
+  console.log('Processed parameters:', { parsedPatient, doctorId });
+
+  const { supabaseConnector } = useSystem();
+  console.log('useSystem:', { supabaseConnector });
+
+  const [patientData, setPatientData] = useState<Patient | null>(parsedPatient);
+  const [doctorData, setDoctorData] = useState<Doctor | null>(null);
+  const [attendanceData, setAttendanceData] = useState({
+    weight: '',
+    height: '',
+    blood_pressure: '',
+    apgar_score_at_one_minute: '',
+    apgar_score_at_five_minutes: '',
+    maternal_tax: '',
+    maternal_weight: '',
+    maternal_height: '',
+    maternal_blood_pressure: '',
+    maternal_blood_type: '',
+    number_of_previous_pregnancies: '',
+    number_of_previous_births: '',
+    number_of_cesarean_sections: '',
+    number_of_abortions: '',
+    spontaneous_abortions: '',
+    maternal_vaccines: '',
+    number_of_living_children: '',
+    number_of_neonatal_deaths: '',
+    number_of_children: '',
+    maternal_hospitalizations: '',
+    maternal_surgeries: '',
+    number_of_surgeries: '',
+    prenatal_consultations: '',
+    number_of_prenatal_consultations: '',
+    maternal_treatments: '',
+    maternal_description: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (patientId && typeof patientId === 'string') {
-      loadPaciente(patientId);
-    } else {
-      Alert.alert('Erro', 'ID do paciente inválido ou não fornecido.');
-      router.replace('/home/');
+    if (doctorId) {
+      setLoading(true);
+      console.log('Starting data load for doctor.');
+      loadDoctor(doctorId)
+        .then(() => setLoading(false))
+        .catch((error) => {
+          console.error('Error during doctor data load:', error);
+          setLoading(false);
+        });
     }
-  }, [patientId]);
+  }, [doctorId]);
 
-  const loadPaciente = async (id: string) => {
-    setLoading(true);
+  const loadDoctor = async (id: string) => {
+    console.log('Loading doctor data for ID:', id);
     try {
-      const { data: result, error } = await supabaseConnector.client
-        .from('patients')
+      const { data, error } = await supabaseConnector.client
+        .from('doctors')
         .select('*')
         .eq('id', id)
         .single();
 
       if (error) {
-        console.error('Erro ao carregar paciente:', error);
-        Alert.alert('Erro', 'Erro ao carregar os dados do paciente.');
-        router.replace('/home/');
+        console.error('Error loading doctor data from Supabase:', error);
       } else {
-        setPaciente(result);
+        console.log('Doctor data loaded successfully:', data);
+        setDoctorData(data);
       }
     } catch (error) {
-      console.error('Erro ao carregar paciente:', error);
-      Alert.alert('Erro', 'Erro ao carregar os dados do paciente.');
-      router.replace('/home/');
-    } finally {
-      setLoading(false);
+      console.error('Exception caught while loading doctor data:', error);
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#32CD32" />
-        <Text>Carregando detalhes da consulta...</Text>
-      </View>
-    );
-  }
+  const handleInputChange = (field: string, value: string) => {
+    console.log(`Input change - Field: ${field}, Value: ${value}`);
+    setAttendanceData((prevData) => ({ ...prevData, [field]: value }));
+  };
 
-  if (!paciente) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Erro: Nenhum paciente encontrado!</Text>
-      </View>
-    );
-  }
-  const handleRegisterAttendance = async () => {
-    if (!patientId) {
-      Alert.alert('Erro', 'Dados do paciente ou médico não disponíveis.');
+  const handleSaveAttendance = async () => {
+    if (!patientData || !doctorData) {
+      Alert.alert(
+        'Erro',
+        'Não foi possível salvar o prontuário porque os dados do paciente ou do médico não estão disponíveis. Por favor, tente novamente mais tarde.'
+      );
+      console.warn('Attempted to save attendance without patientData or doctorData:', {
+        patientData,
+        doctorData,
+      });
       return;
     }
 
-    setLoading(true);
+    setSaving(true);
+    console.log('Saving attendance data:', {
+      ...attendanceData,
+      patient_id: patientData.id,
+      doctor_id: doctorData.id,
+    });
+
+    const newAttendance = {
+      ...attendanceData,
+      id: uuid(),
+      patient_id: patientData.id,
+      doctor_id: doctorData.id,
+      doctor_name: doctorData.name,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
 
     try {
-      // Dados a serem inseridos no registro de prontuário
-      const attendanceData = {
-        patient_id: patientId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      console.log('Dados do prontuário sendo enviados:', attendanceData);
-
-      const { error } = await supabaseConnector.client.from('attendances').insert([attendanceData]);
+      const { error } = await supabaseConnector.client.from('attendances').insert(newAttendance);
 
       if (error) {
-        console.error('Erro ao cadastrar prontuário:', error);
-        Alert.alert('Erro', 'Erro ao cadastrar o prontuário.');
+        console.error('Error saving attendance data:', error);
+        Alert.alert('Erro', 'Erro ao salvar prontuário: ' + error.message);
       } else {
-        Alert.alert('Sucesso', 'Prontuário cadastrado com sucesso.');
+        console.log('Attendance saved successfully:', newAttendance);
+        Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
         router.replace('/home/');
       }
     } catch (error) {
-      console.error('Erro ao cadastrar prontuário:', error);
-      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o prontuário.');
+      console.error('Exception caught while saving attendance data:', error);
+      Alert.alert('Erro', 'Erro ao salvar prontuário.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Consulta do Paciente</Text>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.detailItem}>Nome: {paciente.name}</Text>
-        <Text style={styles.detailItem}>CPF: {paciente.cpf}</Text>
-        {/* Outros dados da consulta podem ser exibidos aqui */}
-      </View>
-      <TouchableOpacity style={styles.button} onPress={() => router.replace('/home/')}>
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.container}>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#32CD32" />
+          <Text>Carregando...</Text>
+        </View>
+      ) : (
+        <>
+          <View style={styles.infoContainer}>
+            <Text style={styles.title}>Dados do Paciente</Text>
+            <Text>Nome: {patientData?.name ?? 'Nome não disponível'}</Text>
+            <Text>CPF: {formatCPF(patientData?.cpf ?? '')}</Text>
+            <Text>
+              Idade:{' '}
+              {patientData && patientData.birth_date
+                ? calcularIdade(new Date(patientData.birth_date))
+                : 'Data de nascimento não disponível'}
+            </Text>
+          </View>
 
-      {/* Campos para registro do prontuário */}
-      <TextInput
-        placeholder="Peso"
-        style={styles.input}
-        onChangeText={(text) => setFormData({ ...formData, weight: text })}
-      />
-      <TextInput
-        placeholder="Altura"
-        style={styles.input}
-        onChangeText={(text) => setFormData({ ...formData, height: text })}
-      />
-      {/* Adicione outros campos necessários aqui */}
+          <View style={styles.infoContainer}>
+            <Text style={styles.title}>Médico Responsável</Text>
+            <Text>Nome: {doctorData?.name ?? 'Nome não disponível'}</Text>
+            <Text>Email: {doctorData?.email ?? 'Email não disponível'}</Text>
+          </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleRegisterAttendance}>
-        <Text style={styles.buttonText}>Registrar Prontuário</Text>
-      </TouchableOpacity>
-    </View>
+          <View style={styles.attendanceContainer}>
+            <Text style={styles.title}>Cadastro do Prontuário</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Peso do Paciente"
+              value={attendanceData.weight}
+              onChangeText={(text) => handleInputChange('weight', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Altura do Paciente"
+              value={attendanceData.height}
+              onChangeText={(text) => handleInputChange('height', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Pressão Arterial"
+              value={attendanceData.blood_pressure}
+              onChangeText={(text) => handleInputChange('blood_pressure', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Apgar após 1 minuto"
+              value={attendanceData.apgar_score_at_one_minute}
+              onChangeText={(text) => handleInputChange('apgar_score_at_one_minute', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Apgar após 5 minutos"
+              value={attendanceData.apgar_score_at_five_minutes}
+              onChangeText={(text) => handleInputChange('apgar_score_at_five_minutes', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Peso da Mãe"
+              value={attendanceData.maternal_weight}
+              onChangeText={(text) => handleInputChange('maternal_weight', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Altura da Mãe"
+              value={attendanceData.maternal_height}
+              onChangeText={(text) => handleInputChange('maternal_height', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Pressão Arterial da Mãe"
+              value={attendanceData.maternal_blood_pressure}
+              onChangeText={(text) => handleInputChange('maternal_blood_pressure', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Tipo Sanguíneo da Mãe"
+              value={attendanceData.maternal_blood_type}
+              onChangeText={(text) => handleInputChange('maternal_blood_type', text)}
+            />
+            {/* Campos adicionais para o cadastro */}
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Gestações Anteriores"
+              value={attendanceData.number_of_previous_pregnancies}
+              onChangeText={(text) => handleInputChange('number_of_previous_pregnancies', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Consultas Pré-natais"
+              value={attendanceData.number_of_prenatal_consultations}
+              onChangeText={(text) => handleInputChange('number_of_prenatal_consultations', text)}
+            />
+            {/* Continue adicionando os demais campos conforme a necessidade */}
+          </View>
+
+          <Button title="Salvar Prontuário" onPress={handleSaveAttendance} disabled={saving} />
+        </>
+      )}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
-    backgroundColor: '#e8f5e9', // Verde claro
+    backgroundColor: '#f8f9fa',
   },
-  header: {
-    fontSize: 28,
+  infoContainer: {
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  title: {
+    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#2e7d32', // Verde escuro
+    marginBottom: 8,
+  },
+  attendanceContainer: {
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ced4da',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+    borderRadius: 4,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  detailsContainer: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  patientDetails: {
-    backgroundColor: '#ffffff',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  detailItem: {
-    fontSize: 18,
-    color: '#2e7d32', // Verde escuro
-    marginBottom: 10,
-  },
-  input: {
-    backgroundColor: '#ffffff',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 12,
-    borderColor: '#ccc',
-    borderWidth: 1,
-  },
-  button: {
-    backgroundColor: '#4CAF50', // Verde mais escuro para contraste
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

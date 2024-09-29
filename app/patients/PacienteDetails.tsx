@@ -57,8 +57,11 @@ const PacienteDetails = () => {
   };
 
   const handleOpenConsulta = () => {
-    // Redirecionar para a página de consulta do paciente
-    router.push(`/attendences/ConsultaDetails?patientId=${parsedPatient?.id}`);
+    // Redirecionar para a página de registro do prontuário do paciente
+    const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
+    router.push(
+      `/attendences/RegisterAttendance?patient=${encodedPatient}` as unknown as `${string}:${string}`
+    );
   };
 
   if (loading) {
