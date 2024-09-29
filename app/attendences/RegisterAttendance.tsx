@@ -1,17 +1,24 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  Alert,
+  TextInput,
+} from 'react-native';
 
 import { Patient } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 
-const ConsultaDetails = () => {
+const RegisterAttendance = () => {
   const { patientId } = useLocalSearchParams(); // Recebe o ID do paciente como parâmetro da URL
   const { db, supabaseConnector } = useSystem();
-  const { patient } = useLocalSearchParams(); // Recebe o registro do paciente selecionado
-  const parsedPatient: Patient = patient ? JSON.parse(decodeURIComponent(patient as string)) : null;
   const [paciente, setPaciente] = useState<Patient | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [formData, setFormData] = useState({ weight: '', height: '' });
   const router = useRouter();
 
   useEffect(() => {
@@ -64,10 +71,39 @@ const ConsultaDetails = () => {
       </View>
     );
   }
+  const handleRegisterAttendance = async () => {
+    if (!patientId) {
+      Alert.alert('Erro', 'Dados do paciente ou médico não disponíveis.');
+      return;
+    }
 
-  const handleOpenProntuario = () => {
-    // Redirecionar para a página de consulta do paciente
-    router.push(`/attendences/RegisterAttendance?patientId=${parsedPatient?.id}`);
+    setLoading(true);
+
+    try {
+      // Dados a serem inseridos no registro de prontuário
+      const attendanceData = {
+        patient_id: patientId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log('Dados do prontuário sendo enviados:', attendanceData);
+
+      const { error } = await supabaseConnector.client.from('attendances').insert([attendanceData]);
+
+      if (error) {
+        console.error('Erro ao cadastrar prontuário:', error);
+        Alert.alert('Erro', 'Erro ao cadastrar o prontuário.');
+      } else {
+        Alert.alert('Sucesso', 'Prontuário cadastrado com sucesso.');
+        router.replace('/home/');
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar prontuário:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o prontuário.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,8 +117,22 @@ const ConsultaDetails = () => {
       <TouchableOpacity style={styles.button} onPress={() => router.replace('/home/')}>
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonProntuario} onPress={handleOpenProntuario}>
-        <Text style={styles.buttonText}>ABRIR CONSULTA</Text>
+
+      {/* Campos para registro do prontuário */}
+      <TextInput
+        placeholder="Peso"
+        style={styles.input}
+        onChangeText={(text) => setFormData({ ...formData, weight: text })}
+      />
+      <TextInput
+        placeholder="Altura"
+        style={styles.input}
+        onChangeText={(text) => setFormData({ ...formData, height: text })}
+      />
+      {/* Adicione outros campos necessários aqui */}
+
+      <TouchableOpacity style={styles.button} onPress={handleRegisterAttendance}>
+        <Text style={styles.buttonText}>Registrar Prontuário</Text>
       </TouchableOpacity>
     </View>
   );
@@ -117,23 +167,35 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
+  patientDetails: {
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
   detailItem: {
     fontSize: 18,
     color: '#2e7d32', // Verde escuro
     marginBottom: 10,
+  },
+  input: {
+    backgroundColor: '#ffffff',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderColor: '#ccc',
+    borderWidth: 1,
   },
   button: {
     backgroundColor: '#4CAF50', // Verde mais escuro para contraste
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-  },
-  buttonProntuario: {
-    backgroundColor: '#388E3C', // Verde mais escuro para contraste
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
@@ -142,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ConsultaDetails;
+export default RegisterAttendance;

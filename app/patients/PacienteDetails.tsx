@@ -58,7 +58,7 @@ const PacienteDetails = () => {
 
   const handleOpenConsulta = () => {
     // Redirecionar para a página de consulta do paciente
-    router.push(`/attendances/consulta?cpf=${parsedPatient?.cpf}`);
+    router.push(`/attendences/ConsultaDetails?patientId=${parsedPatient?.id}`);
   };
 
   if (loading) {
