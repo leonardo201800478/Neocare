@@ -167,6 +167,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+  buttonVaccine: {
+    backgroundColor: '#FF9800',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
   detailItem: {
     fontSize: 18,
     color: '#2e7d32',

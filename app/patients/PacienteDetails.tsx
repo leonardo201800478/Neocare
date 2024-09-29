@@ -109,6 +109,15 @@ const PacienteDetails = () => {
     );
   };
 
+  const handleVaccine = () => {
+    const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
+    if (attendance) {
+      router.push(
+        `/vaccines/?patient=${encodedPatient}&attendanceId=${attendance.id}` as unknown as `${string}:${string}`
+      );
+    }
+  };
+
   const handleOpenConsulta = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
     if (attendance) {
@@ -166,6 +175,11 @@ const PacienteDetails = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonConsulta} onPress={handleOpenConsulta}>
           <Text style={styles.buttonText}>{attendance ? 'NOVA CONSULTA' : 'ABRIR CONSULTA'}</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buttonVaccine} onPress={handleVaccine}>
+          <Text style={styles.buttonText}>TABELA DE VACINAÇÃO</Text>
         </TouchableOpacity>
       </View>
     </View>
