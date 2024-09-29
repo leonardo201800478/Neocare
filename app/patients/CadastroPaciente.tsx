@@ -43,7 +43,7 @@ const CadastroPaciente = () => {
   const [endereco, setEndereco] = useState('');
   const [numero, setNumero] = useState('');
   const router = useRouter();
-  const { supabaseConnector } = useSystem();
+  const { supabaseConnector, powersync } = useSystem();
 
   const handleCadastro = async () => {
     setLoading(true);
@@ -62,28 +62,30 @@ const CadastroPaciente = () => {
     // Formatar o telefone no formato +00-00-00000-0000
     const formattedPhoneNumber = formatPhoneNumber(codigoPais, telefone);
 
-    const newPatient = {
-      id: uuid(),
-      name: nome,
-      cpf: removeCPFMask(cpf),
-      birth_date: formatDateForDatabase(dataNasc),
-      phone_number: formattedPhoneNumber,
-      gender: sexo,
-      zip_code: removeCEPFormat(cep),
-      uf: uf,
-      city: cidade,
-      address: endereco,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
-
     try {
+      // Obtendo o ID do usuário conectado
+      const { userID } = await supabaseConnector.fetchCredentials();
+
+      const newPatient = {
+        id: uuid(),
+        name: nome,
+        cpf: removeCPFMask(cpf),
+        birth_date: formatDateForDatabase(dataNasc),
+        phone_number: formattedPhoneNumber,
+        gender: sexo,
+        zip_code: removeCEPFormat(cep),
+        uf,
+        city: cidade,
+        address: endereco,
+        created_by: userID, // Relacionando o paciente ao médico criador
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
+
       // Inserir o paciente diretamente via Supabase client
-      const { data, error } = await supabaseConnector.client
-        .from('patients')
-        .insert([newPatient]);
+      const { data, error } = await supabaseConnector.client.from('patients').insert([newPatient]);
 
       if (error) {
         throw error;
@@ -105,9 +107,9 @@ const CadastroPaciente = () => {
       const formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
       setDataNasc(formattedValue);
       const birthDate = new Date(
-        parseInt(value.slice(4)), // ano
-        parseInt(value.slice(2, 4)) - 1, // mês (0-11)
-        parseInt(value.slice(0, 2)) // dia
+        parseInt(value.slice(4), 10), // ano
+        parseInt(value.slice(2, 4), 10) - 1, // mês (0-11)
+        parseInt(value.slice(0, 2), 10) // dia
       );
       const idadeCalculada = calcularIdade(birthDate);
       setIdade(idadeCalculada);
@@ -157,8 +159,7 @@ const CadastroPaciente = () => {
             <Picker
               selectedValue={codigoPais}
               style={styles.picker}
-              onValueChange={(itemValue) => setCodigoPais(itemValue)}
-            >
+              onValueChange={(itemValue) => setCodigoPais(itemValue)}>
               {countryCodes.map(({ code, country }) => (
                 <Picker.Item key={code} label={`${country} ${code}`} value={code} />
               ))}
