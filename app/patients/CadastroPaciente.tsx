@@ -1,3 +1,4 @@
+// app/patients/register.tsx
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -14,7 +15,6 @@ import {
 
 import CEPInput from '../../components/CEPInput';
 import { isCPFValid } from '../../components/CPFValidator';
-import { PATIENTS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import {
   formatDateForDatabase,
@@ -43,7 +43,7 @@ const CadastroPaciente = () => {
   const [endereco, setEndereco] = useState('');
   const [numero, setNumero] = useState('');
   const router = useRouter();
-  const { db, supabaseConnector } = useSystem();
+  const { supabaseConnector } = useSystem();
 
   const handleCadastro = async () => {
     setLoading(true);
@@ -62,34 +62,39 @@ const CadastroPaciente = () => {
     // Formatar o telefone no formato +00-00-00000-0000
     const formattedPhoneNumber = formatPhoneNumber(codigoPais, telefone);
 
+    const newPatient = {
+      id: uuid(),
+      name: nome,
+      cpf: removeCPFMask(cpf),
+      birth_date: formatDateForDatabase(dataNasc),
+      phone_number: formattedPhoneNumber,
+      gender: sexo,
+      zip_code: removeCEPFormat(cep),
+      uf: uf,
+      city: cidade,
+      address: endereco,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
+
     try {
-      const { userID } = await supabaseConnector.fetchCredentials();
-      const doctorId = userID;
+      // Inserir o paciente diretamente via Supabase client
+      const { data, error } = await supabaseConnector.client
+        .from('patients')
+        .insert([newPatient]);
 
-      await db
-        .insertInto('patients')
-        .values({
-          id: uuid(),
-          name: nome,
-          cpf: removeCPFMask(cpf),
-          birth_date: formatDateForDatabase(dataNasc),
-          phone_number: formattedPhoneNumber,
-          gender: sexo,
-          zip_code: removeCEPFormat(cep),
-          uf: uf,
-          city: cidade,
-          address: endereco,
-          created_by: doctorId,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .execute();
+      if (error) {
+        throw error;
+      }
 
+      console.log('Dados inseridos no Supabase:', data);
       Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
-      router.replace(`/patients/${removeCPFMask(cpf)}`);
+      router.replace(`/home/`);
     } catch (error) {
-      console.error(error);
-      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o paciente');
+      console.error('Erro ao cadastrar o paciente:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o paciente.');
     } finally {
       setLoading(false);
     }

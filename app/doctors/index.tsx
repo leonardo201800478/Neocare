@@ -19,15 +19,19 @@ const DoctorProfile: React.FC = () => {
   const loadDoctorData = async () => {
     try {
       setLoading(true);
-      const { userID } = await supabaseConnector.fetchCredentials(); // Pegar o ID do usuário autenticado
-      const doctorData = await db
-        .selectFrom(DOCTORS_TABLE)
-        .selectAll()
-        .where('user_id', '=', userID)
-        .execute();
+      const { userID, client } = await supabaseConnector.fetchCredentials(); // Pegar o ID do usuário autenticado
+      const { data: user } = await client.auth.getUser();
 
-      if (doctorData.length > 0) {
-        setDoctor(doctorData[0]);
+      if (user) {
+        const doctorData = await db
+          .selectFrom(DOCTORS_TABLE)
+          .selectAll()
+          .where('id', '=', userID) // Buscando pelo ID do usuário autenticado
+          .execute();
+
+        if (doctorData.length > 0) {
+          setDoctor(doctorData[0]);
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar os dados do médico:', error);
@@ -37,7 +41,12 @@ const DoctorProfile: React.FC = () => {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#A700FF" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#A700FF" />
+        <Text>Carregando os dados do médico...</Text>
+      </View>
+    );
   }
 
   return (
@@ -57,7 +66,8 @@ const DoctorProfile: React.FC = () => {
           {/* Botão para atualizar os dados do médico */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#007BFF' }]}
-            onPress={() => router.push('/doctors/update')}>
+            onPress={() => router.push('/doctors/update')}
+          >
             <Text style={styles.buttonText}>Atualizar Dados</Text>
           </TouchableOpacity>
 
@@ -79,6 +89,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     fontSize: 24,
