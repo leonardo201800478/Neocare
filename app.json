@@ -37,6 +37,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.strife.neocare"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5f0ac4f3-105c-4b91-a118-6014cbc84b34"
+      }
     }
   }
 }
