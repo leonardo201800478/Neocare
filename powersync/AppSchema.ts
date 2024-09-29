@@ -2,23 +2,6 @@
 
 import { column, Schema, Table } from '@powersync/react-native';
 
-// Definindo a tabela de usuários (users)
-export const USERS_TABLE = 'users';
-
-const users = new Table(
-  {
-    id: column.text, // ID do usuário (UUID)
-    created_at: column.text, // Data de criação armazenada como texto (ISO format)
-    email: column.text, // Email do usuário, único
-    password: column.text, // Senha do usuário (criptografada)
-  },
-  {
-    indexes: {
-      emailIndex: ['email'], // Índice para acelerar buscas por email
-    },
-  }
-);
-
 // Nome da tabela doctors (médicos)
 export const DOCTORS_TABLE = 'doctors';
 
@@ -117,7 +100,6 @@ const attendances = new Table(
 
 // Criando o esquema com as tabelas definidas
 export const AppSchema = new Schema({
-  users,
   doctors,
   patients,
   attendances,
@@ -125,7 +107,6 @@ export const AppSchema = new Schema({
 
 // Definindo o tipo Database com base no esquema
 export type Database = (typeof AppSchema)['types'];
-export type User = Database['users']; // Tipagem para a tabela users
 export type Doctor = Database['doctors']; // Tipagem para a tabela doctors
 export type Patient = Database['patients']; // Tipagem para a tabela patients
 export type Attendance = Database['attendances']; // Tipagem para a tabela attendances

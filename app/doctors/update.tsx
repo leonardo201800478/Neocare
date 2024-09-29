@@ -1,30 +1,37 @@
-import { router } from 'expo-router';
+// app/doctors/update.tsx
+import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
-import { DOCTORS_TABLE, Database } from '../../powersync/AppSchema';
+import { DOCTORS_TABLE, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 
 const UpdateDoctorProfile: React.FC = () => {
-  const { supabaseConnector } = useSystem();
-  const [doctor, setDoctor] = useState<Database[typeof DOCTORS_TABLE] | null>(null);
+  const { supabaseConnector, db } = useSystem();
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [newName, setNewName] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     loadDoctorData();
   }, []);
 
   const loadDoctorData = async () => {
-    const { userID } = await supabaseConnector.fetchCredentials(); // Pegar o ID do usuário autenticado
-    const doctorData = await db
-      .selectFrom(DOCTORS_TABLE)
-      .selectAll()
-      .where('owner_id', '=', userID)
-      .execute();
+    try {
+      const { userID } = await supabaseConnector.fetchCredentials(); // Pegar o ID do usuário autenticado
+      const doctorData = await db
+        .selectFrom(DOCTORS_TABLE)
+        .selectAll()
+        .where('user_id', '=', userID)
+        .execute();
 
-    if (doctorData.length > 0) {
-      setDoctor(doctorData[0]);
-      setNewName(doctorData[0].name ?? ''); // Inicializa o campo com o nome atual
+      if (doctorData.length > 0) {
+        setDoctor(doctorData[0]);
+        setNewName(doctorData[0].name ?? ''); // Inicializa o campo com o nome atual
+      }
+    } catch (error) {
+      console.error('Erro ao carregar os dados do médico:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os dados do médico.');
     }
   };
 
@@ -34,18 +41,21 @@ const UpdateDoctorProfile: React.FC = () => {
       return;
     }
 
-    const { userID } = await supabaseConnector.fetchCredentials();
+    try {
+      const { userID } = await supabaseConnector.fetchCredentials();
 
-    await db
-      .updateTable(DOCTORS_TABLE)
-      .set({
-        name: newName,
-      })
-      .where('owner_id', '=', userID)
-      .execute();
+      await db
+        .updateTable(DOCTORS_TABLE)
+        .set({ name: newName })
+        .where('user_id', '=', userID)
+        .execute();
 
-    Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
-    router.push('/doctors/'); // Volta para a página principal de perfil do médico
+      Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
+      router.push('/doctors/'); // Volta para a página principal de perfil do médico
+    } catch (error) {
+      console.error('Erro ao atualizar os dados do médico:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar os dados do médico.');
+    }
   };
 
   return (

@@ -1,18 +1,16 @@
+// app/register.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { Alert, View, TextInput, TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
 import { useSystem } from '../../powersync/PowerSync';
-import { uuid } from '../../utils/uuid';
-import styles from '../styles/AuthStyles';
 
 const Register = () => {
-  const [name, setName] = useState(''); // Novo estado para o nome do usuário
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { supabaseConnector, db } = useSystem();
+  const { supabaseConnector } = useSystem();
   const router = useRouter();
 
   const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
@@ -30,10 +28,6 @@ const Register = () => {
       Alert.alert('Erro', 'As senhas não conferem');
       return;
     }
-    if (name.trim() === '') {
-      Alert.alert('Erro', 'O nome não pode estar vazio');
-      return;
-    }
 
     setLoading(true);
 
@@ -48,27 +42,8 @@ const Register = () => {
         throw new Error(error.message);
       }
 
-      // Recuperando o ID do usuário criado
-      const userID = data?.user?.id;
-
-      if (userID) {
-        // Registrando o novo médico na tabela "doctors"
-        const doctorId = uuid(); // Gerando um UUID para o médico
-
-        await db
-          .insertInto('doctors')
-          .values({
-            id: doctorId,
-            name, // Usando o nome coletado no input
-            email: email, // Vinculando ao Supabase auth user ID
-            created_at: new Date().toISOString(),
-          })
-          .execute();
-
-        console.log('Usuário registrado com sucesso na tabela doctors');
-        Alert.alert('Sucesso', 'Usuário registrado com sucesso!');
-        router.replace('/'); // Voltar para a tela de login
-      }
+      // Caso o usuário seja registrado com sucesso, redireciona para a página de registro de médico
+      router.replace('/doctors/'); // Redirecionando para a tela de cadastro de médico
     } catch (error: any) {
       console.error('Erro ao registrar o usuário:', error.message);
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o usuário.');
@@ -85,9 +60,6 @@ const Register = () => {
         </View>
       )}
       <Text style={styles.header}>Criar Conta</Text>
-
-      {/* Novo campo de entrada para o nome */}
-      <TextInput placeholder="Nome" value={name} onChangeText={setName} style={styles.input} />
 
       <TextInput
         placeholder="Email"
@@ -120,5 +92,53 @@ const Register = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#151515',
+  },
+  header: {
+    fontSize: 30,
+    textAlign: 'center',
+    margin: 50,
+    color: '#fff',
+  },
+  input: {
+    marginVertical: 4,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#A700FF',
+    borderRadius: 4,
+    padding: 10,
+    color: '#fff',
+    backgroundColor: '#363636',
+  },
+  button: {
+    marginVertical: 15,
+    alignItems: 'center',
+    backgroundColor: '#A700FF',
+    padding: 12,
+    borderRadius: 4,
+  },
+  errorInput: {
+    borderColor: 'red',
+  },
+  buttonText: {
+    color: '#fff',
+  },
+  linkText: {
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 15,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+});
 
 export default Register;

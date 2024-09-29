@@ -27,7 +27,7 @@ const HomeScreen: React.FC = () => {
 
   const filteredPatients = patients.filter(
     (patient) =>
-      (patient.nome_patients?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+      (patient.name_patients?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
       (patient.cpf_patients?.toString().includes(searchQuery) ?? false)
   );
 
@@ -41,7 +41,7 @@ const HomeScreen: React.FC = () => {
         router.push(`/patients/${item.cpf_patients}`);
       }}>
       <View style={styles.row}>
-        <Text style={{ flex: 1 }}>{item.nome_patients}</Text>
+        <Text style={{ flex: 1 }}>{item.name_patients}</Text>
         <Text style={{ flex: 1 }}>{item.cpf_patients}</Text>
       </View>
     </TouchableOpacity>

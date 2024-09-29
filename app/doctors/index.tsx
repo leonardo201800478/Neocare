@@ -1,4 +1,5 @@
-import { router } from 'expo-router';
+// app/doctors/index.tsx
+import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 
@@ -9,6 +10,7 @@ const DoctorProfile: React.FC = () => {
   const { supabaseConnector, db } = useSystem();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     loadDoctorData();
@@ -21,7 +23,7 @@ const DoctorProfile: React.FC = () => {
       const doctorData = await db
         .selectFrom(DOCTORS_TABLE)
         .selectAll()
-        .where('owner_id', '=', userID)
+        .where('user_id', '=', userID)
         .execute();
 
       if (doctorData.length > 0) {
@@ -44,7 +46,7 @@ const DoctorProfile: React.FC = () => {
         <>
           <Text style={styles.header}>Perfil do Médico</Text>
           <Text style={styles.text}>Nome: {doctor.name}</Text>
-          <Text style={styles.text}>ID: {doctor.id}</Text>
+          <Text style={styles.text}>Email: {doctor.email}</Text>
           <Text style={styles.text}>
             Data de Criação:{' '}
             {doctor.created_at
