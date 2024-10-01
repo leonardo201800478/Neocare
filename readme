@@ -1,50 +1,48 @@
 /project-root
 │
 ├── /app
-│   ├── /attendences
-│   │   ├── _layout.tsx             # Layout para o módulo de atendimentos
-│   │   ├── index.tsx               # Página para listar os atendimentos
-│   │
-│   ├── /auth
-│   │   ├── _layout.tsx             # Layout para autenticação
-│   │   ├── index.tsx               # Página de login
-│   │
-│   ├── /doctors
-│   │   ├── _layout.tsx             # Layout para a página inicial (dashboard)
-│   │   ├── index.tsx               # Página de gerenciamento de médicos
-│   │
-│   ├── /home
-│   │   ├── _layout.tsx             # Layout para a página inicial (dashboard)
-│   │   ├── index.tsx               # Página inicial (dashboard)
-│   │
-│   ├── /patients
-│   │   ├── _layout.tsx             # Layout para o módulo de pacientes
-│   │   ├── index.tsx               # Página de gerenciamento de pacientes
+│ ├── /attendences
+│ │ ├── \_layout.tsx # Layout para o módulo de atendimentos
+│ │ ├── index.tsx # Página para listar os atendimentos
+│ │
+│ ├── /auth
+│ │ ├── \_layout.tsx # Layout para autenticação
+│ │ ├── index.tsx # Página de login
+│ │
+│ ├── /doctors
+│ │ ├── \_layout.tsx # Layout para a página inicial (dashboard)
+│ │ ├── index.tsx # Página de gerenciamento de médicos
+│ │
+│ ├── /home
+│ │ ├── \_layout.tsx # Layout para a página inicial (dashboard)
+│ │ ├── index.tsx # Página inicial (dashboard)
+│ │
+│ ├── /patients
+│ │ ├── \_layout.tsx # Layout para o módulo de pacientes
+│ │ ├── index.tsx # Página de gerenciamento de pacientes
 │
-├── /assets                         # Arquivos de mídia, ícones, fontes, etc.
+├── /assets # Arquivos de mídia, ícones, fontes, etc.
 │
 ├── /components
-│   ├── SwipeableRow.tsx            # Componente para Swipeable Row (para deletar itens)
+│ ├── SwipeableRow.tsx # Componente para Swipeable Row (para deletar itens)
 │
 ├── /powersync
-│   ├── AppSchema.ts                # Esquema do banco de dados do PowerSync
-│   ├── PowerSync.tsx               # Arquivo de configuração do PowerSync
-│   ├── PowerSyncProvider.tsx       # Provedor de contexto para PowerSync
-│   ├── SupabaseConnector.ts        # Conector entre Supabase e PowerSync
+│ ├── AppSchema.ts # Esquema do banco de dados do PowerSync
+│ ├── PowerSync.tsx # Arquivo de configuração do PowerSync
+│ ├── PowerSyncProvider.tsx # Provedor de contexto para PowerSync
+│ ├── SupabaseConnector.ts # Conector entre Supabase e PowerSync
 │
 ├── /utils
-│   ├── uuid.ts                     # Função utilitária para gerar UUIDs
+│ ├── uuid.ts # Função utilitária para gerar UUIDs
 │
-├── .env                            # Arquivo de variáveis de ambiente
-├── .gitignore                      # Arquivo para ignorar arquivos no Git
-├── app.json                        # Configurações do Expo
-├── babel.config.js                 # Configurações do Babel
-├── expo-env.d.ts                   # Declaração de tipos do Expo
-├── metro.config.js                 # Configurações do Metro bundler
-├── package.json                    # Configurações do npm
-└── tsconfig.json                   # Configurações do TypeScript
-
-
+├── .env # Arquivo de variáveis de ambiente
+├── .gitignore # Arquivo para ignorar arquivos no Git
+├── app.json # Configurações do Expo
+├── babel.config.js # Configurações do Babel
+├── expo-env.d.ts # Declaração de tipos do Expo
+├── metro.config.js # Configurações do Metro bundler
+├── package.json # Configurações do npm
+└── tsconfig.json # Configurações do TypeScript
 
 Tabelas:
 
@@ -65,3 +63,63 @@ Políticas de segurança para garantir que cada médico só possa ver os pacient
 PowerSync SyncRules:
 
 Definir as regras de sincronização para o PowerSync para as tabelas envolvidas.
+
+Comandos Expo;
+npm install - Isntala as dependências do projeto
+npm start - Inicia o servidor de desenvolvimento
+npm run android - Inicia o app no emulador Android
+npm run ios - Inicia o app no emulador iOS
+npm run web - Inicia o app no navegador
+npm run eject - Ejeta o Expo do projeto
+npm run lint - Roda o linter
+npm run format - Formata o código
+npm run test - Roda os testes
+npm run build - Gera o build de produção
+npm run deploy - Faz o deploy do projeto
+npm audit fix - Corrige vulnerabilidades de segurança
+npm run sync - Sincroniza os dados com o Supabase
+npm run powersync - Inicia o PowerSync
+npm run powersync:reset - Reseta o PowerSync
+npm run powersync:clean - Limpa o PowerSync
+npm run powersync:seed - Semeia o PowerSync
+npm run powersync:sync - Sincroniza o PowerSync
+npm run powersync:status - Mostra o status do PowerSync
+npm run powersync:logs - Mostra os logs do PowerSync
+npm run powersync:stop - Para o PowerSync
+npm run powersync:restart - Reinicia o PowerSync
+npm run powersync:rebuild - Reconstroi o PowerSync
+npm run powersync:reseed - Resemeia o PowerSync
+npm run powersync:reseed:force - Resemeia o PowerSync forçadamente
+npm run powersync:reseed:all - Resemeia todos os modelos do PowerSync
+npm run powersync:reseed:all:force - Resemeia todos os modelos do PowerSync forçadamente
+npm run powersync:reseed:all:force:clean - Resemeia todos os modelos do PowerSync forçadamente e limpa os dados
+npm run powersync:reseed:all:force:clean:sync - Resemeia todos os modelos do PowerSync forçadamente, limpa os dados e sincroniza
+npm run powersync:reseed:all:force:clean:sync:restart - Resemeia todos os modelos do PowerSync forçadamente, limpa os dados, sincroniza e reinicia
+
+// **********************\_\_\_\_**********************
+
+Comandos de reparo;
+npx expo-doctor - Verifica e repara problemas no projeto
+npm install -g sharp-cli@^2.1.0 - Instala o sharp-cli
+npx expo-optimize - Otimiza o projeto para produção
+npx expo-verify - Verifica a integridade do projeto
+npx expo-whoami - Mostra o usuário logado no Expo
+npx expo-updates - Atualiza o Expo CLI
+npx expo-logout - Desloga do Expo
+npx expo-login - Loga no Expo
+npx expo-publish - Publica o projeto no Expo
+npx expo-status - Mostra o status do projeto no Expo
+npx expo-logs - Mostra os logs do projeto no Expo
+npx expo-start - Inicia o projeto no Expo
+npx expo-stop - Para o projeto no Expo
+npx expo-restart - Reinicia o projeto no Expo
+npx expo-build - Gera o build do projeto no Expo
+npx expo-eject - Ejeta o projeto do Expo
+npx expo-init - Inicia um novo projeto no Expo
+npx expo-branch - Cria uma nova branch no Expo
+npx expo-merge - Faz o merge de branches no Expo
+npx expo-rollback - Faz o rollback do projeto no Expo
+npx expo-destroy - Destrói o projeto no Expo
+npx expo install --check - Verifica as dependências do projeto
+npx expo install --force - Força a instalação das dependências do projeto
+npx expo install --clean - Limpa as dependências do projeto

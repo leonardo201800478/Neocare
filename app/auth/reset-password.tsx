@@ -1,7 +1,14 @@
 // app/auth/reset-password.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +20,7 @@ const ResetPasswordPage = () => {
       alert('Por favor, insira um endereço de email válido.');
       return;
     }
-    
+
     setLoading(true);
     try {
       // Adicionar lógica de recuperação de senha (Substituir com a implementação de envio real)

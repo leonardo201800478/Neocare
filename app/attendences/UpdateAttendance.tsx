@@ -2,22 +2,13 @@
 
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Button,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TextInput, ScrollView, Button, Alert, ActivityIndicator } from 'react-native';
 
 import { Attendance, Patient, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/Styles'; // Importando o estilo padronizado
 import { formatCPF } from '../../utils/formatUtils';
 import { calcularIdade } from '../../utils/idadeCalculator';
+import styles from '../styles/Styles'; // Importando o estilo padronizado
 
 const UpdateAttendance = () => {
   const params = useLocalSearchParams();
@@ -26,7 +17,7 @@ const UpdateAttendance = () => {
   const parsedPatient: Patient = params.patient
     ? JSON.parse(decodeURIComponent(params.patient as string))
     : null;
-  
+
   const attendanceId = params.attendanceId ? (params.attendanceId as string) : null;
 
   const { supabaseConnector } = useSystem();
@@ -207,7 +198,7 @@ const UpdateAttendance = () => {
           </View>
 
           <Button
-            title={saving ? "Salvando..." : "Salvar Atualizações"}
+            title={saving ? 'Salvando...' : 'Salvar Atualizações'}
             onPress={handleUpdateAttendance}
             disabled={saving}
           />

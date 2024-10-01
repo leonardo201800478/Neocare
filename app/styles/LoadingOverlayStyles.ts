@@ -15,3 +15,5 @@ const LoadingStyles = StyleSheet.create({
     fontSize: 20,
   },
 });
+
+export default LoadingStyles;

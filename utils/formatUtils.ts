@@ -81,6 +81,6 @@ export const countryCodes = [
   { code: '+82', country: 'Coreia do Sul' },
   { code: '+86', country: 'China' },
   { code: '+90', country: 'Turquia' },
-  { code: '+91', country: 'India' }
+  { code: '+91', country: 'India' },
   // Complete com outros países se necessário...
 ];

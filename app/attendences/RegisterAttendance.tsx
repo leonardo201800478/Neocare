@@ -1,14 +1,6 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Button,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TextInput, ScrollView, Button, Alert, ActivityIndicator } from 'react-native';
 
 import { Patient, Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
@@ -179,18 +171,18 @@ const RegisterAttendance = () => {
                 : 'Data de nascimento não disponível'}
             </Text>
           </View>
-  
+
           {/* Informações do Médico */}
           <View style={styles.infoContainer}>
             <Text style={styles.title}>Médico Responsável</Text>
             <Text>Nome: {doctorData?.name ?? 'Nome não disponível'}</Text>
             <Text>Email: {doctorData?.email ?? 'Email não disponível'}</Text>
           </View>
-  
+
           {/* Cadastro do Prontuário */}
           <View style={styles.attendanceContainer}>
             <Text style={styles.title}>Cadastro do Prontuário</Text>
-  
+
             {/* Peso do Paciente */}
             <TextInput
               style={styles.input}
@@ -199,7 +191,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('weight', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Altura do Paciente */}
             <TextInput
               style={styles.input}
@@ -208,7 +200,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('height', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Pressão Arterial */}
             <TextInput
               style={styles.input}
@@ -217,7 +209,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('blood_pressure', text)}
               keyboardType="default"
             />
-  
+
             {/* Apgar após 1 minuto */}
             <TextInput
               style={styles.input}
@@ -226,7 +218,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('apgar_score_at_one_minute', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Apgar após 5 minutos */}
             <TextInput
               style={styles.input}
@@ -235,7 +227,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('apgar_score_at_five_minutes', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Peso da Mãe */}
             <TextInput
               style={styles.input}
@@ -244,7 +236,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('maternal_weight', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Altura da Mãe */}
             <TextInput
               style={styles.input}
@@ -253,7 +245,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('maternal_height', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Pressão Arterial da Mãe */}
             <TextInput
               style={styles.input}
@@ -262,7 +254,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('maternal_blood_pressure', text)}
               keyboardType="default"
             />
-  
+
             {/* Tipo Sanguíneo da Mãe */}
             <TextInput
               style={styles.input}
@@ -271,7 +263,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('maternal_blood_type', text)}
               keyboardType="default"
             />
-  
+
             {/* Número de Gestações Anteriores */}
             <TextInput
               style={styles.input}
@@ -280,7 +272,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('number_of_previous_pregnancies', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Número de Partos Anteriores */}
             <TextInput
               style={styles.input}
@@ -289,7 +281,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('number_of_previous_births', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Número de Cesáreas */}
             <TextInput
               style={styles.input}
@@ -298,7 +290,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('number_of_cesarean_sections', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Abortos */}
             <TextInput
               style={styles.input}
@@ -307,7 +299,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('number_of_abortions', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Abortos Espontâneos */}
             <TextInput
               style={styles.input}
@@ -316,7 +308,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('spontaneous_abortions', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Vacinas Maternas */}
             <TextInput
               style={styles.input}
@@ -325,7 +317,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('maternal_vaccines', text)}
               keyboardType="default"
             />
-  
+
             {/* Número de Filhos Vivos */}
             <TextInput
               style={styles.input}
@@ -334,7 +326,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('number_of_living_children', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Consultas Pré-natais */}
             <TextInput
               style={styles.input}
@@ -343,7 +335,7 @@ const RegisterAttendance = () => {
               onChangeText={(text) => handleInputChange('number_of_prenatal_consultations', text)}
               keyboardType="numeric"
             />
-  
+
             {/* Descrição Adicional */}
             <TextInput
               style={styles.inputMultiline}
@@ -354,7 +346,7 @@ const RegisterAttendance = () => {
               numberOfLines={4}
             />
           </View>
-  
+
           {/* Botão para salvar o prontuário */}
           <View style={styles.buttonContainer}>
             <Button
@@ -367,7 +359,7 @@ const RegisterAttendance = () => {
         </>
       )}
     </ScrollView>
-  );  
+  );
 };
 
 export default RegisterAttendance;

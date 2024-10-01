@@ -1,7 +1,15 @@
 // app/doctors/register.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 
 import { useSystem } from '../../powersync/PowerSync';
 
@@ -30,7 +38,10 @@ const RegisterDoctor = () => {
       const userEmail = userData.user.email;
 
       if (!userID || !userEmail) {
-        Alert.alert('Erro', 'Não foi possível obter as informações do usuário. Faça login novamente.');
+        Alert.alert(
+          'Erro',
+          'Não foi possível obter as informações do usuário. Faça login novamente.'
+        );
         return;
       }
 
