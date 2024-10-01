@@ -1,13 +1,11 @@
-//APP/PATIENTS/PACIENTEDETAILS.TSX
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 
 import LoadingOverlay from '../../components/LoadingOverlay'; // Importando o componente de loading
-import { Patient, Attendance } from '../../powersync/AppSchema';
+import { Patient, Attendance, Vaccination } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/Styles';
+import styles from '../styles/PacienteDetailsStyles';
 
 const PacienteDetails = () => {
   const router = useRouter();
@@ -19,6 +17,7 @@ const PacienteDetails = () => {
   const { db, supabaseConnector } = useSystem();
   const [loading, setLoading] = useState(true); // Inicia como `true` para mostrar o loading inicialmente
   const [attendance, setAttendance] = useState<Attendance | null>(null);
+  const [vaccines, setVaccines] = useState<Vaccination[]>([]);
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
@@ -29,6 +28,7 @@ const PacienteDetails = () => {
         return;
       }
       await checkAttendance(parsedPatient.id);
+      await checkVaccinations(parsedPatient.id);
     };
 
     fetchPatientDetails().catch((error) => {
@@ -61,6 +61,25 @@ const PacienteDetails = () => {
     }
   };
 
+  // Função para buscar as vacinas do paciente
+  const checkVaccinations = async (patientId: string) => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('vaccinations')
+        .select('*')
+        .eq('patient_id', patientId);
+
+      if (error) {
+        console.error('Erro ao buscar vacinas:', error);
+      } else {
+        setVaccines(data || []);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar vacinas:', error);
+      Alert.alert('Erro', 'Erro ao buscar vacinas do paciente.');
+    }
+  };
+
   const handleDeletePaciente = async () => {
     Alert.alert(
       'Confirmar Exclusão',
@@ -83,20 +102,31 @@ const PacienteDetails = () => {
                 console.error('Erro ao excluir prontuário do Supabase:', deleteAttendanceError);
                 Alert.alert('Erro', 'Erro ao excluir o prontuário do paciente.');
               } else {
-                // Deletando o paciente do Supabase
-                const { error: deletePatientError } = await supabaseConnector.client
-                  .from('patients')
+                // Deletando as vacinas do paciente do Supabase
+                const { error: deleteVaccinesError } = await supabaseConnector.client
+                  .from('vaccinations')
                   .delete()
-                  .eq('cpf', parsedPatient!.cpf);
+                  .eq('patient_id', parsedPatient!.id);
 
-                if (deletePatientError) {
-                  console.error('Erro ao excluir paciente do Supabase:', deletePatientError);
-                  Alert.alert('Erro', 'Erro ao excluir o paciente do Supabase.');
+                if (deleteVaccinesError) {
+                  console.error('Erro ao excluir vacinas do Supabase:', deleteVaccinesError);
+                  Alert.alert('Erro', 'Erro ao excluir as vacinas do paciente.');
                 } else {
-                  // Deletando o paciente do banco de dados local
-                  await db.deleteFrom('patients').where('cpf', '=', parsedPatient!.cpf).execute();
-                  Alert.alert('Sucesso', 'Paciente e prontuários excluídos com sucesso.');
-                  router.replace('/home/');
+                  // Deletando o paciente do Supabase
+                  const { error: deletePatientError } = await supabaseConnector.client
+                    .from('patients')
+                    .delete()
+                    .eq('cpf', parsedPatient!.cpf);
+
+                  if (deletePatientError) {
+                    console.error('Erro ao excluir paciente do Supabase:', deletePatientError);
+                    Alert.alert('Erro', 'Erro ao excluir o paciente do Supabase.');
+                  } else {
+                    // Deletando o paciente do banco de dados local
+                    await db.deleteFrom('patients').where('cpf', '=', parsedPatient!.cpf).execute();
+                    Alert.alert('Sucesso', 'Paciente e prontuários excluídos com sucesso.');
+                    router.replace('/home/');
+                  }
                 }
               }
             } catch (error) {
@@ -113,12 +143,20 @@ const PacienteDetails = () => {
 
   const handleVaccine = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
-    if (attendance) {
+  
+    if (vaccines.length > 0) {
+      // Se já existe um cartão de vacina, redireciona para a atualização do cartão de vacinas
       router.push(
-        `/vaccines/?patient=${encodedPatient}&attendanceId=${attendance.id}` as unknown as `${string}:${string}`
+        `/vaccines/UpdateVaccine?patient=${encodedPatient}&vaccineId=${vaccines[0].id}` as unknown as `${string}:${string}`
+      );
+    } else {
+      // Se não existe um cartão de vacina, redirecionar para o registro de um novo cartão de vacinas
+      router.push(
+        `/vaccines/RegisterVaccination?patient=${encodedPatient}&doctorId=${parsedPatient!.created_by}` as unknown as `${string}:${string}`
       );
     }
   };
+  
 
   const handleOpenConsulta = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
@@ -170,6 +208,19 @@ const PacienteDetails = () => {
             </Text>
           </>
         )}
+        {vaccines.length > 0 && (
+          <View style={styles.vaccinesContainer}>
+            <Text style={styles.subHeader}>Vacinas:</Text>
+            {vaccines.map((vaccine) => (
+              <Text key={vaccine.id} style={styles.detailItem}>
+                {vaccine.vaccine_name} - Dose {vaccine.dose_number} - Aplicada em:{' '}
+                {vaccine.administered_at
+                  ? new Date(vaccine.administered_at).toLocaleDateString()
+                  : 'Data não disponível'}
+              </Text>
+            ))}
+          </View>
+        )}
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonDelete} onPress={handleDeletePaciente}>
@@ -181,7 +232,9 @@ const PacienteDetails = () => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonVaccine} onPress={handleVaccine}>
-          <Text style={styles.buttonText}>TABELA DE VACINAÇÃO</Text>
+          <Text style={styles.buttonText}>
+            {vaccines.length > 0 ? 'ATUALIZAR VACINAS' : 'CADASTRAR VACINAS'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

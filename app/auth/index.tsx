@@ -53,7 +53,7 @@ const Login = () => {
   };
 
   const onSignUpPress = () => {
-    router.push('/auth/register');
+    router.push('/auth/Register');
   };
 
   const onForgotPasswordPress = () => {

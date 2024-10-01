@@ -345,7 +345,7 @@ const RegisterAttendance = () => {
               value={attendanceData.maternal_description}
               onChangeText={(text) => handleInputChange('maternal_description', text)}
               multiline
-              numberOfLines={4}
+              numberOfLines={6}
             />
           </View>
 

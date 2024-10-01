@@ -133,21 +133,21 @@ const UpdateAttendance = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Pressão Arterial"
+              placeholder="Pressão Arterial (mmHg)"
               value={attendanceData?.blood_pressure || ''}
               keyboardType="default"
               onChangeText={(text) => handleInputChange('blood_pressure', text)}
             />
             <TextInput
               style={styles.input}
-              placeholder="Apgar após 1 minuto"
+              placeholder="Apgar após 1 minuto (0-10)"
               value={attendanceData?.apgar_score_at_one_minute || ''}
               keyboardType="numeric"
               onChangeText={(text) => handleInputChange('apgar_score_at_one_minute', text)}
             />
             <TextInput
               style={styles.input}
-              placeholder="Apgar após 5 minutos"
+              placeholder="Apgar após 5 minutos (0-10)"
               value={attendanceData?.apgar_score_at_five_minutes || ''}
               keyboardType="numeric"
               onChangeText={(text) => handleInputChange('apgar_score_at_five_minutes', text)}
@@ -168,14 +168,14 @@ const UpdateAttendance = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Pressão Arterial da Mãe"
+              placeholder="Pressão Arterial da Mãe (mmHg)"
               value={attendanceData?.maternal_blood_pressure || ''}
               keyboardType="default"
               onChangeText={(text) => handleInputChange('maternal_blood_pressure', text)}
             />
             <TextInput
               style={styles.input}
-              placeholder="Tipo Sanguíneo da Mãe"
+              placeholder="Tipo Sanguíneo da Mãe (ex.: O+)"
               value={attendanceData?.maternal_blood_type || ''}
               keyboardType="default"
               onChangeText={(text) => handleInputChange('maternal_blood_type', text)}
@@ -189,12 +189,61 @@ const UpdateAttendance = () => {
             />
             <TextInput
               style={styles.input}
+              placeholder="Número de Partos Anteriores"
+              value={attendanceData?.number_of_previous_births || ''}
+              keyboardType="numeric"
+              onChangeText={(text) => handleInputChange('number_of_previous_births', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Cesáreas"
+              value={attendanceData?.number_of_cesarean_sections || ''}
+              keyboardType="numeric"
+              onChangeText={(text) => handleInputChange('number_of_cesarean_sections', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Abortos"
+              value={attendanceData?.number_of_abortions || ''}
+              keyboardType="numeric"
+              onChangeText={(text) => handleInputChange('number_of_abortions', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Abortos Espontâneos"
+              value={attendanceData?.spontaneous_abortions || ''}
+              keyboardType="numeric"
+              onChangeText={(text) => handleInputChange('spontaneous_abortions', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Vacinas Maternas"
+              value={attendanceData?.maternal_vaccines || ''}
+              keyboardType="default"
+              onChangeText={(text) => handleInputChange('maternal_vaccines', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número de Filhos Vivos"
+              value={attendanceData?.number_of_living_children || ''}
+              keyboardType="numeric"
+              onChangeText={(text) => handleInputChange('number_of_living_children', text)}
+            />
+            <TextInput
+              style={styles.input}
               placeholder="Número de Consultas Pré-natais"
               value={attendanceData?.number_of_prenatal_consultations || ''}
               keyboardType="numeric"
               onChangeText={(text) => handleInputChange('number_of_prenatal_consultations', text)}
             />
-            {/* Continue adicionando todos os demais campos necessários */}
+            <TextInput
+              style={styles.input}
+              placeholder="Descrição Adicional"
+              value={attendanceData?.maternal_description || ''}
+              multiline
+              numberOfLines={6}
+              onChangeText={(text) => handleInputChange('maternal_description', text)}
+            />
           </View>
 
           <Button
