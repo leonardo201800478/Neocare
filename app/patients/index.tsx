@@ -1,3 +1,5 @@
+//APP/PATIENTS/INDEX.TSX
+
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';

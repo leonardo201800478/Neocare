@@ -1,4 +1,5 @@
 // app/styles/CadastroPacienteStyles.ts
+
 import { StyleSheet, StatusBar } from 'react-native';
 
 const styles = StyleSheet.create({

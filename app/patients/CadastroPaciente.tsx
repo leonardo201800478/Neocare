@@ -1,4 +1,5 @@
 // app/patients/register.tsx
+
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';

@@ -1,14 +1,10 @@
 // app/auth/reset-password.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { authStyles } from '../styles/AuthStyles';
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -16,110 +12,62 @@ const ResetPasswordPage = () => {
   const router = useRouter();
 
   const handleResetPassword = async () => {
-    if (!email) {
-      alert('Por favor, insira um endereço de email válido.');
+    if (!email.trim()) {
+      Alert.alert('Erro', 'Por favor, insira um endereço de email válido.');
       return;
     }
 
     setLoading(true);
     try {
-      // Adicionar lógica de recuperação de senha (Substituir com a implementação de envio real)
+      // Adicione aqui a lógica de recuperação de senha (integração com Supabase ou outro serviço)
       console.log('Solicitação de recuperação de senha enviada');
-      alert('Email de recuperação enviado! Verifique sua caixa de entrada.');
+      Alert.alert('Sucesso', 'Email de recuperação enviado! Verifique sua caixa de entrada.');
       router.replace('/auth/');
     } catch (error) {
       console.error('Erro ao enviar recuperação de senha:', error);
-      alert('Ocorreu um erro ao enviar a recuperação de senha. Por favor, tente novamente.');
+      Alert.alert('Erro', 'Ocorreu um erro ao enviar a recuperação de senha.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={authStyles.container}>
       {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#fff" />
+        <View style={authStyles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#00ff00" />
+          <Text style={authStyles.loadingText}>Enviando...</Text>
         </View>
       )}
-      <Text style={styles.header}>Recuperar Senha</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Digite seu Email"
-        placeholderTextColor="#999"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-        <Text style={styles.buttonText}>Enviar Email de Recuperação</Text>
+
+      <Text style={authStyles.header}>Recuperar Senha</Text>
+
+      {/* Campo de Email com Ícone */}
+      <View style={authStyles.inputWrapper}>
+        <Icon name="envelope" size={20} color="#999" style={authStyles.icon} />
+        <TextInput
+          placeholder="Digite seu Email"
+          value={email}
+          onChangeText={setEmail}
+          style={authStyles.inputField}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor="#999"
+        />
+      </View>
+
+      {/* Botão de Enviar com Ícone */}
+      <TouchableOpacity style={authStyles.button} onPress={handleResetPassword}>
+        <Icon name="send" size={20} color="#fff" />
+        <Text style={authStyles.buttonText}>Enviar Email de Recuperação</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('/auth/')} style={styles.linkButton}>
-        <Text style={styles.linkText}>Voltar para Login</Text>
+      {/* Link para voltar ao login */}
+      <TouchableOpacity onPress={() => router.replace('/auth/')} style={authStyles.linkButton}>
+        <Text style={authStyles.linkText}>Voltar para o login</Text>
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#eef2f3',
-  },
-  header: {
-    fontSize: 30,
-    textAlign: 'center',
-    marginBottom: 50,
-    color: '#333',
-    fontWeight: 'bold',
-  },
-  input: {
-    marginVertical: 10,
-    height: 50,
-    borderRadius: 10,
-    padding: 10,
-    borderColor: '#dcdcdc',
-    borderWidth: 1,
-    backgroundColor: '#fff',
-    color: '#000',
-  },
-  button: {
-    marginVertical: 20,
-    alignItems: 'center',
-    backgroundColor: '#6200ee',
-    padding: 15,
-    borderRadius: 30,
-    shadowColor: '#6200ee',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  linkButton: {
-    marginVertical: 10,
-    alignItems: 'center',
-  },
-  linkText: {
-    color: '#6200ee',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-});
 
 export default ResetPasswordPage;

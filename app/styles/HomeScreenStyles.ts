@@ -1,4 +1,4 @@
-// HomeScreenStyles.ts
+// APP/STYLES/HomeScreenStyles.ts
 
 import { StyleSheet } from 'react-native';
 

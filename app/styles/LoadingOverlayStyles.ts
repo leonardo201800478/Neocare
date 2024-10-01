@@ -1,4 +1,5 @@
 // /app/styles/LoadingOverlayStyles.ts
+
 import { StyleSheet } from 'react-native';
 
 const LoadingStyles = StyleSheet.create({

@@ -1,3 +1,5 @@
+//APP/PATIENTS/PACIENTEDETAILS.TSX
+
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';

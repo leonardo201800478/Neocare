@@ -1,3 +1,5 @@
+//APP/ATTENDANCES/REGISTERATTENDANCE.TSX
+
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Button, Alert, ActivityIndicator } from 'react-native';
@@ -342,7 +344,7 @@ const RegisterAttendance = () => {
               placeholder="Descrição Adicional"
               value={attendanceData.maternal_description}
               onChangeText={(text) => handleInputChange('maternal_description', text)}
-              multiline={true}
+              multiline
               numberOfLines={4}
             />
           </View>

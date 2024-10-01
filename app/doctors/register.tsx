@@ -106,8 +106,8 @@ const RegisterDoctor = () => {
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('/auth/')}>
-        <Text style={styles.linkText}>Voltar para o login</Text>
+      <TouchableOpacity onPress={() => router.replace('/home/')}>
+        <Text style={styles.linkText}>Voltar para Home</Text>
       </TouchableOpacity>
     </View>
   );
