@@ -5,7 +5,7 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeAidpi() {
+export default function Aconselhar() {
   const router = useRouter();
 
   return (
@@ -17,29 +17,24 @@ export default function HomeAidpi() {
           <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
+        <Text style={styles.title}>Aconselhar a Mãe ou o Acompanhante</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/avaliarCrianca/graficos/')}>
-            <Text style={styles.buttonText}>Avaliar, Classificar e Identificar o Tratamento</Text>
+            onPress={() => router.push('/screens/aconselharMae/alimentacao/')}>
+            <Text style={styles.buttonText}>Alimentação</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/')}>
-            <Text style={styles.buttonText}>Tratar a Criança</Text>
+            onPress={() => router.push('/screens/aconselharMae/liquidos/')}>
+            <Text style={styles.buttonText}>Líquidos</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/consultaRetorno/')}>
-            <Text style={styles.buttonText}>Consulta de Retorno</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/aconselharMae/')}>
-            <Text style={styles.buttonText}>Aconselhar a mãe ou acompanhante</Text>
+            onPress={() => router.push('/screens/aconselharMae/retorno/')}>
+            <Text style={styles.buttonText}>Quando Retornar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

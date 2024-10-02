@@ -5,7 +5,7 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeAidpi() {
+export default function Diarreia() {
   const router = useRouter();
 
   return (
@@ -17,29 +17,24 @@ export default function HomeAidpi() {
           <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
+        <Text style={styles.title}>Dar Líquidos Adicionais para combater a Diarreia</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/avaliarCrianca/graficos/')}>
-            <Text style={styles.buttonText}>Avaliar, Classificar e Identificar o Tratamento</Text>
+            onPress={() => router.push('/screens/tratarCrianca/liquidosDiarreia/planoA')}>
+            <Text style={styles.buttonText}>Plano A: Tratar a Diarreia em casa</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/')}>
-            <Text style={styles.buttonText}>Tratar a Criança</Text>
+            onPress={() => router.push('/screens/tratarCrianca/liquidosDiarreia/planoB')}>
+            <Text style={styles.buttonText}>Plano B: Tratar Desidratação com SRO</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/consultaRetorno/')}>
-            <Text style={styles.buttonText}>Consulta de Retorno</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/aconselharMae/')}>
-            <Text style={styles.buttonText}>Aconselhar a mãe ou acompanhante</Text>
+            onPress={() => router.push('/screens/tratarCrianca/liquidosDiarreia/planoC')}>
+            <Text style={styles.buttonText}>Plano C: Tratar Rapidamente a Desidratação Grave</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

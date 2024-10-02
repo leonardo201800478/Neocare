@@ -1,4 +1,4 @@
-// screens/aidpi_neonatal/alimentacao/_layout.tsx
+// screens/aidpi_neonatal/_layout.tsx
 import { Stack } from 'expo-router';
 import React from 'react';
 
@@ -7,9 +7,9 @@ export default function Layout() {
     <Stack
       screenOptions={{
         headerShown: false, // Exibir o cabeçalho para navegação
-        headerTitle: 'Home AIDPI Neonatal',
+        headerTitle: 'Quando Retornar', // Título do cabeçalho
         headerStyle: {
-          backgroundColor: '#e9ecef', // Cor do cabeçalho
+          backgroundColor: '#f8f9fa', // Cor do cabeçalho
         },
         headerTintColor: '#333', // Cor do texto no cabeçalho
       }}

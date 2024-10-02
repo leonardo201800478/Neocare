@@ -7,7 +7,7 @@ export default function Layout() {
     <Stack
       screenOptions={{
         headerShown: false, // Exibir o cabeçalho para navegação
-        headerTitle: 'Home AIDPI Neonatal',
+        headerTitle: 'Dar Líquidos Adicionais para combater a Diarreia',
         headerStyle: {
           backgroundColor: '#e9ecef', // Cor do cabeçalho
         },

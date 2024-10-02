@@ -1,6 +1,6 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 
 import LoadingOverlay from '../../components/LoadingOverlay'; // Importando o componente de loading
 import { Patient, Attendance, Vaccination } from '../../powersync/AppSchema';
@@ -143,7 +143,7 @@ const PacienteDetails = () => {
 
   const handleVaccine = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
-  
+
     if (vaccines.length > 0) {
       // Se já existe um cartão de vacina, redireciona para a atualização do cartão de vacinas
       router.push(
@@ -156,7 +156,6 @@ const PacienteDetails = () => {
       );
     }
   };
-  
 
   const handleOpenConsulta = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
@@ -178,66 +177,68 @@ const PacienteDetails = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Detalhes do Paciente</Text>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.detailItem}>Nome: {parsedPatient?.name}</Text>
-        <Text style={styles.detailItem}>CPF: {parsedPatient?.cpf}</Text>
-        <Text style={styles.detailItem}>
-          Data de Nascimento:{' '}
-          {parsedPatient?.birth_date
-            ? new Date(parsedPatient.birth_date).toLocaleDateString()
-            : 'Data não disponível'}
-        </Text>
-        <Text style={styles.detailItem}>Sexo: {parsedPatient?.gender}</Text>
-        <Text style={styles.detailItem}>Telefone: {parsedPatient?.phone_number}</Text>
-        <Text style={styles.detailItem}>CEP: {parsedPatient?.zip_code}</Text>
-        <Text style={styles.detailItem}>UF: {parsedPatient?.uf}</Text>
-        <Text style={styles.detailItem}>Cidade: {parsedPatient?.city}</Text>
-        <Text style={styles.detailItem}>Endereço: {parsedPatient?.address}</Text>
-        {attendance && (
-          <>
-            <Text style={styles.detailItem}>
-              Data da Última Consulta:{' '}
-              {attendance.updated_at
-                ? new Date(attendance.updated_at).toLocaleDateString()
-                : 'Data não disponível'}
-            </Text>
-            <Text style={styles.detailItem}>
-              Médico da Última Consulta: {attendance.doctor_name ?? 'Nome não disponível'}
-            </Text>
-          </>
-        )}
-        {vaccines.length > 0 && (
-          <View style={styles.vaccinesContainer}>
-            <Text style={styles.subHeader}>Vacinas:</Text>
-            {vaccines.map((vaccine) => (
-              <Text key={vaccine.id} style={styles.detailItem}>
-                {vaccine.vaccine_name} - Dose {vaccine.dose_number} - Aplicada em:{' '}
-                {vaccine.administered_at
-                  ? new Date(vaccine.administered_at).toLocaleDateString()
+    <SafeAreaView style={styles.safeAreaView}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={styles.header}>Detalhes do Paciente</Text>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.detailItem}>Nome: {parsedPatient?.name}</Text>
+          <Text style={styles.detailItem}>CPF: {parsedPatient?.cpf}</Text>
+          <Text style={styles.detailItem}>
+            Data de Nascimento:{' '}
+            {parsedPatient?.birth_date
+              ? new Date(parsedPatient.birth_date).toLocaleDateString()
+              : 'Data não disponível'}
+          </Text>
+          <Text style={styles.detailItem}>Sexo: {parsedPatient?.gender}</Text>
+          <Text style={styles.detailItem}>Telefone: {parsedPatient?.phone_number}</Text>
+          <Text style={styles.detailItem}>CEP: {parsedPatient?.zip_code}</Text>
+          <Text style={styles.detailItem}>UF: {parsedPatient?.uf}</Text>
+          <Text style={styles.detailItem}>Cidade: {parsedPatient?.city}</Text>
+          <Text style={styles.detailItem}>Endereço: {parsedPatient?.address}</Text>
+          {attendance && (
+            <>
+              <Text style={styles.detailItem}>
+                Data da Última Consulta:{' '}
+                {attendance.updated_at
+                  ? new Date(attendance.updated_at).toLocaleDateString()
                   : 'Data não disponível'}
               </Text>
-            ))}
-          </View>
-        )}
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonDelete} onPress={handleDeletePaciente}>
-          <Text style={styles.buttonText}>DELETAR PACIENTE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonConsulta} onPress={handleOpenConsulta}>
-          <Text style={styles.buttonText}>{attendance ? 'NOVA CONSULTA' : 'ABRIR CONSULTA'}</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonVaccine} onPress={handleVaccine}>
-          <Text style={styles.buttonText}>
-            {vaccines.length > 0 ? 'ATUALIZAR VACINAS' : 'CADASTRAR VACINAS'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+              <Text style={styles.detailItem}>
+                Médico da Última Consulta: {attendance.doctor_name ?? 'Nome não disponível'}
+              </Text>
+            </>
+          )}
+          {vaccines.length > 0 && (
+            <View style={styles.vaccinesContainer}>
+              <Text style={styles.subHeader}>Vacinas:</Text>
+              {vaccines.map((vaccine) => (
+                <Text key={vaccine.id} style={styles.detailItem}>
+                  {vaccine.vaccine_name} - Dose {vaccine.dose_number} - Aplicada em:{' '}
+                  {vaccine.administered_at
+                    ? new Date(vaccine.administered_at).toLocaleDateString()
+                    : 'Data não disponível'}
+                </Text>
+              ))}
+            </View>
+          )}
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleDeletePaciente}>
+            <Text style={styles.buttonText}>DELETAR PACIENTE</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonConsulta} onPress={handleOpenConsulta}>
+            <Text style={styles.buttonText}>{attendance ? 'NOVA CONSULTA' : 'ABRIR CONSULTA'}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonVaccine} onPress={handleVaccine}>
+            <Text style={styles.buttonText}>
+              {vaccines.length > 0 ? 'ATUALIZAR VACINAS' : 'CADASTRAR VACINAS'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

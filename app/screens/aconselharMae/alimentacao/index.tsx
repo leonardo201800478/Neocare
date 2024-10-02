@@ -1,11 +1,11 @@
-// screens/aidpi_neonatal/index.tsx
+// app/screens/aconselharMae/alimentacao/index.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeAidpi() {
+export default function Alimentacao() {
   const router = useRouter();
 
   return (
@@ -17,29 +17,26 @@ export default function HomeAidpi() {
           <Text style={styles.backText}>Voltar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
+        <Text style={styles.title}>Alimentação</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/avaliarCrianca/graficos/')}>
-            <Text style={styles.buttonText}>Avaliar, Classificar e Identificar o Tratamento</Text>
+            onPress={() => router.push('/screens/aconselharMae/alimentacao/avaliarAlimentacao')}>
+            <Text style={styles.buttonText}>Avaliar a Alimentação da Criança</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/')}>
-            <Text style={styles.buttonText}>Tratar a Criança</Text>
+            onPress={() => router.push('/screens/aconselharMae/alimentacao/pesoBaixo')}>
+            <Text style={styles.buttonText}>Ensinar a mãe a tratar o peso baixo em casa</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/consultaRetorno/')}>
-            <Text style={styles.buttonText}>Consulta de Retorno</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/aconselharMae/')}>
-            <Text style={styles.buttonText}>Aconselhar a mãe ou acompanhante</Text>
+            onPress={() => router.push('/screens/aconselharMae/alimentacao/aconselharMae')}>
+            <Text style={styles.buttonText}>
+              Aconselhar a Mãe ou o Acompanhante quanto a problemas de alimentação
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
