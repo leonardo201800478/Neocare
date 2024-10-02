@@ -105,6 +105,13 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.buttonText}>Perfil</Text>
         </TouchableOpacity>
 
+        {/* Botão para ir para a tela de AIDPI */}
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#007BFF' }]}
+          onPress={() => router.push('/screens/aidpi_neonatal/')}>
+          <Text style={styles.buttonText}>AIDPI</Text>
+        </TouchableOpacity>
+
         {/* Botão para ir para a tela de Atualização de Perfil */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
