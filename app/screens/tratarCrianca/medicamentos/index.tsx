@@ -11,13 +11,8 @@ export default function Medicamentos() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Botão de Voltar Estilizado */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Voltar</Text>
-        </TouchableOpacity>
 
-        <Text style={styles.title}>Administrar os Medicamentos orais em Casa</Text>
+        <Text style={styles.title}>Administrar os medicamentos por via oral em casa</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
@@ -107,5 +102,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18,
+    textAlign: 'center',
   },
 });

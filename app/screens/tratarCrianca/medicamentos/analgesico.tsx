@@ -119,7 +119,8 @@ export default function AnalgesicoAntitermico() {
         </ScrollView>
 
         <Text style={styles.note}>
-          *O Ibuprofeno só deve ser usado em maiores de 6 meses e excluído o diagnóstico de dengue, nas crianças alérgicas a dipirona e paracetamol. Dose máxima em crianças: 200mg/dose.
+          *O Ibuprofeno só deve ser usado em maiores de 6 meses e excluído o diagnóstico de dengue,
+          nas crianças alérgicas a dipirona e paracetamol. Dose máxima em crianças: 200mg/dose.
         </Text>
 
         <TouchableOpacity style={styles.button} onPress={() => router.back()}>
