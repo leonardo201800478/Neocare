@@ -7,12 +7,14 @@
     "analgesico",
     "Analgesico",
     "antibioticos",
+    "Antimalarico",
     "asynciterator",
     "Belgica",
     "buttonprontuario",
     "Crianca",
     "datetimepicker",
     "Desidratacao",
+    "falciparum",
     "graficos",
     "Grecia",
     "injetavel",
@@ -27,6 +29,7 @@
     "observacoes",
     "Observacoes",
     "PACIENTEDETAILS",
+    "polivitaminas",
     "Polonia",
     "postgres",
     "powersync",
@@ -40,6 +43,7 @@
     "swipeable",
     "Swipeable",
     "Trackpad",
-    "vacinacao"
+    "vacinacao",
+    "vivax"
   ]
 }
