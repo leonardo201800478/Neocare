@@ -70,7 +70,7 @@ const Login = () => {
       )}
 
       {/* Cabeçalho do Login */}
-      <Text style={authStyles.header}>Bem-vindo ao Neo Care</Text>
+      <Text style={authStyles.header}>Neo Care</Text>
       <Text style={authStyles.subHeader}>Faça login para continuar</Text>
 
       {/* Campo de Email com Ícone */}

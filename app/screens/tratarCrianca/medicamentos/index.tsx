@@ -33,7 +33,7 @@ export default function Medicamentos() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/medicamentos/viaOral')}>
+            onPress={() => router.push('/screens/tratarCrianca/medicamentos/analgesico')}>
             <Text style={styles.buttonText}>Analgésico/Antitérmico</Text>
           </TouchableOpacity>
           <TouchableOpacity
