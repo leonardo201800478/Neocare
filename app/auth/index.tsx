@@ -75,7 +75,7 @@ const Login = () => {
 
       {/* Campo de Email com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="envelope" size={20} color="#999" style={authStyles.icon} />
+        <Icon name="envelope" size={20} color="#999" adjustsFontSizeToFit style={authStyles.icon} />
         <TextInput
           placeholder="Email"
           value={email}
@@ -89,7 +89,7 @@ const Login = () => {
 
       {/* Campo de Senha com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="lock" size={20} color="#999" style={authStyles.icon} />
+        <Icon name="lock" size={30} color="#999" style={authStyles.icon} />
         <TextInput
           placeholder="Senha"
           value={password}
@@ -129,5 +129,4 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
-
 export default Login;

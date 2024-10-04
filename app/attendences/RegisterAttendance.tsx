@@ -142,7 +142,7 @@ const RegisterAttendance = () => {
       } else {
         console.log('Attendance saved successfully:', newAttendance);
         Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
-        router.replace('/home/');
+        router.replace('/(tabs)/home/');
       }
     } catch (error) {
       console.error('Exception caught while saving attendance data:', error);

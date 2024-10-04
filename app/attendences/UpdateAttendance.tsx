@@ -84,7 +84,7 @@ const UpdateAttendance = () => {
         Alert.alert('Erro', 'Erro ao atualizar prontuário: ' + error.message);
       } else {
         Alert.alert('Sucesso', 'Prontuário atualizado com sucesso!');
-        router.replace('/home/');
+        router.replace('/(tabs)/home/');
       }
     } catch (error) {
       console.error('Erro ao atualizar prontuário:', error);

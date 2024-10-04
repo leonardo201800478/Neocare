@@ -14,9 +14,9 @@ import {
   ScrollView,
 } from 'react-native';
 
-import CEPInput from '../../components/CEPInput';
-import { isCPFValid } from '../../components/CPFValidator';
-import { useSystem } from '../../powersync/PowerSync';
+import CEPInput from '../../../components/CEPInput';
+import { isCPFValid } from '../../../components/CPFValidator';
+import { useSystem } from '../../../powersync/PowerSync';
 import {
   formatDateForDatabase,
   formatCPF,
@@ -24,10 +24,10 @@ import {
   removeCEPFormat,
   formatPhoneNumber,
   countryCodes,
-} from '../../utils/formatUtils';
-import { calcularIdade } from '../../utils/idadeCalculator';
-import { uuid } from '../../utils/uuid';
-import styles from '../styles/Styles';
+} from '../../../utils/formatUtils';
+import { calcularIdade } from '../../../utils/idadeCalculator';
+import { uuid } from '../../../utils/uuid';
+import styles from '../../styles/Styles';
 
 const CadastroPaciente = () => {
   const [loading, setLoading] = useState(false);

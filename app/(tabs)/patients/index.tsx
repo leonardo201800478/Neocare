@@ -8,10 +8,10 @@ const PatientIndex = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Simulando carregamento antes de redirecionar para a tela de detalhes de pacientes ou outra rota
+    // Simulando carregamento antes de redirecionar para a tela de cadastro de pacientes
     setTimeout(() => {
-      router.replace('/home/'); // Redireciona para a tela Home ou para a rota de pacientes.
-    }, 2000); // Simulação de atraso de 2 segundos
+      router.replace('/(tabs)/patients/CadastroPaciente'); // Redireciona para a tela CadastroPaciente
+    }, 20); // Simulação de atraso de 2 segundos
   }, [router]);
 
   return (

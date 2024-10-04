@@ -34,16 +34,16 @@ export const useAuth = () => {
           // Se o registro do médico não existir, cria um com um nome nulo
           if (doctorError.code === 'PGRST116') {
             await addDoctorIfNotExists(userID, data?.user?.email, client);
-            router.replace('/doctors/register');
+            router.replace('/(tabs)/doctors/register');
           } else {
             throw doctorError;
           }
         } else if (!doctorData?.name) {
           // Se o médico existir, mas o nome não estiver definido, redireciona para o registro
-          router.replace('/doctors/register');
+          router.replace('/(tabs)/doctors/register');
         } else {
           // Médico existe e nome está definido, pode prosseguir para a Home
-          router.replace('/home/');
+          router.replace('/(tabs)/home/');
         }
       } catch (e) {
         console.error('Erro ao verificar a autenticação:', e);

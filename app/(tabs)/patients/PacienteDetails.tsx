@@ -2,10 +2,10 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 
-import LoadingOverlay from '../../components/LoadingOverlay'; // Importando o componente de loading
-import { Patient, Attendance, Vaccination } from '../../powersync/AppSchema';
-import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/PacienteDetailsStyles';
+import LoadingOverlay from '../../../components/LoadingOverlay'; // Importando o componente de loading
+import { Patient, Attendance, Vaccination } from '../../../powersync/AppSchema';
+import { useSystem } from '../../../powersync/PowerSync';
+import styles from '../../styles/PacienteDetailsStyles';
 
 const PacienteDetails = () => {
   const router = useRouter();

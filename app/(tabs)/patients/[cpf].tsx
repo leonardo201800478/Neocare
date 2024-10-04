@@ -4,8 +4,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 
-import { Patient } from '../../powersync/AppSchema';
-import { useSystem } from '../../powersync/PowerSync';
+import { Patient } from '../../../powersync/AppSchema';
+import { useSystem } from '../../../powersync/PowerSync';
 
 const PacienteDetails: React.FC = () => {
   const { cpf } = useLocalSearchParams<{ cpf: string }>(); // Pegando o parâmetro dinâmico da URL de forma tipada

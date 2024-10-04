@@ -44,7 +44,7 @@ const Register = () => {
       if (data.user) {
         // Adiciona um pequeno atraso para garantir que a autenticação seja processada
         setTimeout(() => {
-          router.replace('/doctors/register');
+          router.replace('/(tabs)/doctors/register');
         }, 1000);
       } else {
         throw new Error('Erro ao registrar o usuário. Tente novamente.');
@@ -83,7 +83,7 @@ const Register = () => {
 
       {/* Campo de Senha com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="lock" size={20} color="#999" style={authStyles.icon} />
+        <Icon name="lock" size={30} color="#999" style={authStyles.icon} />
         <TextInput
           placeholder="Senha"
           value={password}
@@ -96,7 +96,7 @@ const Register = () => {
 
       {/* Campo de Confirmação de Senha com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="lock" size={20} color="#999" style={authStyles.icon} />
+        <Icon name="lock" size={30} color="#999" style={authStyles.icon} />
         <TextInput
           placeholder="Confirmar Senha"
           value={confirmPassword}

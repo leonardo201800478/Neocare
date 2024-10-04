@@ -11,15 +11,15 @@ export const authStyles = StyleSheet.create({
   header: {
     fontSize: 30,
     textAlign: 'center',
-    marginBottom: 20, // Reduzi o espaçamento para acomodar o subtítulo
-    color: '#333',
+    marginBottom: 40, // Reduzi o espaçamento para acomodar o subtítulo
+    color: '#006400',
     fontWeight: 'bold',
   },
   subHeader: {
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 40, // Espaçamento adequado para separar do campo de entrada
-    color: '#555',
+    color: '#006400',
     fontWeight: '400',
   },
   inputWrapper: {
