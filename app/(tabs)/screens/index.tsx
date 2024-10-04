@@ -23,11 +23,6 @@ export default function HomeAidpi() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/graficos/')}>
-            <Text style={styles.buttonText}>Gráfico Peso/Idade</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sectionButton}
             onPress={() => router.push('/screens/tratarCrianca/')}>
             <Text style={styles.buttonText}>Tratar a Criança</Text>
           </TouchableOpacity>

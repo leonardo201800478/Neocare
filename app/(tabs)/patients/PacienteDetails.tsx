@@ -125,7 +125,7 @@ const PacienteDetails = () => {
                     // Deletando o paciente do banco de dados local
                     await db.deleteFrom('patients').where('cpf', '=', parsedPatient!.cpf).execute();
                     Alert.alert('Sucesso', 'Paciente e prontuários excluídos com sucesso.');
-                    router.replace('/home/');
+                    router.replace('/(tabs)/home/');
                   }
                 }
               }

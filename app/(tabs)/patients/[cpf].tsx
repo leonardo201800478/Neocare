@@ -19,7 +19,7 @@ const PacienteDetails: React.FC = () => {
       loadPaciente(cpf);
     } else {
       Alert.alert('Erro', 'CPF inválido ou não fornecido.');
-      router.replace('/home/');
+      router.replace('/(tabs)/home/');
     }
   }, [cpf]);
 
@@ -51,7 +51,7 @@ const PacienteDetails: React.FC = () => {
           try {
             await db.deleteFrom('patients').where('cpf', '=', cpf).execute();
             Alert.alert('Sucesso', 'Paciente excluído com sucesso.');
-            router.replace('/home/');
+            router.replace('/(tabs)/home/');
           } catch (error) {
             console.error('Erro ao excluir paciente:', error);
             console.log('Detalhes do erro ao excluir paciente:', error); // Adicionando log para depurar erros ao excluir
@@ -75,7 +75,7 @@ const PacienteDetails: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <Text>Paciente não encontrado.</Text>
-        <TouchableOpacity style={styles.buttonHome} onPress={() => router.replace('/home/')}>
+        <TouchableOpacity style={styles.buttonHome} onPress={() => router.replace('/(tabs)/home/')}>
           <Text style={styles.buttonText}>VOLTAR PARA HOME</Text>
         </TouchableOpacity>
       </View>
