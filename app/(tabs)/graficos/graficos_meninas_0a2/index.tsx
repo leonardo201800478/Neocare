@@ -10,22 +10,10 @@ export default function GraficosMeninas0a2() {
       <Text style={styles.title}>Gráfico Meninas 0 a 2 Meses</Text>
       <ScrollView horizontal>
         <View style={styles.imageContainer}>
-          <Image
-            source={require('../../../../../assets/imagens/graficos/menina0-2.jpg')}
-            style={styles.image}
-          />
-          <Image
-            source={require('~/assets/imagens/graficos/menina0-2_2.jpg')}
-            style={styles.image}
-          />
-          <Image
-            source={require('~/assets/imagens/graficos/menina0-2_3.jpg')}
-            style={styles.image}
-          />
-          <Image
-            source={require('~/assets/imagens/graficos/menina2-5_4.jpg')}
-            style={styles.image}
-          />
+          <Image source={require('../assets/graficos/menina0-2.jpg')} style={styles.image} />
+          <Image source={require('../assets/graficos/menina0-2_2.jpg')} style={styles.image} />
+          <Image source={require('../assets/graficos/menina0-2_3.jpg')} style={styles.image} />
+          <Image source={require('../assets/graficos/menina2-5_4.jpg')} style={styles.image} />
         </View>
       </ScrollView>
       <Button title="Voltar" onPress={() => router.back()} />

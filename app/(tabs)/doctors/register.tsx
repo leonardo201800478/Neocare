@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { useSystem } from '../../powersync/PowerSync';
+import { useSystem } from '../../../powersync/PowerSync';
 
 const RegisterDoctor = () => {
   const [name, setName] = useState('');

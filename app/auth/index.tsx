@@ -40,7 +40,7 @@ const Login = () => {
       // Tentativa de login
       await supabaseConnector.login(email, password);
       console.log('Login bem-sucedido');
-      router.replace('/home/'); // Redireciona para a tela Home
+      router.replace('/(tabs)/home'); // Redireciona para a tela Home
     } catch (error: any) {
       console.error('Erro ao tentar realizar login:', error);
       Alert.alert(

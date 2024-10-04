@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
-import { useSystem } from '../../powersync/PowerSync';
+import { useSystem } from '../../../powersync/PowerSync';
 
 const UpdateDoctorProfile: React.FC = () => {
   const { supabaseConnector } = useSystem();

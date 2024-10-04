@@ -1,5 +1,4 @@
-// screens/aidpi_neonatal/index.tsx
-import { Ionicons } from '@expo/vector-icons';
+// screens/index.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
@@ -11,11 +10,6 @@ export default function HomeAidpi() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Botão de Voltar Estilizado */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Voltar</Text>
-        </TouchableOpacity>
 
         <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
 
@@ -23,23 +17,25 @@ export default function HomeAidpi() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/avaliarCrianca/graficos/')}>
-            <Text style={styles.buttonText}>Avaliar, Classificar e Identificar o Tratamento</Text>
+            onPress={() => router.push('/screens/tratarCrianca/medicamentos/')}>
+            <Text style={styles.buttonText}>Administrar os Medicamentos orais em Casa</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/')}>
-            <Text style={styles.buttonText}>Tratar a Criança</Text>
+            onPress={() => router.push('/screens/tratarCrianca/tratamentoSintomatico/')}>
+            <Text style={styles.buttonText}>Utilizar Tratamento Sintomático</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/consultaRetorno/')}>
-            <Text style={styles.buttonText}>Consulta de Retorno</Text>
+            onPress={() => router.push('/screens/tratarCrianca/tratamentoUS/')}>
+            <Text style={styles.buttonText}>
+              Administrar os Tratamentos Exclusivamente na unidade de saúde
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
-            onPress={() => router.push('/screens/aconselharMae/')}>
-            <Text style={styles.buttonText}>Aconselhar a mãe ou acompanhante</Text>
+            onPress={() => router.push('/screens/tratarCrianca/liquidosDiarreia/')}>
+            <Text style={styles.buttonText}>Dar Líquidos Adicionais para combater a Diarreia</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -86,6 +82,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+    textAlign: 'center',
     fontSize: 18,
+    marginStart: 4,
+    marginEnd: 4,
   },
 });

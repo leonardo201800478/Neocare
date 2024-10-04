@@ -5,7 +5,7 @@ import { Stack, router } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { useSystem } from '../../powersync/PowerSync';
+import { useSystem } from '../../../powersync/PowerSync';
 
 const Layout: React.FC = () => {
   const { supabaseConnector, powersync } = useSystem();

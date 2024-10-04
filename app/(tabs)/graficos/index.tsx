@@ -1,42 +1,38 @@
 // screens/aidpi_neonatal/index.tsx
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function HomeAidpi() {
+export default function Graficos() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-
-        <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
+        <Text style={styles.title}>Gráfico Peso/Idade</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/medicamentos/')}>
-            <Text style={styles.buttonText}>Administrar os Medicamentos orais em Casa</Text>
+            style={styles.sectionButtonMenina}
+            onPress={() => router.push('/graficos/graficos_meninas_0a2/')}>
+            <Text style={styles.buttonText}>Gráficos Meninas 0 a 2 meses</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/tratamentoSintomatico/')}>
-            <Text style={styles.buttonText}>Utilizar Tratamento Sintomático</Text>
+            style={styles.sectionButtonMenino}
+            onPress={() => router.push('/graficos/graficos_meninos_0a2/')}>
+            <Text style={styles.buttonText}>Gráficos Meninos 0 a 2 meses</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/tratamentoUS/')}>
-            <Text style={styles.buttonText}>
-              Administrar os Tratamentos Exclusivamente na unidade de saúde
-            </Text>
+            style={styles.sectionButtonMenina}
+            onPress={() => router.push('/graficos/graficos_meninas_2a5/')}>
+            <Text style={styles.buttonText}>Gráficos Meninas 2 meses a 5 anos</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.sectionButton}
-            onPress={() => router.push('/screens/tratarCrianca/liquidosDiarreia/')}>
-            <Text style={styles.buttonText}>Dar Líquidos Adicionais para combater a Diarreia</Text>
+            style={styles.sectionButtonMenino}
+            onPress={() => router.push('/graficos/graficos_meninos_2a5/')}>
+            <Text style={styles.buttonText}>Gráficos Meninos 2 meses a 5 anos</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -76,6 +72,20 @@ const styles = StyleSheet.create({
   },
   sectionButton: {
     backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  sectionButtonMenino: {
+    backgroundColor: '#0000FF',
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  sectionButtonMenina: {
+    backgroundColor: '#FF1493',
     paddingVertical: 15,
     borderRadius: 8,
     marginVertical: 10,

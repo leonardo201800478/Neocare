@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { PATIENTS_TABLE, Patient } from '../../powersync/AppSchema';
-import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/HomeScreenStyles';
+import { PATIENTS_TABLE, Patient } from '../../../powersync/AppSchema';
+import { useSystem } from '../../../powersync/PowerSync';
+import styles from '../../styles/HomeScreenStyles';
 
 const HomeScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
