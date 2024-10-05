@@ -1,6 +1,6 @@
 // app/utils/idadeCalculator.ts
 
-export const calcularIdade = (dataNasc: Date) => {
+export const calcularIdade = (dataNasc: Date, p0: string) => {
   const hoje = new Date();
   const anoAtual = hoje.getFullYear();
   const mesAtual = hoje.getMonth();

@@ -60,40 +60,108 @@ const attendances = new Table(
     created_at: column.text, // Data de criação do prontuário como texto
     updated_at: column.text, // Data da última atualização como texto
     patient_id: column.text, // ID do paciente relacionado
-    doctor_id: column.text, // ID do médico responsável (usuário)
-    doctor_name: column.text, // Nome do médico responsável
-    appointment_date: column.text, // Data e hora da consulta como texto (ISO format)
-    weight: column.text, // Peso do paciente
-    height: column.text, // Altura do paciente
-    blood_pressure: column.text, // Pressão arterial do paciente
-    apgar_score_at_one_minute: column.text, // Pontuação Apgar após 1 minuto
-    apgar_score_at_five_minutes: column.text, // Pontuação Apgar após 5 minutos
-    maternal_tax: column.text, // Dados médicos relacionados à mãe
-    maternal_weight: column.text, // Peso da mãe
-    maternal_height: column.text, // Altura da mãe
-    maternal_blood_pressure: column.text, // Pressão arterial da mãe
-    maternal_blood_type: column.text, // Tipo sanguíneo da mãe
-    number_of_previous_pregnancies: column.text, // Número de gestações anteriores da mãe
-    number_of_previous_births: column.text, // Número de partos anteriores
-    number_of_cesarean_sections: column.text, // Número de cesarianas
-    number_of_abortions: column.text, // Número de abortos
-    spontaneous_abortions: column.text, // Abortos espontâneos
-    maternal_vaccines: column.text, // Vacinas tomadas pela mãe
-    number_of_living_children: column.text, // Número de filhos vivos
-    number_of_neonatal_deaths: column.text, // Número de mortes neonatais
-    number_of_children: column.text, // Número total de filhos
-    maternal_hospitalizations: column.text, // Histórico de hospitalizações da mãe
-    maternal_surgeries: column.text, // Histórico de cirurgias da mãe
-    number_of_surgeries: column.text, // Quantidade de cirurgias realizadas
-    prenatal_consultations: column.text, // Informações sobre consultas pré-natais
-    number_of_prenatal_consultations: column.text, // Número de consultas pré-natais
-    maternal_treatments: column.text, // Tratamentos realizados pela mãe
-    maternal_description: column.text, // Descrição adicional sobre a saúde materna
+    registered_by: column.text, // ID do profissional que fez o atendimento
+    data_atendimento: column.text, // Data do atendimento
+    primeira_consulta: column.text, // Primeira consulta (Sim/Não)
+    consulta_retorno: column.text, // Consulta de retorno (Sim/Não)
+    motivo_consulta: column.text, // Motivo da consulta
+    peso_kg: column.text, // Peso do paciente (kg)
+    comprimento_cm: column.text, // Comprimento do paciente (cm)
+    perimetro_cefalico_cm: column.text, // Perímetro cefálico (cm)
+    problemas_da_crianca: column.text, // Quais os problemas da criança
+
+    // Avaliar sinais gerais de perigo
+    nao_bebe_ou_mama: column.text, // Sim/Não
+    vomita_tudo: column.text, // Sim/Não
+    convulsoes: column.text, // Sim/Não
+    letargica: column.text, // Sim/Não
+    enchimento_capilar: column.text, // Sim/Não
+    batimento_asa: column.text, // Sim/Não
+
+    // Tosse ou dificuldade para respirar
+    tem_tosse: column.text, // Sim/Não
+    tosse_ha_quanto_tempo: column.text, // Há quanto tempo tem tosse (dias)
+    numero_respiracoes_por_minuto: column.text, // Número de respirações por minuto
+    respiracao_rapida: column.text, // Respiração rápida? (Sim/Não)
+    tiragem_subcostal: column.text, // Sim/Não
+    estridor: column.text, // Sim/Não
+    sibilancia: column.text, // Sim/Não
+    sibilancia_ha_quanto_tempo: column.text, // Sibilância há quanto tempo (dias)
+    primeira_crise: column.text, // Primeira crise? (Sim/Não)
+    broncodilatador: column.text, // Uso de broncodilatador nas últimas 24h (Sim/Não)
+
+    // Diarreia
+    tem_diarreia: column.text, // Criança tem diarreia? (Sim/Não)
+    diarreia_ha_quanto_tempo: column.text, // Diarreia há quanto tempo (dias)
+    sangue_nas_fezes: column.text, // Sangue nas fezes? (Sim/Não)
+
+    // Febre
+    tem_febre: column.text, // Criança está com febre? (Sim/Não)
+    area_risco_malaria: column.text, // Área com risco de malária ('sem risco', 'alto risco', 'baixo risco')
+    febre_ha_quanto_tempo: column.text, // Febre há quanto tempo (dias)
+    febre_todos_os_dias: column.text, // Febre todos os dias? (Sim/Não)
+    rigidez_nuca: column.text, // Rigidez de nuca? (Sim/Não)
+    petequias: column.text, // Presença de petéquias (Sim/Não)
+    abaulamento_fontanela: column.text, // Abaulamento da fontanela (Sim/Não)
+
+    // Problemas de ouvido
+    problema_ouvido: column.text, // Criança tem problema de ouvido? (Sim/Não)
+    dor_no_ouvido: column.text, // Dor no ouvido? (Sim/Não)
+    secrecao_ouvido: column.text, // Secreção no ouvido? (Sim/Não)
+    secrecao_ha_quanto_tempo: column.text, // Secreção há quanto tempo (dias)
+
+    // Dor de garganta
+    dor_garganta: column.text, // Criança está com dor de garganta? (Sim/Não)
+    ganglios_cervicais: column.text, // Gânglios cervicais aumentados/dolorosos (Sim/Não)
+    abaulamento_palato: column.text, // Abaulamento de palato (Sim/Não)
+    amigdalas_membrana: column.text, // Amígdalas com membrana branco-acinzentada (Sim/Não)
+    amigdalas_pontos_purulentos: column.text, // Pontos purulentos nas amígdalas (Sim/Não)
+    vesiculas_hiperemia: column.text, // Presença de vesículas e/ou hiperemia (Sim/Não)
+
+    // Doença grave ou infecção local (para recém-nascidos)
+    gemido: column.text, // Gemido, estridor ou sibilância (Sim/Não)
+    cianose_periferica: column.text, // Cianose periférica (Sim/Não)
+    ictericia: column.text, // Icterícia (Sim/Não)
+    secrecao_umbilical: column.text, // Secreção purulenta no umbigo (Sim/Não)
+    distensao_abdominal: column.text, // Distensão abdominal (Sim/Não)
+    anomalias_congenitas: column.text, // Anomalias congênitas (Sim/Não)
+
+    // Desnutrição ou anemia
+    emagrecimento: column.text, // Emagrecimento acentuado? (Sim/Não)
+    edema: column.text, // Edema (Sim/Não)
+    palidez_palmar: column.text, // Palidez palmar ('leve' ou 'grave')
+    peso_para_idade: column.text, // Peso para idade ('muito baixo', 'baixo', 'adequado', 'elevado')
+    ganho_insuficiente_peso: column.text, // Ganho insuficiente de peso (Sim/Não)
+
+    // Alimentação da criança
+    amamentando: column.text, // Está amamentando? (Sim/Não)
+    quantas_vezes_amamenta: column.text, // Quantas vezes amamenta por dia
+    amamenta_noite: column.text, // Amamenta à noite? (Sim/Não)
+    alimentos_liquidos: column.text, // Recebe outros líquidos/alimentos?
+    quantidade_refeicoes: column.text, // Quantas refeições por dia
+    recebe_proporcao: column.text, // Recebe proporção adequada? (Sim/Não)
+    tipo_alimentacao: column.text, // Tipo de alimentação (mamadeira/copo/colher)
+    mudou_alimentacao: column.text, // Mudou a alimentação recentemente? (Sim/Não)
+    como_mudou_alimentacao: column.text, // Como mudou a alimentação?
+
+    // Avaliar desenvolvimento
+    perda_peso_primeira_semana: column.text, // Perda de peso maior que 10% na primeira semana? (Sim/Não)
+    tendencia_crescimento: column.text, // Tendência de crescimento
+    habilidades_desenvolvimento: column.text, // Habilidades de desenvolvimento alcançadas
+
+    // Prática de atividade física
+    atividade_fisica_vezes_semana: column.text, // Quantas vezes por semana pratica atividade física?
+    tempo_atividade_fisica: column.text, // Por quanto tempo?
+    tempo_sedentario: column.text, // Tempo sedentário (TV/computador/celular)
+
+    // Possibilidade de violência e outros problemas
+    avaliacao_violencia: column.text, // Possibilidade de violência
+    outros_problemas: column.text, // Outros problemas
   },
   {
     indexes: {
       patientIdIndex: ['patient_id'], // Índice para acelerar buscas por paciente
-      doctorIdIndex: ['doctor_id'], // Índice para acelerar buscas por médico
+      registeredByIdIndex: ['registered_by'], // Índice para acelerar buscas por profissional
     },
   }
 );

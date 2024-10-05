@@ -51,7 +51,7 @@ const VaccinationCard = () => {
   useEffect(() => {
     if (parsedPatient) {
       const birthDate = new Date(parsedPatient.birth_date);
-      setPatientAge(calcularIdade(birthDate));
+      setPatientAge(calcularIdade(birthDate, 'p0'));
 
       const fetchVaccinations = async () => {
         try {

@@ -1,151 +1,219 @@
-//APP/ATTENDANCES/REGISTERATTENDANCE.TSX
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Button, Alert, ActivityIndicator } from 'react-native';
 
-import { Patient, Doctor } from '../../powersync/AppSchema';
+import { Patient } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { formatCPF } from '../../utils/formatUtils';
 import { calcularIdade } from '../../utils/idadeCalculator';
-import { uuid } from '../../utils/uuid';
 import styles from '../styles/Styles';
 
-const RegisterAttendance = () => {
-  const params = useLocalSearchParams();
-  console.log('Raw useLocalSearchParams output:', params);
+// Definindo a interface para os dados do formulário de prontuário
+interface AttendanceData {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  patient_id?: string;
+  registered_by?: string;
+  data_atendimento?: string;
+  primeira_consulta?: string;
+  consulta_retorno?: string;
+  motivo_consulta?: string;
+  peso_kg?: string;
+  comprimento_cm?: string;
+  perimetro_cefalico_cm?: string;
+  problemas_da_crianca?: string;
+  nao_bebe_ou_mama?: string;
+  vomita_tudo?: string;
+  convulsoes?: string;
+  letargica?: string;
+  enchimento_capilar?: string;
+  batimento_asa?: string;
+  tem_tosse?: string;
+  tosse_ha_quanto_tempo?: string;
+  numero_respiracoes_por_minuto?: string;
+  respiracao_rapida?: string;
+  tiragem_subcostal?: string;
+  estridor?: string;
+  sibilancia?: string;
+  sibilancia_ha_quanto_tempo?: string;
+  primeira_crise?: string;
+  broncodilatador?: string;
+  tem_diarreia?: string;
+  diarreia_ha_quanto_tempo?: string;
+  sangue_nas_fezes?: string;
+  tem_febre?: string;
+  area_risco_malaria?: string;
+  febre_ha_quanto_tempo?: string;
+  febre_todos_os_dias?: string;
+  rigidez_nuca?: string;
+  petequias?: string;
+  abaulamento_fontanela?: string;
+  problema_ouvido?: string;
+  dor_no_ouvido?: string;
+  secrecao_ouvido?: string;
+  secrecao_ha_quanto_tempo?: string;
+  dor_garganta?: string;
+  ganglios_cervicais?: string;
+  abaulamento_palato?: string;
+  amigdalas_membrana?: string;
+  amigdalas_pontos_purulentos?: string;
+  vesiculas_hiperemia?: string;
+  gemido?: string;
+  cianose_periferica?: string;
+  ictericia?: string;
+  secrecao_umbilical?: string;
+  distensao_abdominal?: string;
+  anomalias_congenitas?: string;
+  emagrecimento?: string;
+  edema?: string;
+  palidez_palmar?: string;
+  peso_para_idade?: string;
+  ganho_insuficiente_peso?: string;
+  amamentando?: string;
+  quantas_vezes_amamenta?: string;
+  amamenta_noite?: string;
+  alimentos_liquidos?: string;
+  quantidade_refeicoes?: string;
+  recebe_proporcao?: string;
+  tipo_alimentacao?: string;
+  mudou_alimentacao?: string;
+  como_mudou_alimentacao?: string;
+  perda_peso_primeira_semana?: string;
+  tendencia_crescimento?: string;
+  habilidades_desenvolvimento?: string;
+  atividade_fisica_vezes_semana?: string;
+  tempo_atividade_fisica?: string;
+  tempo_sedentario?: string;
+  avaliacao_violencia?: string;
+  outros_problemas?: string;
+}
 
-  // Capturando os dados do paciente diretamente dos parâmetros fornecidos
+const RegisterAttendance: React.FC = () => {
+  const params = useLocalSearchParams();
   const parsedPatient: Patient = params.patient
     ? JSON.parse(decodeURIComponent(params.patient as string))
     : null;
 
-  // Capturando o ID do médico e garantindo que ele seja uma string
-  let doctorId: string | null = null;
-  if (params.doctorId) {
-    doctorId = Array.isArray(params.doctorId) ? params.doctorId[0] : params.doctorId;
-  }
-
-  console.log('Processed parameters:', { parsedPatient, doctorId });
-
   const { supabaseConnector } = useSystem();
-  console.log('useSystem:', { supabaseConnector });
-
   const [patientData, setPatientData] = useState<Patient | null>(parsedPatient);
-  const [doctorData, setDoctorData] = useState<Doctor | null>(null);
-  const [attendanceData, setAttendanceData] = useState({
-    weight: '',
-    height: '',
-    blood_pressure: '',
-    apgar_score_at_one_minute: '',
-    apgar_score_at_five_minutes: '',
-    maternal_tax: '',
-    maternal_weight: '',
-    maternal_height: '',
-    maternal_blood_pressure: '',
-    maternal_blood_type: '',
-    number_of_previous_pregnancies: '',
-    number_of_previous_births: '',
-    number_of_cesarean_sections: '',
-    number_of_abortions: '',
-    spontaneous_abortions: '',
-    maternal_vaccines: '',
-    number_of_living_children: '',
-    number_of_neonatal_deaths: '',
-    number_of_children: '',
-    maternal_hospitalizations: '',
-    maternal_surgeries: '',
-    number_of_surgeries: '',
-    prenatal_consultations: '',
-    number_of_prenatal_consultations: '',
-    maternal_treatments: '',
-    maternal_description: '',
-  });
+  const [attendanceData, setAttendanceData] = useState<AttendanceData>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (doctorId) {
-      setLoading(true);
-      console.log('Starting data load for doctor.');
-      loadDoctor(doctorId)
-        .then(() => setLoading(false))
-        .catch((error) => {
-          console.error('Error during doctor data load:', error);
-          setLoading(false);
-        });
+    if (parsedPatient) {
+      loadFormBasedOnAge(parsedPatient);
     }
-  }, [doctorId]);
+  }, [parsedPatient]);
 
-  const loadDoctor = async (id: string) => {
-    console.log('Loading doctor data for ID:', id);
-    try {
-      const { data, error } = await supabaseConnector.client
-        .from('doctors')
-        .select('*')
-        .eq('id', id)
-        .single();
+  const loadFormBasedOnAge = (patient: Patient) => {
+    if (!patient.birth_date) {
+      Alert.alert('Erro', 'Data de nascimento do paciente não disponível.');
+      return;
+    }
 
-      if (error) {
-        console.error('Error loading doctor data from Supabase:', error);
-      } else {
-        console.log('Doctor data loaded successfully:', data);
-        setDoctorData(data);
-      }
-    } catch (error) {
-      console.error('Exception caught while loading doctor data:', error);
+    const idadeEmMeses = Number(calcularIdade(new Date(patient.birth_date), 'months'));
+
+    if (idadeEmMeses <= 2) {
+      setAttendanceData(getInitialDataForNewbornForm());
+    } else {
+      setAttendanceData(getInitialDataForOlderChildForm());
     }
   };
 
+  const getInitialDataForNewbornForm = (): AttendanceData => {
+    return {
+      peso_kg: '',
+      comprimento_cm: '',
+      perimetro_cefalico_cm: '',
+      gemido: '',
+      cianose_periferica: '',
+      ictericia: '',
+      secrecao_umbilical: '',
+      distensao_abdominal: '',
+      anomalias_congenitas: '',
+      perda_peso_primeira_semana: '',
+      tendencia_crescimento: '',
+      habilidades_desenvolvimento: '',
+    };
+  };
+
+  const getInitialDataForOlderChildForm = (): AttendanceData => {
+    return {
+      peso_kg: '',
+      tem_tosse: '',
+      tosse_ha_quanto_tempo: '',
+      numero_respiracoes_por_minuto: '',
+      tiragem_subcostal: '',
+      estridor: '',
+      tem_diarreia: '',
+      diarreia_ha_quanto_tempo: '',
+      sangue_nas_fezes: '',
+      tem_febre: '',
+      febre_ha_quanto_tempo: '',
+      rigidez_nuca: '',
+      problema_ouvido: '',
+      dor_no_ouvido: '',
+      secrecao_ouvido: '',
+      secrecao_ha_quanto_tempo: '',
+      dor_garganta: '',
+      ganglios_cervicais: '',
+      abaulamento_palato: '',
+      amigdalas_membrana: '',
+      amigdalas_pontos_purulentos: '',
+      vesiculas_hiperemia: '',
+      emagrecimento: '',
+      edema: '',
+      palidez_palmar: '',
+      peso_para_idade: '',
+      ganho_insuficiente_peso: '',
+      amamentando: '',
+      quantas_vezes_amamenta: '',
+      amamenta_noite: '',
+      alimentos_liquidos: '',
+      quantidade_refeicoes: '',
+      recebe_proporcao: '',
+      tipo_alimentacao: '',
+      mudou_alimentacao: '',
+      como_mudou_alimentacao: '',
+      atividade_fisica_vezes_semana: '',
+      tempo_atividade_fisica: '',
+      tempo_sedentario: '',
+      avaliacao_violencia: '',
+      outros_problemas: '',
+    };
+  };
+
   const handleInputChange = (field: string, value: string) => {
-    console.log(`Input change - Field: ${field}, Value: ${value}`);
     setAttendanceData((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleSaveAttendance = async () => {
-    if (!patientData || !doctorData) {
-      Alert.alert(
-        'Erro',
-        'Não foi possível salvar o prontuário porque os dados do paciente ou do médico não estão disponíveis. Por favor, tente novamente mais tarde.'
-      );
-      console.warn('Attempted to save attendance without patientData or doctorData:', {
-        patientData,
-        doctorData,
-      });
+    if (!patientData) {
+      Alert.alert('Erro', 'Dados do paciente não disponíveis.');
       return;
     }
 
     setSaving(true);
-    console.log('Saving attendance data:', {
-      ...attendanceData,
-      patient_id: patientData.id,
-      doctor_id: doctorData.id,
-    });
-
-    const newAttendance = {
-      ...attendanceData,
-      id: uuid(),
-      patient_id: patientData.id,
-      doctor_id: doctorData.id,
-      doctor_name: doctorData.name,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
     try {
+      const newAttendance = {
+        ...attendanceData,
+        patient_id: patientData.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
       const { error } = await supabaseConnector.client.from('attendances').insert(newAttendance);
 
       if (error) {
-        console.error('Error saving attendance data:', error);
         Alert.alert('Erro', 'Erro ao salvar prontuário: ' + error.message);
       } else {
-        console.log('Attendance saved successfully:', newAttendance);
         Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
         router.replace('/(tabs)/home/');
       }
     } catch (error) {
-      console.error('Exception caught while saving attendance data:', error);
       Alert.alert('Erro', 'Erro ao salvar prontuário.');
     } finally {
       setSaving(false);
@@ -161,7 +229,6 @@ const RegisterAttendance = () => {
         </View>
       ) : (
         <>
-          {/* Informações do Paciente */}
           <View style={styles.infoContainer}>
             <Text style={styles.title}>Dados do Paciente</Text>
             <Text>Nome: {patientData?.name ?? 'Nome não disponível'}</Text>
@@ -169,187 +236,461 @@ const RegisterAttendance = () => {
             <Text>
               Idade:{' '}
               {patientData && patientData.birth_date
-                ? calcularIdade(new Date(patientData.birth_date))
+                ? calcularIdade(new Date(patientData.birth_date), 'years')
                 : 'Data de nascimento não disponível'}
             </Text>
           </View>
 
-          {/* Informações do Médico */}
-          <View style={styles.infoContainer}>
-            <Text style={styles.title}>Médico Responsável</Text>
-            <Text>Nome: {doctorData?.name ?? 'Nome não disponível'}</Text>
-            <Text>Email: {doctorData?.email ?? 'Email não disponível'}</Text>
-          </View>
-
-          {/* Cadastro do Prontuário */}
           <View style={styles.attendanceContainer}>
             <Text style={styles.title}>Cadastro do Prontuário</Text>
 
-            {/* Peso do Paciente */}
+            {/* Renderizando campos do formulário - Inserção manual de todos os campos */}
             <TextInput
               style={styles.input}
-              placeholder="Peso do Paciente (kg)"
-              value={attendanceData.weight}
-              onChangeText={(text) => handleInputChange('weight', text)}
+              placeholder="Data de Atendimento"
+              value={attendanceData.data_atendimento}
+              onChangeText={(text) => handleInputChange('data_atendimento', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Primeira Consulta (Sim/Não)"
+              value={attendanceData.primeira_consulta}
+              onChangeText={(text) => handleInputChange('primeira_consulta', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Consulta de Retorno (Sim/Não)"
+              value={attendanceData.consulta_retorno}
+              onChangeText={(text) => handleInputChange('consulta_retorno', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Motivo da Consulta"
+              value={attendanceData.motivo_consulta}
+              onChangeText={(text) => handleInputChange('motivo_consulta', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Peso (kg)"
+              value={attendanceData.peso_kg}
+              onChangeText={(text) => handleInputChange('peso_kg', text)}
               keyboardType="numeric"
             />
-
-            {/* Altura do Paciente */}
             <TextInput
               style={styles.input}
-              placeholder="Altura do Paciente (m)"
-              value={attendanceData.height}
-              onChangeText={(text) => handleInputChange('height', text)}
+              placeholder="Comprimento (cm)"
+              value={attendanceData.comprimento_cm}
+              onChangeText={(text) => handleInputChange('comprimento_cm', text)}
               keyboardType="numeric"
             />
-
-            {/* Pressão Arterial */}
             <TextInput
               style={styles.input}
-              placeholder="Pressão Arterial (mmHg)"
-              value={attendanceData.blood_pressure}
-              onChangeText={(text) => handleInputChange('blood_pressure', text)}
-              keyboardType="default"
-            />
-
-            {/* Apgar após 1 minuto */}
-            <TextInput
-              style={styles.input}
-              placeholder="Apgar após 1 minuto (0-10)"
-              value={attendanceData.apgar_score_at_one_minute}
-              onChangeText={(text) => handleInputChange('apgar_score_at_one_minute', text)}
+              placeholder="Perímetro Cefálico (cm)"
+              value={attendanceData.perimetro_cefalico_cm}
+              onChangeText={(text) => handleInputChange('perimetro_cefalico_cm', text)}
               keyboardType="numeric"
             />
-
-            {/* Apgar após 5 minutos */}
             <TextInput
               style={styles.input}
-              placeholder="Apgar após 5 minutos (0-10)"
-              value={attendanceData.apgar_score_at_five_minutes}
-              onChangeText={(text) => handleInputChange('apgar_score_at_five_minutes', text)}
+              placeholder="Problemas da Criança"
+              value={attendanceData.problemas_da_crianca}
+              onChangeText={(text) => handleInputChange('problemas_da_crianca', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Não Bebe ou Mama (Sim/Não)"
+              value={attendanceData.nao_bebe_ou_mama}
+              onChangeText={(text) => handleInputChange('nao_bebe_ou_mama', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Vomita Tudo (Sim/Não)"
+              value={attendanceData.vomita_tudo}
+              onChangeText={(text) => handleInputChange('vomita_tudo', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Convulsões (Sim/Não)"
+              value={attendanceData.convulsoes}
+              onChangeText={(text) => handleInputChange('convulsoes', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Letárgica (Sim/Não)"
+              value={attendanceData.letargica}
+              onChangeText={(text) => handleInputChange('letargica', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Enchimento Capilar (Sim/Não)"
+              value={attendanceData.enchimento_capilar}
+              onChangeText={(text) => handleInputChange('enchimento_capilar', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Batimento de Asa (Sim/Não)"
+              value={attendanceData.batimento_asa}
+              onChangeText={(text) => handleInputChange('batimento_asa', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Tem Tosse (Sim/Não)"
+              value={attendanceData.tem_tosse}
+              onChangeText={(text) => handleInputChange('tem_tosse', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Tosse há Quanto Tempo (dias)"
+              value={attendanceData.tosse_ha_quanto_tempo}
+              onChangeText={(text) => handleInputChange('tosse_ha_quanto_tempo', text)}
               keyboardType="numeric"
             />
-
-            {/* Peso da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Peso da Mãe (kg)"
-              value={attendanceData.maternal_weight}
-              onChangeText={(text) => handleInputChange('maternal_weight', text)}
+              placeholder="Número de Respirações por Minuto"
+              value={attendanceData.numero_respiracoes_por_minuto}
+              onChangeText={(text) => handleInputChange('numero_respiracoes_por_minuto', text)}
               keyboardType="numeric"
             />
-
-            {/* Altura da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Altura da Mãe (m)"
-              value={attendanceData.maternal_height}
-              onChangeText={(text) => handleInputChange('maternal_height', text)}
+              placeholder="Respiração Rápida? (Sim/Não)"
+              value={attendanceData.respiracao_rapida}
+              onChangeText={(text) => handleInputChange('respiracao_rapida', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Tiragem Subcostal (Sim/Não)"
+              value={attendanceData.tiragem_subcostal}
+              onChangeText={(text) => handleInputChange('tiragem_subcostal', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Estridor (Sim/Não)"
+              value={attendanceData.estridor}
+              onChangeText={(text) => handleInputChange('estridor', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Sibilância (Sim/Não)"
+              value={attendanceData.sibilancia}
+              onChangeText={(text) => handleInputChange('sibilancia', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Sibilância há Quanto Tempo (dias)"
+              value={attendanceData.sibilancia_ha_quanto_tempo}
+              onChangeText={(text) => handleInputChange('sibilancia_ha_quanto_tempo', text)}
               keyboardType="numeric"
             />
-
-            {/* Pressão Arterial da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Pressão Arterial da Mãe (mmHg)"
-              value={attendanceData.maternal_blood_pressure}
-              onChangeText={(text) => handleInputChange('maternal_blood_pressure', text)}
-              keyboardType="default"
+              placeholder="Primeira Crise? (Sim/Não)"
+              value={attendanceData.primeira_crise}
+              onChangeText={(text) => handleInputChange('primeira_crise', text)}
             />
-
-            {/* Tipo Sanguíneo da Mãe */}
             <TextInput
               style={styles.input}
-              placeholder="Tipo Sanguíneo da Mãe (ex.: O+)"
-              value={attendanceData.maternal_blood_type}
-              onChangeText={(text) => handleInputChange('maternal_blood_type', text)}
-              keyboardType="default"
+              placeholder="Uso de Broncodilatador nas últimas 24h (Sim/Não)"
+              value={attendanceData.broncodilatador}
+              onChangeText={(text) => handleInputChange('broncodilatador', text)}
             />
-
-            {/* Número de Gestações Anteriores */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Gestações Anteriores"
-              value={attendanceData.number_of_previous_pregnancies}
-              onChangeText={(text) => handleInputChange('number_of_previous_pregnancies', text)}
+              placeholder="Criança tem Diarreia? (Sim/Não)"
+              value={attendanceData.tem_diarreia}
+              onChangeText={(text) => handleInputChange('tem_diarreia', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Diarreia há Quanto Tempo (dias)"
+              value={attendanceData.diarreia_ha_quanto_tempo}
+              onChangeText={(text) => handleInputChange('diarreia_ha_quanto_tempo', text)}
               keyboardType="numeric"
             />
-
-            {/* Número de Partos Anteriores */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Partos Anteriores"
-              value={attendanceData.number_of_previous_births}
-              onChangeText={(text) => handleInputChange('number_of_previous_births', text)}
+              placeholder="Sangue nas Fezes? (Sim/Não)"
+              value={attendanceData.sangue_nas_fezes}
+              onChangeText={(text) => handleInputChange('sangue_nas_fezes', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Criança está com Febre? (Sim/Não)"
+              value={attendanceData.tem_febre}
+              onChangeText={(text) => handleInputChange('tem_febre', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Área com risco de Malária ('sem risco', 'alto risco', 'baixo risco')"
+              value={attendanceData.area_risco_malaria}
+              onChangeText={(text) => handleInputChange('area_risco_malaria', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Febre há Quanto Tempo (dias)"
+              value={attendanceData.febre_ha_quanto_tempo}
+              onChangeText={(text) => handleInputChange('febre_ha_quanto_tempo', text)}
               keyboardType="numeric"
             />
-
-            {/* Número de Cesáreas */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Cesáreas"
-              value={attendanceData.number_of_cesarean_sections}
-              onChangeText={(text) => handleInputChange('number_of_cesarean_sections', text)}
+              placeholder="Febre Todos os Dias? (Sim/Não)"
+              value={attendanceData.febre_todos_os_dias}
+              onChangeText={(text) => handleInputChange('febre_todos_os_dias', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Rigidez de Nuca? (Sim/Não)"
+              value={attendanceData.rigidez_nuca}
+              onChangeText={(text) => handleInputChange('rigidez_nuca', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Presença de Petéquias (Sim/Não)"
+              value={attendanceData.petequias}
+              onChangeText={(text) => handleInputChange('petequias', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Abaulamento da Fontanela (Sim/Não)"
+              value={attendanceData.abaulamento_fontanela}
+              onChangeText={(text) => handleInputChange('abaulamento_fontanela', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Problema de Ouvido? (Sim/Não)"
+              value={attendanceData.problema_ouvido}
+              onChangeText={(text) => handleInputChange('problema_ouvido', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Dor no Ouvido? (Sim/Não)"
+              value={attendanceData.dor_no_ouvido}
+              onChangeText={(text) => handleInputChange('dor_no_ouvido', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Secreção no Ouvido? (Sim/Não)"
+              value={attendanceData.secrecao_ouvido}
+              onChangeText={(text) => handleInputChange('secrecao_ouvido', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Secreção há Quanto Tempo (dias)"
+              value={attendanceData.secrecao_ha_quanto_tempo}
+              onChangeText={(text) => handleInputChange('secrecao_ha_quanto_tempo', text)}
               keyboardType="numeric"
             />
-
-            {/* Abortos */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Abortos"
-              value={attendanceData.number_of_abortions}
-              onChangeText={(text) => handleInputChange('number_of_abortions', text)}
+              placeholder="Dor de Garganta? (Sim/Não)"
+              value={attendanceData.dor_garganta}
+              onChangeText={(text) => handleInputChange('dor_garganta', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Gânglios Cervicais aumentados/dolorosos (Sim/Não)"
+              value={attendanceData.ganglios_cervicais}
+              onChangeText={(text) => handleInputChange('ganglios_cervicais', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Abaulamento do Palato (Sim/Não)"
+              value={attendanceData.abaulamento_palato}
+              onChangeText={(text) => handleInputChange('abaulamento_palato', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Amígdalas com Membrana Branco-acinzentada (Sim/Não)"
+              value={attendanceData.amigdalas_membrana}
+              onChangeText={(text) => handleInputChange('amigdalas_membrana', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Pontos Purulentos nas Amígdalas (Sim/Não)"
+              value={attendanceData.amigdalas_pontos_purulentos}
+              onChangeText={(text) => handleInputChange('amigdalas_pontos_purulentos', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Presença de Vesículas e/ou Hiperemia (Sim/Não)"
+              value={attendanceData.vesiculas_hiperemia}
+              onChangeText={(text) => handleInputChange('vesiculas_hiperemia', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Gemido, Estridor ou Sibilância (Sim/Não)"
+              value={attendanceData.gemido}
+              onChangeText={(text) => handleInputChange('gemido', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Cianose Periférica (Sim/Não)"
+              value={attendanceData.cianose_periferica}
+              onChangeText={(text) => handleInputChange('cianose_periferica', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Icterícia (Sim/Não)"
+              value={attendanceData.ictericia}
+              onChangeText={(text) => handleInputChange('ictericia', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Secreção Umbilical (Sim/Não)"
+              value={attendanceData.secrecao_umbilical}
+              onChangeText={(text) => handleInputChange('secrecao_umbilical', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Distensão Abdominal (Sim/Não)"
+              value={attendanceData.distensao_abdominal}
+              onChangeText={(text) => handleInputChange('distensao_abdominal', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Anomalias Congênitas (Sim/Não)"
+              value={attendanceData.anomalias_congenitas}
+              onChangeText={(text) => handleInputChange('anomalias_congenitas', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Emagrecimento Acentuado? (Sim/Não)"
+              value={attendanceData.emagrecimento}
+              onChangeText={(text) => handleInputChange('emagrecimento', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Edema (Sim/Não)"
+              value={attendanceData.edema}
+              onChangeText={(text) => handleInputChange('edema', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Palidez Palmar ('leve' ou 'grave')"
+              value={attendanceData.palidez_palmar}
+              onChangeText={(text) => handleInputChange('palidez_palmar', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Peso para Idade ('muito baixo', 'baixo', 'adequado', 'elevado')"
+              value={attendanceData.peso_para_idade}
+              onChangeText={(text) => handleInputChange('peso_para_idade', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Ganho Insuficiente de Peso (Sim/Não)"
+              value={attendanceData.ganho_insuficiente_peso}
+              onChangeText={(text) => handleInputChange('ganho_insuficiente_peso', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Amamentando? (Sim/Não)"
+              value={attendanceData.amamentando}
+              onChangeText={(text) => handleInputChange('amamentando', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Quantas Vezes Amamenta por Dia"
+              value={attendanceData.quantas_vezes_amamenta}
+              onChangeText={(text) => handleInputChange('quantas_vezes_amamenta', text)}
               keyboardType="numeric"
             />
-
-            {/* Abortos Espontâneos */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Abortos Espontâneos"
-              value={attendanceData.spontaneous_abortions}
-              onChangeText={(text) => handleInputChange('spontaneous_abortions', text)}
+              placeholder="Amamenta à Noite? (Sim/Não)"
+              value={attendanceData.amamenta_noite}
+              onChangeText={(text) => handleInputChange('amamenta_noite', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Recebe outros Líquidos/Alimentos?"
+              value={attendanceData.alimentos_liquidos}
+              onChangeText={(text) => handleInputChange('alimentos_liquidos', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Quantas Refeições por Dia"
+              value={attendanceData.quantidade_refeicoes}
+              onChangeText={(text) => handleInputChange('quantidade_refeicoes', text)}
               keyboardType="numeric"
             />
-
-            {/* Vacinas Maternas */}
             <TextInput
               style={styles.input}
-              placeholder="Vacinas Maternas"
-              value={attendanceData.maternal_vaccines}
-              onChangeText={(text) => handleInputChange('maternal_vaccines', text)}
-              keyboardType="default"
+              placeholder="Recebe Proporção Adequada? (Sim/Não)"
+              value={attendanceData.recebe_proporcao}
+              onChangeText={(text) => handleInputChange('recebe_proporcao', text)}
             />
-
-            {/* Número de Filhos Vivos */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Filhos Vivos"
-              value={attendanceData.number_of_living_children}
-              onChangeText={(text) => handleInputChange('number_of_living_children', text)}
+              placeholder="Tipo de Alimentação (mamadeira/copo/colher)"
+              value={attendanceData.tipo_alimentacao}
+              onChangeText={(text) => handleInputChange('tipo_alimentacao', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Mudou a Alimentação Recentemente? (Sim/Não)"
+              value={attendanceData.mudou_alimentacao}
+              onChangeText={(text) => handleInputChange('mudou_alimentacao', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Como Mudou a Alimentação?"
+              value={attendanceData.como_mudou_alimentacao}
+              onChangeText={(text) => handleInputChange('como_mudou_alimentacao', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Perda de Peso na Primeira Semana >10%? (Sim/Não)"
+              value={attendanceData.perda_peso_primeira_semana}
+              onChangeText={(text) => handleInputChange('perda_peso_primeira_semana', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Tendência de Crescimento"
+              value={attendanceData.tendencia_crescimento}
+              onChangeText={(text) => handleInputChange('tendencia_crescimento', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Habilidades de Desenvolvimento Alcançadas"
+              value={attendanceData.habilidades_desenvolvimento}
+              onChangeText={(text) => handleInputChange('habilidades_desenvolvimento', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Prática de Atividade Física (Vezes por Semana)"
+              value={attendanceData.atividade_fisica_vezes_semana}
+              onChangeText={(text) => handleInputChange('atividade_fisica_vezes_semana', text)}
               keyboardType="numeric"
             />
-
-            {/* Consultas Pré-natais */}
             <TextInput
               style={styles.input}
-              placeholder="Número de Consultas Pré-natais"
-              value={attendanceData.number_of_prenatal_consultations}
-              onChangeText={(text) => handleInputChange('number_of_prenatal_consultations', text)}
-              keyboardType="numeric"
+              placeholder="Tempo de Atividade Física"
+              value={attendanceData.tempo_atividade_fisica}
+              onChangeText={(text) => handleInputChange('tempo_atividade_fisica', text)}
             />
-
-            {/* Descrição Adicional */}
             <TextInput
-              style={styles.inputMultiline}
-              placeholder="Descrição Adicional"
-              value={attendanceData.maternal_description}
-              onChangeText={(text) => handleInputChange('maternal_description', text)}
-              multiline
-              numberOfLines={6}
+              style={styles.input}
+              placeholder="Tempo Sedentário (TV/Computador/Celular)"
+              value={attendanceData.tempo_sedentario}
+              onChangeText={(text) => handleInputChange('tempo_sedentario', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Possibilidade de Violência?"
+              value={attendanceData.avaliacao_violencia}
+              onChangeText={(text) => handleInputChange('avaliacao_violencia', text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Outros Problemas"
+              value={attendanceData.outros_problemas}
+              onChangeText={(text) => handleInputChange('outros_problemas', text)}
             />
           </View>
 
-          {/* Botão para salvar o prontuário */}
           <View style={styles.buttonContainer}>
             <Button
               title="Salvar Prontuário"

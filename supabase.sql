@@ -31,40 +31,116 @@ CREATE TABLE public.patients (
 -- Tabela Attendances (Prontuários)
 CREATE TABLE public.attendances (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp with time zone NOT NULL DEFAULT now(),
-  tax_mae text,
-  peso_mae text,
-  estatura_mae text,
-  pa_mae text,
-  tipo_sang_mae text,
-  tax text,
-  apgar_1 text,
-  apgar_5 text,
-  peso text,
-  comprimento text,
-  pc text,
-  gesta text,
-  para text,
-  cesareas text,
-  abortos text,
-  abot_espon text,
-  vacinas_mae text,
-  nasc_vivos text,
-  mort_neo text,
-  filhos text,
-  intern text,
-  cirg text,
-  quant_cirg text,
-  consul_pre text,
-  quant_consul_pre text,
-  trat_mae text,
-  descr_mae text,
   patient_id uuid NOT NULL REFERENCES public.patients (id) ON DELETE CASCADE,
-  doctor_id uuid NOT NULL REFERENCES public.doctors (id) ON DELETE CASCADE,
-  doctor_name text NOT NULL,
-  created_by uuid NOT NULL REFERENCES auth.users (id) ON DELETE SET NULL
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+
+  -- Informações gerais
+  data_atendimento text NOT NULL,
+  primeira_consulta text, -- Sim/Não
+  consulta_retorno text, -- Sim/Não
+  motivo_consulta text,
+  peso_kg text,
+  comprimento_cm text,
+  perimetro_cefalico_cm text,
+  
+  -- Pergunta: Quais os problemas da criança?
+  problemas_da_crianca text,
+  
+  -- Avaliar sinais gerais de perigo
+  nao_bebe_ou_mama text, -- Sim/Não
+  vomita_tudo text, -- Sim/Não
+  convulsoes text, -- Sim/Não
+  letargica text, -- Sim/Não
+  enchimento_capilar text, -- Sim/Não
+  batimento_asa text, -- Sim/Não
+  
+  -- Tosse ou dificuldade para respirar
+  tem_tosse text, -- Sim/Não
+  tosse_ha_quanto_tempo text,
+  numero_respiracoes_por_minuto text,
+  respiracao_rapida text, -- Sim/Não
+  tiragem_subcostal text, -- Sim/Não
+  estridor text, -- Sim/Não
+  sibilancia text, -- Sim/Não
+  sibilancia_ha_quanto_tempo text,
+  primeira_crise text, -- Sim/Não
+  broncodilatador text, -- Sim/Não
+  
+  -- Diarreia
+  tem_diarreia text, -- Sim/Não
+  diarreia_ha_quanto_tempo text,
+  sangue_nas_fezes text, -- Sim/Não
+  
+  -- Febre
+  tem_febre text, -- Sim/Não
+  area_risco_malaria text, -- 'sem risco', 'alto risco', 'baixo risco'
+  febre_ha_quanto_tempo text,
+  febre_todos_os_dias text, -- Sim/Não
+  rigidez_nuca text, -- Sim/Não
+  petequias text, -- Sim/Não
+  abaulamento_fontanela text, -- Sim/Não
+  
+  -- Problemas de ouvido
+  problema_ouvido text, -- Sim/Não
+  dor_no_ouvido text, -- Sim/Não
+  secrecao_ouvido text, -- Sim/Não
+  secrecao_ha_quanto_tempo text,
+  
+  -- Dor de garganta
+  dor_garganta text, -- Sim/Não
+  ganglios_cervicais text, -- Sim/Não
+  abaulamento_palato text, -- Sim/Não
+  amigdalas_membrana text, -- Sim/Não
+  amigdalas_pontos_purulentos text, -- Sim/Não
+  vesiculas_hiperemia text, -- Sim/Não
+
+  -- Doença grave ou infecção local (para recém-nascidos)
+  gemido text, -- Sim/Não
+  cianose_periferica text, -- Sim/Não
+  ictericia text, -- Sim/Não
+  secrecao_umbilical text, -- Sim/Não
+  distensao_abdominal text, -- Sim/Não
+  anomalias_congenitas text, -- Sim/Não
+
+  -- Desnutrição ou anemia
+  emagrecimento text, -- Sim/Não
+  edema text, -- Sim/Não
+  palidez_palmar text, -- 'leve' ou 'grave'
+  peso_para_idade text, -- 'muito baixo', 'baixo', 'adequado', 'elevado'
+  ganho_insuficiente_peso text, -- Sim/Não
+
+  -- Alimentação da criança
+  amamentando text, -- Sim/Não
+  quantas_vezes_amamenta text,
+  amamenta_noite text, -- Sim/Não
+  alimentos_liquidos text,
+  quantidade_refeicoes text,
+  recebe_proporcao text, -- Sim/Não
+  tipo_alimentacao text,
+  mudou_alimentacao text, -- Sim/Não
+  como_mudou_alimentacao text,
+
+  -- Avaliar desenvolvimento
+  perda_peso_primeira_semana text, -- Sim/Não
+  tendencia_crescimento text,
+  habilidades_desenvolvimento text,
+
+  -- Prática de atividade física
+  atividade_fisica_vezes_semana text,
+  tempo_atividade_fisica text,
+  tempo_sedentario text,
+
+  -- Possibilidade de violência e outros problemas
+  avaliacao_violencia text,
+  outros_problemas text,
+
+  -- Registro do profissional que fez o atendimento
+  registrado_por uuid NULL REFERENCES auth.users (id) ON DELETE SET NULL
 );
+
+
+
 
 -- Publicar tabelas para sincronização no powersync;
 
