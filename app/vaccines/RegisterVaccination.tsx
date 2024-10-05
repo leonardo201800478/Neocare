@@ -1,4 +1,6 @@
-import { useRouter, useLocalSearchParams } from 'expo-router';
+// app/vaccines/RegisterVaccination.tsx
+
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Para os ícones de incremento e decremento
@@ -6,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Para os ícones de 
 import { VACCINATIONS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { useDoctor } from '../context/DoctorContext';
+import { usePatient } from '../context/PatientContext';
 import styles from '../styles/VaccinationStyles';
 
 type VaccineSchedule = {
@@ -35,21 +38,20 @@ const vaccineSchedule: VaccineSchedule = {
 
 const RegisterVaccination = () => {
   const router = useRouter();
-  const { patient } = useLocalSearchParams();
-  const parsedPatient = patient ? JSON.parse(decodeURIComponent(patient as string)) : null;
-  const { supabaseConnector } = useSystem();
+  const { selectedPatient } = usePatient();
   const { doctorId } = useDoctor();
+  const { supabaseConnector } = useSystem();
   const [vaccines, setVaccines] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     // Buscar vacinas atuais do paciente
-    if (parsedPatient) {
+    if (selectedPatient) {
       const fetchVaccinations = async () => {
         try {
           const { data, error } = await supabaseConnector.client
             .from(VACCINATIONS_TABLE)
             .select('*')
-            .eq('patient_id', parsedPatient.id);
+            .eq('patient_id', selectedPatient.id);
 
           if (error) {
             console.error('Erro ao buscar vacinas:', error);
@@ -74,10 +76,10 @@ const RegisterVaccination = () => {
 
       fetchVaccinations();
     }
-  }, [parsedPatient]);
+  }, [selectedPatient]);
 
   const handleRegister = async (vaccineName: string, dose: number) => {
-    if (!parsedPatient) {
+    if (!selectedPatient) {
       Alert.alert('Erro', 'Paciente não encontrado.');
       return;
     }
@@ -94,7 +96,7 @@ const RegisterVaccination = () => {
 
     try {
       const { error } = await supabaseConnector.client.from(VACCINATIONS_TABLE).insert({
-        patient_id: parsedPatient.id,
+        patient_id: selectedPatient.id,
         doctor_id: doctorId,
         vaccine_name: vaccineName,
         dose_number: dose,
@@ -123,7 +125,7 @@ const RegisterVaccination = () => {
   };
 
   const handleDecrement = async (vaccineName: string) => {
-    if (!parsedPatient || !vaccines[vaccineName] || vaccines[vaccineName] <= 0) {
+    if (!selectedPatient || !vaccines[vaccineName] || vaccines[vaccineName] <= 0) {
       return;
     }
 
@@ -133,7 +135,7 @@ const RegisterVaccination = () => {
       const { error } = await supabaseConnector.client
         .from(VACCINATIONS_TABLE)
         .delete()
-        .eq('patient_id', parsedPatient.id)
+        .eq('patient_id', selectedPatient.id)
         .eq('vaccine_name', vaccineName)
         .eq('dose_number', currentDose);
 
@@ -192,13 +194,7 @@ const RegisterVaccination = () => {
             </View>
           </View>
         ))}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() =>
-            router.replace(
-              `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify(parsedPatient))}`
-            )
-          }>
+        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
           <Text style={styles.buttonText}>SAIR</Text>
         </TouchableOpacity>
       </ScrollView>

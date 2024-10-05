@@ -1,12 +1,13 @@
-// app/vaccines/VaccinationCard.tsx
+// app/vaccines/index.tsx
 
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
 
 import { VACCINATIONS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { calcularIdade } from '../../utils/idadeCalculator';
+import { usePatient } from '../context/PatientContext';
 import VaccinationStyles from '../styles/VaccinationStyles';
 
 type VaccineSchedule = {
@@ -35,15 +36,16 @@ const vaccineSchedule: VaccineSchedule = {
 };
 
 const VaccinationCard = () => {
-  const { patient } = useLocalSearchParams();
-  const parsedPatient = patient ? JSON.parse(decodeURIComponent(patient as string)) : null;
+  const { selectedPatient } = usePatient();
   const { supabaseConnector } = useSystem();
   const [vaccines, setVaccines] = useState<{ [key: string]: any[] }>({});
   const [patientAge, setPatientAge] = useState<string>('');
 
   useEffect(() => {
-    if (parsedPatient) {
-      const birthDate = new Date(parsedPatient.birth_date);
+    if (selectedPatient) {
+      const birthDate = selectedPatient.birth_date
+        ? new Date(selectedPatient.birth_date)
+        : new Date();
       setPatientAge(calcularIdade(birthDate, 'p0'));
 
       const fetchVaccinations = async () => {
@@ -51,7 +53,7 @@ const VaccinationCard = () => {
           const { data, error } = await supabaseConnector.client
             .from(VACCINATIONS_TABLE)
             .select('*')
-            .eq('patient_id', parsedPatient.id);
+            .eq('patient_id', selectedPatient.id);
 
           if (error) {
             console.error('Erro ao buscar vacinas:', error);
@@ -74,7 +76,7 @@ const VaccinationCard = () => {
 
       fetchVaccinations();
     }
-  }, [parsedPatient]);
+  }, [selectedPatient]);
 
   const getStatusColor = (vaccineName: string) => {
     const ageData = vaccineSchedule[vaccineName];
@@ -117,7 +119,7 @@ const VaccinationCard = () => {
     <SafeAreaView style={VaccinationStyles.container}>
       <ScrollView>
         <Text style={VaccinationStyles.header}>Caderneta de Vacinação</Text>
-        <Text style={{ fontSize: 18, marginBottom: 8 }}>Nome: {parsedPatient?.name}</Text>
+        <Text style={{ fontSize: 18, marginBottom: 8 }}>Nome: {selectedPatient?.name}</Text>
         <Text style={{ fontSize: 18, marginBottom: 8 }}>Idade: {patientAge}</Text>
         <View style={VaccinationStyles.tableHeader}>
           <Text style={VaccinationStyles.tableHeaderText}>Vacina</Text>

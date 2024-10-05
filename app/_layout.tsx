@@ -5,7 +5,13 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
+import { AttendanceProvider } from './context/AttendanceContext';
+import { AttendanceNutritionDevelopmentProvider } from './context/AttendanceNutritionDevelopmentContext';
+import { AttendanceSymptomProvider } from './context/AttendanceSymptomContext';
+import { AttendanceVitalProvider } from './context/AttendanceVitalContext';
 import { DoctorProvider } from './context/DoctorContext';
+import { PatientProvider } from './context/PatientContext';
+import { VaccinationProvider } from './context/VaccinationContext';
 import { useSystem } from '../powersync/PowerSync';
 
 const Layout = () => {
@@ -48,7 +54,19 @@ const Layout = () => {
 
   return (
     <DoctorProvider>
-      <Slot />
+      <PatientProvider>
+        <AttendanceProvider>
+          <AttendanceVitalProvider>
+            <AttendanceSymptomProvider>
+              <AttendanceNutritionDevelopmentProvider>
+                <VaccinationProvider>
+                  <Slot />
+                </VaccinationProvider>
+              </AttendanceNutritionDevelopmentProvider>
+            </AttendanceSymptomProvider>
+          </AttendanceVitalProvider>
+        </AttendanceProvider>
+      </PatientProvider>
     </DoctorProvider>
   );
 };
