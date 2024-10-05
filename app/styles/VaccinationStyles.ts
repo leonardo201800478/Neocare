@@ -5,7 +5,8 @@ import { StyleSheet } from 'react-native';
 const VaccinationStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingTop: 16,
+    paddingHorizontal: 20,
     backgroundColor: '#f2f2f2',
   },
   header: {
@@ -22,7 +23,7 @@ const VaccinationStyles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: '#ddd',
     backgroundColor: '#e6e6e6',
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
   },
   tableHeaderText: {
     fontWeight: 'bold',
@@ -41,13 +42,14 @@ const VaccinationStyles = StyleSheet.create({
     backgroundColor: '#fff',
     marginBottom: 5,
     borderRadius: 5,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
   },
   vaccineName: {
     flex: 2,
     fontSize: 16,
     color: '#555',
     textAlign: 'left',
+    paddingRight: 10,
   },
   doseNumber: {
     flex: 1,

@@ -2,33 +2,43 @@
 
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+  Button,
+  SafeAreaView,
+} from 'react-native';
 
 import { useSystem } from '../../powersync/PowerSync';
 import { calcularIdade } from '../../utils/idadeCalculator';
+import VaccinationStyles from '../styles/VaccinationStyles';
 
 type VaccineSchedule = {
-  [key: string]: { minAge: number; maxAge: number };
+  [key: string]: { doses: number; minAge: number; maxAge: number };
 };
 
+// Atualizado com as informações de doses por vacina
 const vaccineSchedule: VaccineSchedule = {
-  BCG: { minAge: 0, maxAge: 0 },
-  'Hepatite B': { minAge: 0, maxAge: 0.25 }, // Até 3 meses
-  Rotavírus: { minAge: 0.5, maxAge: 1 }, // De 2 a 7 meses
-  'Tríplice bacteriana (DTP)': { minAge: 2, maxAge: 6 }, // A partir dos 2 meses até reforço aos 6 anos
-  'Haemophilus influenzae B (Hib)': { minAge: 2, maxAge: 1.5 }, // De 2 a 18 meses
-  'Poliomielite (VIP)': { minAge: 2, maxAge: 4 }, // Até 4 anos
-  'Pneumocócica conjugada': { minAge: 2, maxAge: 1.5 }, // Reforço até 18 meses
-  'Meningocócica conjugada C': { minAge: 3, maxAge: 5 }, // A partir de 3 meses com reforço até 5 anos
-  'Meningocócica B': { minAge: 3, maxAge: 2 }, // A partir dos 3 meses com reforço
-  Influenza: { minAge: 6, maxAge: 999 }, // Dose anual após 6 meses
-  'Febre Amarela': { minAge: 9, maxAge: 999 }, // A partir dos 9 meses
-  'Hepatite A': { minAge: 12, maxAge: 5 }, // Dose única aos 15 meses até menores de 5 anos
-  'Tríplice viral (SCR)': { minAge: 12, maxAge: 999 }, // A partir dos 12 meses
-  Varicela: { minAge: 15, maxAge: 999 }, // A partir dos 15 meses
-  HPV: { minAge: 108, maxAge: 180 }, // Dos 9 aos 14 anos
-  Dengue: { minAge: 48, maxAge: 999 }, // A partir de 4 anos
-  'Covid-19': { minAge: 6, maxAge: 60 }, // De 6 meses até 5 anos
+  BCG: { doses: 1, minAge: 0, maxAge: 0 },
+  'Hepatite B': { doses: 4, minAge: 0, maxAge: 3 },
+  Rotavírus: { doses: 3, minAge: 0.5, maxAge: 7 },
+  'Tríplice bacteriana (DTP)': { doses: 5, minAge: 2, maxAge: 72 },
+  'Haemophilus influenzae B (Hib)': { doses: 4, minAge: 2, maxAge: 18 },
+  'Poliomielite (VIP)': { doses: 4, minAge: 2, maxAge: 48 },
+  'Pneumocócica conjugada': { doses: 3, minAge: 2, maxAge: 18 },
+  'Meningocócica conjugada C': { doses: 3, minAge: 3, maxAge: 60 },
+  'Meningocócica B': { doses: 3, minAge: 3, maxAge: 23 },
+  Influenza: { doses: 999, minAge: 6, maxAge: 999 },
+  'Febre Amarela': { doses: 2, minAge: 9, maxAge: 999 },
+  'Hepatite A': { doses: 2, minAge: 12, maxAge: 60 },
+  'Tríplice viral (SCR)': { doses: 2, minAge: 12, maxAge: 999 },
+  Varicela: { doses: 2, minAge: 15, maxAge: 999 },
+  HPV: { doses: 2, minAge: 108, maxAge: 180 },
+  Dengue: { doses: 2, minAge: 48, maxAge: 999 },
+  'Covid-19': { doses: 3, minAge: 6, maxAge: 60 },
 };
 
 const VaccinationCard = () => {
@@ -43,7 +53,6 @@ const VaccinationCard = () => {
       const birthDate = new Date(parsedPatient.birth_date);
       setPatientAge(calcularIdade(birthDate));
 
-      // Fetch current vaccinations for the patient
       const fetchVaccinations = async () => {
         try {
           const { data, error } = await supabaseConnector.client
@@ -75,7 +84,6 @@ const VaccinationCard = () => {
   }, [parsedPatient]);
 
   const getStatusColor = (vaccineName: string) => {
-    const currentDate = new Date();
     const ageData = vaccineSchedule[vaccineName];
     if (!ageData) return 'transparent';
 
@@ -86,67 +94,70 @@ const VaccinationCard = () => {
     const totalMonths = years * 12 + months;
 
     if (totalMonths < ageData.minAge) {
-      return 'transparent'; // Too early for the vaccine
+      return 'transparent';
     }
 
-    if (vaccines[vaccineName]) {
-      // If the vaccine has been taken, check if it's still within schedule
-      const lastDoseDate = new Date(
-        vaccines[vaccineName][vaccines[vaccineName].length - 1].administered_at
-      );
-      const nextDoseDeadline = new Date(lastDoseDate);
-      nextDoseDeadline.setMonth(nextDoseDeadline.getMonth() + 6); // Assume 6 months for the next dose
+    const dosesTaken = vaccines[vaccineName] ? vaccines[vaccineName].length : 0;
 
-      if (currentDate > nextDoseDeadline) {
-        return 'lightcoral'; // Delayed
-      } else if (
-        (nextDoseDeadline.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24) <=
-        15
-      ) {
-        return 'lightyellow'; // Due soon
-      } else {
-        return 'lightgreen'; // Up-to-date
-      }
+    if (dosesTaken < ageData.doses) {
+      return 'lightcoral';
     } else {
-      return 'lightcoral'; // No vaccine taken yet
+      return 'lightgreen';
+    }
+  };
+
+  const handleVaccineClick = (vaccineName: string) => {
+    const ageData = vaccineSchedule[vaccineName];
+    if (!ageData) return;
+
+    const dosesTaken = vaccines[vaccineName] ? vaccines[vaccineName].length : 0;
+    if (dosesTaken < ageData.doses) {
+      const dosesMissing = ageData.doses - dosesTaken;
+      Alert.alert(
+        'Vacina em Atraso',
+        `A criança deveria ter tomado ${ageData.doses} doses da vacina ${vaccineName}, mas tomou apenas ${dosesTaken}. Estão faltando ${dosesMissing} dose(s).`
+      );
     }
   };
 
   return (
-    <ScrollView style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
-        Caderneta de Vacinação
-      </Text>
-      <Text style={{ fontSize: 18, marginBottom: 8 }}>Nome: {parsedPatient?.name}</Text>
-      <Text style={{ fontSize: 18, marginBottom: 8 }}>Idade: {patientAge}</Text>
-      <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-        <Text style={{ flex: 1, fontWeight: 'bold' }}>Vacina</Text>
-        <Text style={{ flex: 1, fontWeight: 'bold' }}>Dose</Text>
-        <Text style={{ flex: 1, fontWeight: 'bold' }}>Data de Aplicação</Text>
-      </View>
-      {Object.keys(vaccineSchedule).map((vaccineName, index) => (
-        <View
-          key={index}
-          style={{
-            flexDirection: 'row',
-            paddingVertical: 8,
-            backgroundColor: getStatusColor(vaccineName),
-            marginBottom: 4,
-          }}>
-          <Text style={{ flex: 1 }}>{vaccineName}</Text>
-          <Text style={{ flex: 1 }}>
-            {vaccines[vaccineName] ? vaccines[vaccineName].length : 'Nenhuma dose aplicada'}
-          </Text>
-          <Text style={{ flex: 1 }}>
-            {vaccines[vaccineName]
-              ? vaccines[vaccineName]
-                  .map((v) => new Date(v.administered_at).toLocaleDateString())
-                  .join(', ')
-              : '-'}
-          </Text>
+    <SafeAreaView style={VaccinationStyles.container}>
+      <ScrollView>
+        <Text style={VaccinationStyles.header}>Caderneta de Vacinação</Text>
+        <Text style={{ fontSize: 18, marginBottom: 8 }}>Nome: {parsedPatient?.name}</Text>
+        <Text style={{ fontSize: 18, marginBottom: 8 }}>Idade: {patientAge}</Text>
+        <View style={VaccinationStyles.tableHeader}>
+          <Text style={VaccinationStyles.tableHeaderText}>Vacina</Text>
+          <Text style={VaccinationStyles.tableHeaderText}>Dose</Text>
+          <Text style={VaccinationStyles.tableHeaderText}>Data de Aplicação</Text>
         </View>
-      ))}
-    </ScrollView>
+        {Object.keys(vaccineSchedule).map((vaccineName, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => handleVaccineClick(vaccineName)}
+            style={[VaccinationStyles.tableRow, { backgroundColor: getStatusColor(vaccineName) }]}>
+            <Text style={VaccinationStyles.vaccineName}>{vaccineName}</Text>
+            <Text style={VaccinationStyles.doseNumber}>
+              {vaccines[vaccineName] ? vaccines[vaccineName].length : 'Nenhuma dose aplicada'}
+            </Text>
+            <Text style={VaccinationStyles.doseNumber}>
+              {vaccines[vaccineName]
+                ? vaccines[vaccineName]
+                    .map((v) => new Date(v.administered_at).toLocaleDateString())
+                    .join(', ')
+                : '-'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity
+          style={VaccinationStyles.button}
+          onPress={() => {
+            /* lógica de navegação para retornar */
+          }}>
+          <Text style={VaccinationStyles.buttonText}>Retornar</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

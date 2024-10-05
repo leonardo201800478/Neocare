@@ -2,31 +2,36 @@
 
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Para os ícones de incremento e decremento
 
 import { useSystem } from '../../powersync/PowerSync';
 import styles from '../styles/VaccinationStyles';
 
-const vaccineList = [
-  'BCG',
-  'Hepatite B',
-  'Rotavírus',
-  'Tríplice bacteriana (DTP)',
-  'Haemophilus influenzae B (Hib)',
-  'Poliomielite (VIP)',
-  'Pneumocócica conjugada',
-  'Meningocócica conjugada C',
-  'Meningocócica B',
-  'Influenza',
-  'Febre Amarela',
-  'Hepatite A',
-  'Tríplice viral (SCR)',
-  'Varicela',
-  'HPV',
-  'Dengue',
-  'Covid-19',
-];
+type VaccineSchedule = {
+  [key: string]: number;
+};
+
+// Atualizado para refletir as doses conforme o calendário
+const vaccineSchedule: VaccineSchedule = {
+  BCG: 1,
+  'Hepatite B': 4,
+  Rotavírus: 3,
+  'Tríplice bacteriana (DTP)': 5,
+  'Haemophilus influenzae B (Hib)': 4,
+  'Poliomielite (VIP)': 4,
+  'Pneumocócica conjugada': 3,
+  'Meningocócica conjugada C': 3,
+  'Meningocócica B': 3,
+  Influenza: 999, // Vacinação contínua anual
+  'Febre Amarela': 2,
+  'Hepatite A': 2,
+  'Tríplice viral (SCR)': 2,
+  Varicela: 2,
+  HPV: 2,
+  Dengue: 2,
+  'Covid-19': 3,
+};
 
 const RegisterVaccination = () => {
   const router = useRouter();
@@ -76,6 +81,11 @@ const RegisterVaccination = () => {
       return;
     }
 
+    if (dose > vaccineSchedule[vaccineName]) {
+      Alert.alert('Erro', `Número máximo de doses para ${vaccineName} já foi atingido.`);
+      return;
+    }
+
     try {
       const { error } = await supabaseConnector.client.from('vaccinations').insert({
         patient_id: parsedPatient.id,
@@ -100,13 +110,11 @@ const RegisterVaccination = () => {
     }
   };
 
-  // Incrementa a dose da vacina no estado e tenta registrar
   const handleIncrement = (vaccineName: string) => {
     const currentDose = vaccines[vaccineName] ? vaccines[vaccineName] + 1 : 1;
     handleRegister(vaccineName, currentDose);
   };
 
-  // Decrementa a dose da vacina no estado e exclui do banco de dados
   const handleDecrement = async (vaccineName: string) => {
     if (!parsedPatient || !vaccines[vaccineName] || vaccines[vaccineName] <= 0) {
       return;
@@ -115,7 +123,6 @@ const RegisterVaccination = () => {
     const currentDose = vaccines[vaccineName];
 
     try {
-      // Deletar a última dose registrada da vacina
       const { error } = await supabaseConnector.client
         .from('vaccinations')
         .delete()
@@ -140,41 +147,55 @@ const RegisterVaccination = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Cadastrar Vacina</Text>
-      <View style={styles.tableHeader}>
-        <Text style={[styles.tableHeaderText, { width: '50%' }]}>Vacina</Text>
-        <Text style={[styles.tableHeaderText, { width: '20%', textAlign: 'center' }]}>
-          Dose Atual
-        </Text>
-        <Text style={[styles.tableHeaderText, { width: '30%', textAlign: 'center' }]}>Ações</Text>
-      </View>
-      {vaccineList.map((vaccine, index) => (
-        <View key={index} style={styles.tableRow}>
-          <Text style={[styles.vaccineName, { width: '50%' }]}>{vaccine}</Text>
-          <Text style={[styles.doseNumber, { width: '20%', textAlign: 'center' }]}>
-            {vaccines[vaccine] ? vaccines[vaccine] : '0'}
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <Text style={styles.header}>Cadastrar Vacina</Text>
+        <View style={styles.tableHeader}>
+          <Text style={[styles.tableHeaderText, { width: '50%' }]}>Vacina</Text>
+          <Text style={[styles.tableHeaderText, { width: '20%', textAlign: 'center' }]}>
+            Dose Atual
           </Text>
-          <View style={{ flexDirection: 'row', width: '30%', justifyContent: 'space-around' }}>
-            <TouchableOpacity onPress={() => handleIncrement(vaccine)}>
-              <Icon name="plus-circle" size={30} color="green" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDecrement(vaccine)}>
-              <Icon name="minus-circle" size={30} color="red" />
-            </TouchableOpacity>
-          </View>
+          <Text style={[styles.tableHeaderText, { width: '30%', textAlign: 'center' }]}>Ações</Text>
         </View>
-      ))}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() =>
-          router.replace(
-            `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify(parsedPatient))}`
-          )
-        }>
-        <Text style={styles.buttonText}>SAIR</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {Object.keys(vaccineSchedule).map((vaccine, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.vaccineName, { width: '50%' }]}>{vaccine}</Text>
+            <Text style={[styles.doseNumber, { width: '20%', textAlign: 'center' }]}>
+              {vaccines[vaccine] ? vaccines[vaccine] : '0'}
+            </Text>
+            <View style={{ flexDirection: 'row', width: '30%', justifyContent: 'space-around' }}>
+              <TouchableOpacity
+                onPress={() => handleIncrement(vaccine)}
+                disabled={vaccines[vaccine] >= vaccineSchedule[vaccine]}>
+                <Icon
+                  name="plus-circle"
+                  size={30}
+                  color={vaccines[vaccine] >= vaccineSchedule[vaccine] ? 'gray' : 'green'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleDecrement(vaccine)}
+                disabled={!vaccines[vaccine] || vaccines[vaccine] <= 0}>
+                <Icon
+                  name="minus-circle"
+                  size={30}
+                  color={!vaccines[vaccine] || vaccines[vaccine] <= 0 ? 'gray' : 'red'}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            router.replace(
+              `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify(parsedPatient))}`
+            )
+          }>
+          <Text style={styles.buttonText}>SAIR</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
