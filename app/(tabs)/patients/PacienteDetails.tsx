@@ -198,16 +198,20 @@ const PacienteDetails = () => {
 
   const handleOpenConsulta = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
-    if (attendance) {
-      // Se já existe um prontuário, redirecionar para a atualização do prontuário
-      router.push(
-        `/attendences/UpdateAttendance?patient=${encodedPatient}&attendanceId=${attendance.id}` as unknown as `${string}:${string}`
-      );
+    if (parsedPatient?.id) {
+      if (attendance) {
+        // Se já existe um prontuário, redirecionar para a atualização do prontuário
+        router.push(
+          `/attendences/UpdateAttendance?patient=${encodedPatient}&attendanceId=${attendance.id}` as unknown as `${string}:${string}`
+        );
+      } else {
+        // Se não existe um prontuário, redirecionar para o registro de um novo prontuário
+        router.push(
+          `/attendences/RegisterAttendance?patientId=${parsedPatient.id}` as unknown as `${string}:${string}`
+        );
+      }
     } else {
-      // Se não existe um prontuário, redirecionar para o registro de um novo prontuário
-      router.push(
-        `/attendences/RegisterAttendance?patient=${encodedPatient}&doctorId=${parsedPatient!.created_by}` as unknown as `${string}:${string}`
-      );
+      Alert.alert('Erro', 'ID do paciente não encontrado.');
     }
   };
 
@@ -254,7 +258,7 @@ const PacienteDetails = () => {
                     : 'Data não disponível'}
                 </Text>
                 <Text style={styles.detailItem}>
-                  Médico da Última Consulta: {attendance.doctor_name ?? 'Nome não disponível'}
+                  Médico da Última Consulta: {attendance.motivo_consulta ?? 'Nome não disponível'}
                 </Text>
               </View>
             </>

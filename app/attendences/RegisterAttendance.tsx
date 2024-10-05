@@ -1,22 +1,28 @@
+import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { View, ScrollView, Button, Alert } from 'react-native';
+import { ScrollView, View, Button, Alert, Text } from 'react-native';
 
 import BasicInfoForm from './BasicInfoForm';
 import GeneralSymptomsForm from './GeneralSymptomsForm';
 import NutritionDevelopmentForm from './NutritionDevelopmentForm';
-import { BasicInfo, GeneralSymptoms, NutritionDevelopment } from './types'; // Importando os tipos
+import VitalInfoForm from './VitalInfoForm';
+import { BasicInfo, VitalInfo, GeneralSymptoms, NutritionDevelopment } from './types';
 import { useSystem } from '../../powersync/PowerSync';
 import styles from '../styles/Styles';
 
 const RegisterAttendance: React.FC = () => {
   const { supabaseConnector } = useSystem();
+  const { patientId } = useLocalSearchParams<{ patientId: string }>();
 
-  // Inicializando o estado com objetos que seguem a estrutura das interfaces
+  // Definindo os estados com valores iniciais corretos
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
-    motivo_consulta: undefined,
-    consulta_retorno: undefined,
-    primeira_consulta: undefined,
-    data_atendimento: undefined,
+    motivo_consulta: '',
+    consulta_retorno: '',
+    primeira_consulta: '',
+    data_atendimento: '',
+  });
+
+  const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
     peso_kg: '',
     comprimento_cm: '',
     perimetro_cefalico_cm: '',
@@ -24,14 +30,25 @@ const RegisterAttendance: React.FC = () => {
   });
 
   const [generalSymptoms, setGeneralSymptoms] = useState<GeneralSymptoms>({
-    tosse_ha_quanto_tempo: undefined,
-    numero_respiracoes_por_minuto: undefined,
-    respiracao_rapida: undefined,
-    tiragem_subcostal: undefined,
-    estridor: undefined,
-    sibilancia_ha_quanto_tempo: undefined,
-    primeira_crise: undefined,
-    broncodilatador: undefined,
+    nao_bebe_ou_mama: '',
+    vomita_tudo: '',
+    convulsoes: '',
+    letargica: '',
+    enchimento_capilar: '',
+    batimento_asa: '',
+    tem_tosse: '',
+    sibilancia: '',
+    tem_diarreia: '',
+    tem_febre: '',
+    rigidez_nuca: '',
+    problema_ouvido: '',
+    dor_garganta: '',
+    gemido: '',
+    cianose_periferica: '',
+    ictericia: '',
+    distensao_abdominal: '',
+    emagrecimento: '',
+    edema: '',
   });
 
   const [nutritionDevelopment, setNutritionDevelopment] = useState<NutritionDevelopment>({
@@ -53,31 +70,36 @@ const RegisterAttendance: React.FC = () => {
     outros_problemas: '',
   });
 
-  const [saving, setSaving] = useState(false);
-
-  const handleBasicInfoChange = (field: keyof BasicInfo, value: string | undefined) => {
+  // As funções onChange que atualizam os estados
+  const handleBasicInfoChange = (field: keyof BasicInfo, value: string) => {
     setBasicInfo((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleGeneralSymptomsChange = (field: keyof GeneralSymptoms, value: string | undefined) => {
+  const handleVitalInfoChange = (field: keyof VitalInfo, value: string) => {
+    setVitalInfo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleGeneralSymptomsChange = (field: keyof GeneralSymptoms, value: string) => {
     setGeneralSymptoms((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleNutritionDevelopmentChange = (
-    field: keyof NutritionDevelopment,
-    value: string | undefined
-  ) => {
+  const handleNutritionDevelopmentChange = (field: keyof NutritionDevelopment, value: string) => {
     setNutritionDevelopment((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSaveAttendance = async () => {
-    setSaving(true);
+    if (!patientId) {
+      Alert.alert('Erro', 'ID do paciente não encontrado.');
+      return;
+    }
+
     try {
-      // Inserir dados de attendances
-      const { data: attendance, error: attendanceError } = await supabaseConnector.client
+      // Inserir dados de `attendances`
+      const { data: attendanceData, error: attendanceError } = await supabaseConnector.client
         .from('attendances')
         .insert({
           ...basicInfo,
+          patient_id: patientId, // Incluindo o patient_id na inserção
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -85,15 +107,12 @@ const RegisterAttendance: React.FC = () => {
 
       if (attendanceError) throw attendanceError;
 
-      const attendanceId = attendance[0].id;
+      const attendanceId = attendanceData[0].id;
 
-      // Inserir dados de attendance_vitals
+      // Inserir dados de `attendance_vitals`
       const vitalsData = {
         attendance_id: attendanceId,
-        peso_kg: basicInfo.peso_kg,
-        comprimento_cm: basicInfo.comprimento_cm,
-        perimetro_cefalico_cm: basicInfo.perimetro_cefalico_cm,
-        numero_respiracoes_por_minuto: basicInfo.numero_respiracoes_por_minuto,
+        ...vitalInfo,
       };
 
       const { error: vitalsError } = await supabaseConnector.client
@@ -102,8 +121,11 @@ const RegisterAttendance: React.FC = () => {
 
       if (vitalsError) throw vitalsError;
 
-      // Inserir dados de attendance_symptoms
-      const symptomsData = { attendance_id: attendanceId, ...generalSymptoms };
+      // Inserir dados de `attendance_symptoms`
+      const symptomsData = {
+        attendance_id: attendanceId,
+        ...generalSymptoms,
+      };
 
       const { error: symptomsError } = await supabaseConnector.client
         .from('attendance_symptoms')
@@ -111,8 +133,11 @@ const RegisterAttendance: React.FC = () => {
 
       if (symptomsError) throw symptomsError;
 
-      // Inserir dados de attendance_nutrition_development
-      const nutritionDevelopmentData = { attendance_id: attendanceId, ...nutritionDevelopment };
+      // Inserir dados de `attendance_nutrition_development`
+      const nutritionDevelopmentData = {
+        attendance_id: attendanceId,
+        ...nutritionDevelopment,
+      };
 
       const { error: nutritionError } = await supabaseConnector.client
         .from('attendance_nutrition_development')
@@ -122,29 +147,31 @@ const RegisterAttendance: React.FC = () => {
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
     } catch (error) {
-      Alert.alert('Erro', 'Erro ao salvar prontuário: ' + (error as any).message);
-    } finally {
-      setSaving(false);
+      Alert.alert('Erro', `Erro ao salvar prontuário: ${(error as any).message}`);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <BasicInfoForm data={basicInfo} onChange={handleBasicInfoChange} />
-      <GeneralSymptomsForm data={generalSymptoms} onChange={handleGeneralSymptomsChange} />
-      <NutritionDevelopmentForm
-        data={nutritionDevelopment}
-        onChange={handleNutritionDevelopmentChange}
-      />
+      {patientId ? (
+        <>
+          <BasicInfoForm data={basicInfo} onChange={handleBasicInfoChange} />
+          <VitalInfoForm data={vitalInfo} onChange={handleVitalInfoChange} />
+          <GeneralSymptomsForm data={generalSymptoms} onChange={handleGeneralSymptomsChange} />
+          <NutritionDevelopmentForm
+            data={nutritionDevelopment}
+            onChange={handleNutritionDevelopmentChange}
+          />
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Salvar Prontuário"
-          onPress={handleSaveAttendance}
-          disabled={saving}
-          color="#4CAF50"
-        />
-      </View>
+          <View style={styles.buttonContainer}>
+            <Button title="Salvar Prontuário" onPress={handleSaveAttendance} />
+          </View>
+        </>
+      ) : (
+        <View>
+          <Text>Erro: ID do paciente não encontrado.</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };

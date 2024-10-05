@@ -117,7 +117,7 @@ const CadastroPaciente = () => {
         parseInt(value.slice(2, 4), 10) - 1, // mês (0-11)
         parseInt(value.slice(0, 2), 10) // dia
       );
-      const idadeCalculada = calcularIdade(birthDate);
+      const idadeCalculada = calcularIdade(birthDate, 'years');
       setIdade(idadeCalculada);
     } else {
       setDataNasc(value);

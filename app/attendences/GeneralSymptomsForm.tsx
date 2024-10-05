@@ -59,60 +59,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       />
       <TextInput
         style={styles.input}
-        placeholder="Tosse há Quanto Tempo (dias)"
-        value={data.tosse_ha_quanto_tempo}
-        onChangeText={(text) => onChange('tosse_ha_quanto_tempo', text)}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Número de Respirações por Minuto"
-        value={data.numero_respiracoes_por_minuto}
-        onChangeText={(text) => onChange('numero_respiracoes_por_minuto', text)}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Respiração Rápida? (Sim/Não)"
-        value={data.respiracao_rapida}
-        onChangeText={(text) => onChange('respiracao_rapida', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Tiragem Subcostal (Sim/Não)"
-        value={data.tiragem_subcostal}
-        onChangeText={(text) => onChange('tiragem_subcostal', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Estridor (Sim/Não)"
-        value={data.estridor}
-        onChangeText={(text) => onChange('estridor', text)}
-      />
-      <TextInput
-        style={styles.input}
         placeholder="Sibilância (Sim/Não)"
         value={data.sibilancia}
         onChangeText={(text) => onChange('sibilancia', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Sibilância há Quanto Tempo (dias)"
-        value={data.sibilancia_ha_quanto_tempo}
-        onChangeText={(text) => onChange('sibilancia_ha_quanto_tempo', text)}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Primeira Crise? (Sim/Não)"
-        value={data.primeira_crise}
-        onChangeText={(text) => onChange('primeira_crise', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Uso de Broncodilatador nas últimas 24h (Sim/Não)"
-        value={data.broncodilatador}
-        onChangeText={(text) => onChange('broncodilatador', text)}
       />
     </View>
   );

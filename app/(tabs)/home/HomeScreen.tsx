@@ -2,7 +2,15 @@
 
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, FlatList, Text, ActivityIndicator } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  Text,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { PATIENTS_TABLE, Patient } from '../../../powersync/AppSchema';
@@ -63,14 +71,40 @@ const HomeScreen: React.FC = () => {
         )
       : [];
 
-  const renderRow = ({ item }: { item: Patient }) => (
-    <TouchableOpacity
-      onPress={() => {
+  const handlePatientPress = async (patient: Patient) => {
+    setLoading(true);
+    try {
+      // Tenta buscar o prontuário do paciente
+      const { data: attendance, error } = await supabaseConnector.client
+        .from('attendances')
+        .select('*')
+        .eq('patient_id', patient.id)
+        .maybeSingle(); // Utilizando maybeSingle() para permitir quando não há prontuário
+
+      if (error) {
+        // Caso haja um erro diferente do retorno vazio, mostramos um alerta
+        console.error('Erro ao buscar prontuário:', error);
+        Alert.alert('Erro', 'Erro ao buscar prontuário. Por favor, tente novamente.');
+      } else {
+        // Caso o prontuário não exista, prosseguir normalmente para a tela de cadastro de prontuário
         router.push({
           pathname: '/(tabs)/patients/PacienteDetails',
-          params: { patient: encodeURIComponent(JSON.stringify(item)) },
+          params: {
+            patient: encodeURIComponent(JSON.stringify(patient)),
+            attendance: encodeURIComponent(JSON.stringify(attendance ?? '')), // Corrigido para garantir que seja uma string
+          },
         });
-      }}>
+      }
+    } catch (error) {
+      console.error('Erro ao buscar prontuário:', error);
+      Alert.alert('Erro', 'Erro inesperado ao buscar prontuário.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderRow = ({ item }: { item: Patient }) => (
+    <TouchableOpacity onPress={() => handlePatientPress(item)}>
       <View style={styles.row}>
         <Text style={{ flex: 1 }}>{item.name}</Text>
         <Text style={{ flex: 1 }}>{item.cpf}</Text>

@@ -1,5 +1,3 @@
-//APP/ATTENDANCES/INDEX.TSX
-
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -57,7 +55,7 @@ const AttendanceList = () => {
           Alert.alert('Erro', 'ID do paciente não encontrado.');
         }
       }}>
-      <Text style={styles.text}>Médico: {item.doctor_name ?? 'Médico não informado'}</Text>
+      <Text style={styles.text}>Médico: {item.registered_by ?? 'Médico não informado'}</Text>
       <Text style={styles.text}>
         Data:{' '}
         {item.updated_at ? new Date(item.updated_at).toLocaleDateString() : 'Data não disponível'}
@@ -69,7 +67,7 @@ const AttendanceList = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#A700FF" />
+        <ActivityIndicator size="large" color="#2e7d32" />
         <Text>Carregando prontuários...</Text>
       </View>
     );
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#e8f5e9', // Verde claro para tornar a visualização agradável
   },
   loadingContainer: {
     flex: 1,
@@ -112,20 +110,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+    color: '#1b5e20', // Verde escuro para destacar o cabeçalho
   },
   listContainer: {
     paddingBottom: 16,
   },
   attendanceItem: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     padding: 16,
     marginBottom: 12,
     borderRadius: 8,
-    borderColor: '#ccc',
+    borderColor: '#1b5e20', // Verde escuro
     borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   text: {
     fontSize: 16,
+    color: '#1b5e20', // Verde escuro
     marginBottom: 4,
   },
 });
