@@ -10,7 +10,6 @@ export default function HomeAidpi() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-
         <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
 
         {/* Navegando para as subseções */}
@@ -38,6 +37,10 @@ export default function HomeAidpi() {
             <Text style={styles.buttonText}>Dar Líquidos Adicionais para combater a Diarreia</Text>
           </TouchableOpacity>
         </View>
+        {/* Botão "Voltar" no Final da Página */}
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/screens/')}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -74,6 +77,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   sectionButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  button: {
     backgroundColor: '#4CAF50',
     paddingVertical: 15,
     borderRadius: 8,

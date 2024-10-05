@@ -11,11 +11,6 @@ export default function HomeAidpi() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Botão de Voltar Estilizado */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Voltar</Text>
-        </TouchableOpacity>
 
         <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
 

@@ -1,10 +1,42 @@
 // app/(tabs)/_layout.tsx
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useNavigationState } from '@react-navigation/native';
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { BackHandler } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 export default function AppTabsLayout() {
+  // Hook para pegar o estado da navegação
+  const navigationState = useNavigationState((state) => state);
+
+  useEffect(() => {
+    const backAction = () => {
+      // Obtém o índice e as rotas do estado atual
+      const currentIndex = navigationState.index;
+      const routes = navigationState.routes;
+
+      // Verifica se a rota anterior faz parte das guias (tabs)
+      if (currentIndex > 0) {
+        const previousRoute = routes[currentIndex - 1];
+        const isPreviousRouteInTabs =
+          previousRoute?.name && routes.some((route) => route.name === '(tabs)');
+
+        if (isPreviousRouteInTabs) {
+          // Se a rota anterior for das guias, não permitir voltar
+          return true; // Impede o comportamento padrão do botão voltar
+        }
+      }
+
+      // Para outros casos, permite o comportamento padrão
+      return false; // Permite o botão voltar funcionar normalmente
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, [navigationState]);
+
   return (
     <Tabs
       screenOptions={{

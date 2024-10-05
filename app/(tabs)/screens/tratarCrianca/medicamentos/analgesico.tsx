@@ -123,7 +123,10 @@ export default function AnalgesicoAntitermico() {
           nas crianças alérgicas a dipirona e paracetamol. Dose máxima em crianças: 200mg/dose.
         </Text>
 
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+        {/* Botão "Voltar" no Final da Página */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push('/screens/tratarCrianca/medicamentos/')}>
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
       </ScrollView>

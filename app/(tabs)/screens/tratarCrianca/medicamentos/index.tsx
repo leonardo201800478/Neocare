@@ -11,7 +11,6 @@ export default function Medicamentos() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-
         <Text style={styles.title}>Administrar os medicamentos por via oral em casa</Text>
 
         {/* Navegando para as subseções */}
@@ -57,6 +56,12 @@ export default function Medicamentos() {
             <Text style={styles.buttonText}>Tratar a criança para evitar hipoglicemia</Text>
           </TouchableOpacity>
         </View>
+        {/* Botão "Voltar" no Final da Página */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push('/screens/tratarCrianca/')}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -93,6 +98,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   sectionButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  button: {
     backgroundColor: '#4CAF50',
     paddingVertical: 15,
     borderRadius: 8,

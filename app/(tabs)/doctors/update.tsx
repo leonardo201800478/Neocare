@@ -62,7 +62,7 @@ const UpdateDoctorProfile: React.FC = () => {
       }
 
       Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
-      router.push('/doctors/'); // Volta para a página principal de perfil do médico
+      router.push('/(tabs)/doctors/'); // Volta para a página principal de perfil do médico
     } catch (error) {
       console.error('Erro ao atualizar os dados do médico:', error);
       Alert.alert('Erro', 'Não foi possível atualizar os dados do médico.');
@@ -84,7 +84,7 @@ const UpdateDoctorProfile: React.FC = () => {
         <Text style={styles.buttonText}>Salvar Alterações</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/doctors/')}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/doctors/')}>
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
     </View>

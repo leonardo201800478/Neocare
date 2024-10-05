@@ -8,7 +8,7 @@ const HomeIndex = () => {
 
   useEffect(() => {
     // Redireciona automaticamente para a tela HomeScreen
-    router.replace('/home/HomeScreen');
+    router.replace('/(tabs)/home/HomeScreen');
   }, []);
 
   return null; // Nenhum conteúdo é renderizado, apenas o redirecionamento é feito

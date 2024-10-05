@@ -1,11 +1,13 @@
+// app/(tabs)/vaccines/index.tsx
+
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 
-import LoadingOverlay from '../../components/LoadingOverlay';
-import { Vaccination, Patient } from '../../powersync/AppSchema';
-import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/VaccinationStyles';
+import LoadingOverlay from '../../../components/LoadingOverlay';
+import { Vaccination, Patient } from '../../../powersync/AppSchema';
+import { useSystem } from '../../../powersync/PowerSync';
+import styles from '../../styles/VaccinationStyles';
 
 const VaccinesIndex = () => {
   const router = useRouter();
@@ -22,7 +24,7 @@ const VaccinesIndex = () => {
     const fetchVaccinations = async () => {
       if (!parsedPatient) {
         Alert.alert('Erro', 'Paciente não encontrado.');
-        router.replace('/home/');
+        router.replace('/(tabs)/home/');
         setLoading(false);
         return;
       }

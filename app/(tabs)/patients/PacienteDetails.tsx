@@ -23,7 +23,7 @@ const PacienteDetails = () => {
     const fetchPatientDetails = async () => {
       if (!parsedPatient) {
         Alert.alert('Erro', 'Paciente não encontrado.');
-        router.replace('/home/');
+        router.replace('/(tabs)/home/');
         setLoading(false);
         return;
       }

@@ -1,4 +1,4 @@
-// app/vaccines/_layout.tsx
+// app/(tabs)/vaccines/_layout.tsx
 
 import { Slot } from 'expo-router';
 import React from 'react';

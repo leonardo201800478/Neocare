@@ -1,9 +1,11 @@
+// app/(tabs)/vaccines/RegisterVaccination.tsx
+
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/VaccinationStyles';
+import { useSystem } from '../../../powersync/PowerSync';
+import styles from '../../styles/VaccinationStyles';
 
 const RegisterVaccination = () => {
   const router = useRouter();
@@ -32,7 +34,7 @@ const RegisterVaccination = () => {
         Alert.alert('Erro', 'Erro ao cadastrar vacina.');
       } else {
         Alert.alert('Sucesso', 'Vacina cadastrada com sucesso!');
-        router.replace('/vaccines/');
+        router.replace('/(tabs)/vaccines/');
       }
     } catch (error) {
       console.error('Erro ao cadastrar vacina:', error);

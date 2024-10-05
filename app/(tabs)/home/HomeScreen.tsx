@@ -67,7 +67,7 @@ const HomeScreen: React.FC = () => {
     <TouchableOpacity
       onPress={() => {
         router.push({
-          pathname: '/patients/PacienteDetails',
+          pathname: '/(tabs)/patients/PacienteDetails',
           params: { patient: encodeURIComponent(JSON.stringify(item)) },
         });
       }}>
@@ -94,35 +94,35 @@ const HomeScreen: React.FC = () => {
         {/* Botão para ir para a tela de cadastro de paciente */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/patients/CadastroPaciente')}>
+          onPress={() => router.push('/(tabs)/patients/')}>
           <Text style={styles.buttonText}>Cadastrar Novo Paciente</Text>
         </TouchableOpacity>
 
         {/* Botão para ir para a tela de Perfil */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/doctors/')}>
+          onPress={() => router.push('/(tabs)/doctors/')}>
           <Text style={styles.buttonText}>Perfil</Text>
         </TouchableOpacity>
 
         {/* Botão para ir para a tela de AIDPI */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/screens/')}>
+          onPress={() => router.push('/(tabs)/screens/')}>
           <Text style={styles.buttonText}>AIDPI</Text>
         </TouchableOpacity>
 
         {/* Botão para ir para a tela de Atualização de Perfil */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/doctors/update')}>
+          onPress={() => router.push('/(tabs)/doctors/update')}>
           <Text style={styles.buttonText}>Atualizar Perfil</Text>
         </TouchableOpacity>
 
         {/* Botão para ir para a tela de registro de médicos */}
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/doctors/register')}>
+          onPress={() => router.push('/(tabs)/doctors/register')}>
           <Text style={styles.buttonText}>Cadastrar Médico</Text>
         </TouchableOpacity>
 

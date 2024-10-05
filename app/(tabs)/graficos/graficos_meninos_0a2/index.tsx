@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Image, Text, Button, StyleSheet, ScrollView } from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 export default function GraficosMeninos0a2() {
   const router = useRouter();
@@ -15,7 +15,9 @@ export default function GraficosMeninos0a2() {
           <Image source={require('../assets/graficos/menino0-2_3.jpg')} style={styles.image} />
         </View>
       </ScrollView>
-      <Button title="Voltar" onPress={() => router.back()} />
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/graficos/')}>
+        <Text style={styles.buttonText}>Voltar</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -26,10 +28,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 60,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    color: '#1B5E20',
+    marginTop: 20,
+    marginBottom: 10,
     textAlign: 'center',
   },
   imageContainer: {
@@ -37,8 +54,8 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   image: {
-    width: 900, // Largura ajustada para permitir a rolagem horizontal
-    height: 600,
+    width: 1000, // Largura ajustada para permitir a rolagem horizontal
+    height: 650,
     margin: 10,
     resizeMode: 'contain', // Para garantir que a imagem não seja cortada
   },

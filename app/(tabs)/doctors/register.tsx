@@ -58,7 +58,7 @@ const RegisterDoctor = () => {
 
       if (existingDoctor) {
         Alert.alert('Atenção', 'Este médico já está registrado.');
-        router.replace('/home/'); // Redireciona para a tela Home se o médico já estiver registrado
+        router.replace('/(tabs)/home/'); // Redireciona para a tela Home se o médico já estiver registrado
         return;
       }
 
@@ -74,7 +74,7 @@ const RegisterDoctor = () => {
       }
 
       Alert.alert('Sucesso', 'Médico registrado com sucesso!');
-      router.replace('/home/');
+      router.replace('/(tabs)/doctors/'); // Redireciona para a tela de médicos após o registro
     } catch (error) {
       console.error('Erro ao registrar o médico:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o médico.');
@@ -106,7 +106,7 @@ const RegisterDoctor = () => {
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('/home/')}>
+      <TouchableOpacity onPress={() => router.replace('/(tabs)/home/')}>
         <Text style={styles.linkText}>Voltar para Home</Text>
       </TouchableOpacity>
     </View>

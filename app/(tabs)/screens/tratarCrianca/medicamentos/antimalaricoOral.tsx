@@ -266,12 +266,13 @@ export default function AntimalaricoOral() {
               </View>
             </View>
           </View>
+          {/* Botão "Voltar" no Final da Página */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push('/screens/tratarCrianca/medicamentos/')}>
+            <Text style={styles.buttonText}>Voltar</Text>
+          </TouchableOpacity>
         </ScrollView>
-
-        {/* Botão "Voltar" no Final da Página */}
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Voltar</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -322,7 +323,7 @@ const styles = StyleSheet.create({
     borderColor: '#1B5E20',
     justifyContent: 'center',
     alignItems: 'center',
-  },  
+  },
   tableCell2: {
     width: 330, // Largura fixa para garantir alinhamento consistente
     padding: 10,

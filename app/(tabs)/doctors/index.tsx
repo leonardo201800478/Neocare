@@ -71,12 +71,12 @@ const DoctorProfile: React.FC = () => {
           {/* Botão para atualizar os dados do médico */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#007BFF' }]}
-            onPress={() => router.push('/doctors/update')}>
+            onPress={() => router.push('/(tabs)/doctors/update')}>
             <Text style={styles.buttonText}>Atualizar Dados</Text>
           </TouchableOpacity>
 
           {/* Botão para voltar à tela Home */}
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/home/')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/home/')}>
             <Text style={styles.buttonText}>Voltar para Home</Text>
           </TouchableOpacity>
         </>

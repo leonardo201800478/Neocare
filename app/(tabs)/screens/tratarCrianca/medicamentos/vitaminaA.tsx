@@ -45,7 +45,10 @@ export default function VitaminaA() {
             </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+        {/* Botão "Voltar" no Final da Página */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push('/screens/tratarCrianca/medicamentos/')}>
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
       </ScrollView>
