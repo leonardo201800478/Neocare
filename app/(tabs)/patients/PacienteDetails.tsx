@@ -1,3 +1,5 @@
+// app/(tabs)/patients/PacienteDetails.tsx
+
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
@@ -141,20 +143,18 @@ const PacienteDetails = () => {
     );
   };
 
-  const handleVaccine = () => {
+  // Botão para registrar uma vacina
+  const handleRegisterVaccination = () => {
     const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
+    router.push(
+      `/vaccines/RegisterVaccination?patient=${encodedPatient}` as unknown as `${string}:${string}`
+    );
+  };
 
-    if (vaccines.length > 0) {
-      // Se já existe um cartão de vacina, redireciona para a atualização do cartão de vacinas
-      router.push(
-        `/vaccines/UpdateVaccine?patient=${encodedPatient}&vaccineId=${vaccines[0].id}` as unknown as `${string}:${string}`
-      );
-    } else {
-      // Se não existe um cartão de vacina, redirecionar para o registro de um novo cartão de vacinas
-      router.push(
-        `/vaccines/RegisterVaccination?patient=${encodedPatient}&doctorId=${parsedPatient!.created_by}` as unknown as `${string}:${string}`
-      );
-    }
+  // Botão para exibir a caderneta de vacinação
+  const handleViewVaccinationCard = () => {
+    const encodedPatient = encodeURIComponent(JSON.stringify(parsedPatient));
+    router.push(`/vaccines/?patient=${encodedPatient}` as unknown as `${string}:${string}`);
   };
 
   const handleOpenConsulta = () => {
@@ -231,10 +231,11 @@ const PacienteDetails = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonVaccine} onPress={handleVaccine}>
-            <Text style={styles.buttonText}>
-              {vaccines.length > 0 ? 'ATUALIZAR VACINAS' : 'CADASTRAR VACINAS'}
-            </Text>
+          <TouchableOpacity style={styles.buttonVaccine} onPress={handleRegisterVaccination}>
+            <Text style={styles.buttonText}>REGISTRAR VACINA</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonVaccine} onPress={handleViewVaccinationCard}>
+            <Text style={styles.buttonText}>CADERNETA DE VACINAÇÃO</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

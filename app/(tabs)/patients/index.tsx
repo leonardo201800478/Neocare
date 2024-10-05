@@ -244,7 +244,7 @@ const CadastroPaciente = () => {
 
         {/* Botões */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => router.replace('/home/')}>
+          <TouchableOpacity style={styles.button} onPress={() => router.replace('/(tabs)/home/')}>
             <Text style={styles.buttonText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleCadastro}>
