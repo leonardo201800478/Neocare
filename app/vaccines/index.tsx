@@ -1,17 +1,10 @@
-// app/(tabs)/vaccines/VaccinationCard.tsx
+// app/vaccines/VaccinationCard.tsx
 
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  TouchableOpacity,
-  Button,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, ScrollView, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
 
+import { VACCINATIONS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { calcularIdade } from '../../utils/idadeCalculator';
 import VaccinationStyles from '../styles/VaccinationStyles';
@@ -56,7 +49,7 @@ const VaccinationCard = () => {
       const fetchVaccinations = async () => {
         try {
           const { data, error } = await supabaseConnector.client
-            .from('vaccinations')
+            .from(VACCINATIONS_TABLE)
             .select('*')
             .eq('patient_id', parsedPatient.id);
 
@@ -149,11 +142,7 @@ const VaccinationCard = () => {
             </Text>
           </TouchableOpacity>
         ))}
-        <TouchableOpacity
-          style={VaccinationStyles.button}
-          onPress={() => {
-            /* lógica de navegação para retornar */
-          }}>
+        <TouchableOpacity style={VaccinationStyles.button} onPress={() => router.back()}>
           <Text style={VaccinationStyles.buttonText}>Retornar</Text>
         </TouchableOpacity>
       </ScrollView>

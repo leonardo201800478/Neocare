@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, View, Button, Alert, Text } from 'react-native';
 
@@ -13,6 +13,7 @@ import styles from '../styles/Styles';
 const RegisterAttendance: React.FC = () => {
   const { supabaseConnector } = useSystem();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
+  const router = useRouter();
 
   // Definindo os estados com valores iniciais corretos
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
@@ -146,6 +147,10 @@ const RegisterAttendance: React.FC = () => {
       if (nutritionError) throw nutritionError;
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
+      // Redirecionar para a tela de detalhes do paciente após salvar
+      router.replace(
+        `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify({ id: patientId }))}`
+      );
     } catch (error) {
       Alert.alert('Erro', `Erro ao salvar prontuário: ${(error as any).message}`);
     }

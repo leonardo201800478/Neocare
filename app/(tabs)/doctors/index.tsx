@@ -1,12 +1,15 @@
-// app/doctors/index.tsx
+// app/(tabs)/doctors/index.tsx
+
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 
 import { useSystem } from '../../../powersync/PowerSync';
+import { useDoctor } from '../../context/DoctorContext';
 
 const DoctorProfile: React.FC = () => {
   const { supabaseConnector } = useSystem();
+  const { setDoctorId } = useDoctor();
   const [doctor, setDoctor] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -26,7 +29,11 @@ const DoctorProfile: React.FC = () => {
       }
 
       // Buscar os dados do médico no Supabase utilizando o userID
-      const { data, error } = await client.from('doctors').select('*').eq('id', userID).single();
+      const { data, error } = await client
+        .from('doctors')
+        .select('*')
+        .eq('id', userID) // Certifique-se de que o campo está correto para vincular com userID.
+        .single();
 
       if (error) {
         throw new Error(`Erro ao buscar dados do médico: ${error.message}`);
@@ -34,6 +41,7 @@ const DoctorProfile: React.FC = () => {
 
       if (data) {
         setDoctor(data);
+        setDoctorId(data.id); // Armazenando o doctor_id no contexto
       } else {
         console.warn('Dados do médico não encontrados para o ID:', userID);
       }
@@ -68,14 +76,12 @@ const DoctorProfile: React.FC = () => {
               : 'Data não disponível'}
           </Text>
 
-          {/* Botão para atualizar os dados do médico */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#007BFF' }]}
             onPress={() => router.push('/(tabs)/doctors/update')}>
             <Text style={styles.buttonText}>Atualizar Dados</Text>
           </TouchableOpacity>
 
-          {/* Botão para voltar à tela Home */}
           <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/home/')}>
             <Text style={styles.buttonText}>Voltar para Home</Text>
           </TouchableOpacity>

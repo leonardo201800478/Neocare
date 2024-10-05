@@ -62,6 +62,7 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+  // Definindo filteredPatients para filtrar os pacientes com base na consulta de pesquisa
   const filteredPatients =
     searchQuery.length >= 3
       ? patients.filter(
@@ -69,38 +70,16 @@ const HomeScreen: React.FC = () => {
             (patient.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
             (patient.cpf?.includes(searchQuery) ?? false)
         )
-      : [];
+      : patients; // Exibe todos os pacientes se a consulta de pesquisa for menor que 3 caracteres
 
-  const handlePatientPress = async (patient: Patient) => {
-    setLoading(true);
-    try {
-      // Tenta buscar o prontuário do paciente
-      const { data: attendance, error } = await supabaseConnector.client
-        .from('attendances')
-        .select('*')
-        .eq('patient_id', patient.id)
-        .maybeSingle(); // Utilizando maybeSingle() para permitir quando não há prontuário
-
-      if (error) {
-        // Caso haja um erro diferente do retorno vazio, mostramos um alerta
-        console.error('Erro ao buscar prontuário:', error);
-        Alert.alert('Erro', 'Erro ao buscar prontuário. Por favor, tente novamente.');
-      } else {
-        // Caso o prontuário não exista, prosseguir normalmente para a tela de cadastro de prontuário
-        router.push({
-          pathname: '/(tabs)/patients/PacienteDetails',
-          params: {
-            patient: encodeURIComponent(JSON.stringify(patient)),
-            attendance: encodeURIComponent(JSON.stringify(attendance ?? '')), // Corrigido para garantir que seja uma string
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao buscar prontuário:', error);
-      Alert.alert('Erro', 'Erro inesperado ao buscar prontuário.');
-    } finally {
-      setLoading(false);
-    }
+  const handlePatientPress = (patient: Patient) => {
+    // Redireciona para a tela de detalhes do paciente, sem buscar o prontuário na HomeScreen
+    router.push({
+      pathname: '/(tabs)/patients/PacienteDetails',
+      params: {
+        patient: encodeURIComponent(JSON.stringify(patient)),
+      },
+    });
   };
 
   const renderRow = ({ item }: { item: Patient }) => (
@@ -132,39 +111,11 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.buttonText}>Cadastrar Novo Paciente</Text>
         </TouchableOpacity>
 
-        {/* Botão para ir para a tela de Perfil */}
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/(tabs)/doctors/')}>
-          <Text style={styles.buttonText}>Perfil</Text>
-        </TouchableOpacity>
-
-        {/* Botão para ir para a tela de AIDPI */}
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/(tabs)/screens/')}>
-          <Text style={styles.buttonText}>AIDPI</Text>
-        </TouchableOpacity>
-
-        {/* Botão para ir para a tela de Atualização de Perfil */}
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/(tabs)/doctors/update')}>
-          <Text style={styles.buttonText}>Atualizar Perfil</Text>
-        </TouchableOpacity>
-
-        {/* Botão para ir para a tela de registro de médicos */}
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: '#007BFF' }]}
-          onPress={() => router.push('/(tabs)/doctors/register')}>
-          <Text style={styles.buttonText}>Cadastrar Médico</Text>
-        </TouchableOpacity>
-
         {/* Mostra um indicador de loading durante a pesquisa */}
         {loading && <ActivityIndicator size="large" color="#005F9E" />}
 
         {/* Lista de pacientes filtrados */}
-        {!loading && filteredPatients.length > 0 && (
+        {!loading && (
           <FlatList
             data={filteredPatients}
             renderItem={renderRow}

@@ -1,11 +1,11 @@
-// app/vaccines/RegisterVaccination.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Para os ícones de incremento e decremento
 
+import { VACCINATIONS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
+import { useDoctor } from '../context/DoctorContext';
 import styles from '../styles/VaccinationStyles';
 
 type VaccineSchedule = {
@@ -38,7 +38,8 @@ const RegisterVaccination = () => {
   const { patient } = useLocalSearchParams();
   const parsedPatient = patient ? JSON.parse(decodeURIComponent(patient as string)) : null;
   const { supabaseConnector } = useSystem();
-  const [vaccines, setVaccines] = useState<{ [key: string]: number }>({}); // Armazena vacina e número da dose
+  const { doctorId } = useDoctor();
+  const [vaccines, setVaccines] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     // Buscar vacinas atuais do paciente
@@ -46,7 +47,7 @@ const RegisterVaccination = () => {
       const fetchVaccinations = async () => {
         try {
           const { data, error } = await supabaseConnector.client
-            .from('vaccinations')
+            .from(VACCINATIONS_TABLE)
             .select('*')
             .eq('patient_id', parsedPatient.id);
 
@@ -81,14 +82,20 @@ const RegisterVaccination = () => {
       return;
     }
 
+    if (!doctorId) {
+      Alert.alert('Erro', 'ID do médico não encontrado.');
+      return;
+    }
+
     if (dose > vaccineSchedule[vaccineName]) {
       Alert.alert('Erro', `Número máximo de doses para ${vaccineName} já foi atingido.`);
       return;
     }
 
     try {
-      const { error } = await supabaseConnector.client.from('vaccinations').insert({
+      const { error } = await supabaseConnector.client.from(VACCINATIONS_TABLE).insert({
         patient_id: parsedPatient.id,
+        doctor_id: doctorId,
         vaccine_name: vaccineName,
         dose_number: dose,
         administered_at: new Date().toISOString(),
@@ -124,7 +131,7 @@ const RegisterVaccination = () => {
 
     try {
       const { error } = await supabaseConnector.client
-        .from('vaccinations')
+        .from(VACCINATIONS_TABLE)
         .delete()
         .eq('patient_id', parsedPatient.id)
         .eq('vaccine_name', vaccineName)
