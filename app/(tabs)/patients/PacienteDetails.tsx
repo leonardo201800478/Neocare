@@ -82,6 +82,45 @@ const PacienteDetails = () => {
     }
   };
 
+  // Função para formatar a data no formato dd/mm/aaaa
+  const formatDate = (isoDate: string) => {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // Função para formatar o número de telefone no formato (código país) (DDD) 00000-0000
+  const formatPhoneNumber = (phoneNumber: string) => {
+    const regex = /^(\+\d{1,3})(\d{2})(\d{4,5})(\d{4})$/;
+    const match = phoneNumber.match(regex);
+    if (match) {
+      return `${match[1]} (${match[2]}) ${match[3]}-${match[4]}`;
+    }
+    return phoneNumber; // Retorna o número como está se o formato não corresponder
+  };
+
+  // Função para formatar o CPF no formato 000.000.000-00
+  const formatCPF = (cpf: string) => {
+    const regex = /^(\d{3})(\d{3})(\d{3})(\d{2})$/;
+    const match = cpf.match(regex);
+    if (match) {
+      return `${match[1]}.${match[2]}.${match[3]}-${match[4]}`;
+    }
+    return cpf; // Retorna o CPF como está se o formato não corresponder
+  };
+
+  // Função para formatar o CEP no formato 00.000-000
+  const formatCEP = (cep: string) => {
+    const regex = /^(\d{2})(\d{3})(\d{3})$/;
+    const match = cep.match(regex);
+    if (match) {
+      return `${match[1]}.${match[2]}-${match[3]}`;
+    }
+    return cep; // Retorna o CEP como está se o formato não corresponder
+  };
+
   const handleDeletePaciente = async () => {
     Alert.alert(
       'Confirmar Exclusão',
@@ -182,30 +221,42 @@ const PacienteDetails = () => {
         <Text style={styles.header}>Detalhes do Paciente</Text>
         <View style={styles.detailsContainer}>
           <Text style={styles.detailItem}>Nome: {parsedPatient?.name}</Text>
-          <Text style={styles.detailItem}>CPF: {parsedPatient?.cpf}</Text>
+          <Text style={styles.detailItem}>
+            CPF: {parsedPatient?.cpf ? formatCPF(parsedPatient.cpf) : 'CPF não disponível'}
+          </Text>
           <Text style={styles.detailItem}>
             Data de Nascimento:{' '}
             {parsedPatient?.birth_date
-              ? new Date(parsedPatient.birth_date).toLocaleDateString()
+              ? formatDate(parsedPatient.birth_date)
               : 'Data não disponível'}
           </Text>
           <Text style={styles.detailItem}>Sexo: {parsedPatient?.gender}</Text>
-          <Text style={styles.detailItem}>Telefone: {parsedPatient?.phone_number}</Text>
-          <Text style={styles.detailItem}>CEP: {parsedPatient?.zip_code}</Text>
+          <Text style={styles.detailItem}>
+            Telefone:{' '}
+            {parsedPatient?.phone_number
+              ? formatPhoneNumber(parsedPatient.phone_number)
+              : 'Telefone não disponível'}
+          </Text>
+          <Text style={styles.detailItem}>
+            CEP:{' '}
+            {parsedPatient?.zip_code ? formatCEP(parsedPatient.zip_code) : 'CEP não disponível'}
+          </Text>
           <Text style={styles.detailItem}>UF: {parsedPatient?.uf}</Text>
           <Text style={styles.detailItem}>Cidade: {parsedPatient?.city}</Text>
           <Text style={styles.detailItem}>Endereço: {parsedPatient?.address}</Text>
           {attendance && (
             <>
-              <Text style={styles.detailItem}>
-                Data da Última Consulta:{' '}
-                {attendance.updated_at
-                  ? new Date(attendance.updated_at).toLocaleDateString()
-                  : 'Data não disponível'}
-              </Text>
-              <Text style={styles.detailItem}>
-                Médico da Última Consulta: {attendance.doctor_name ?? 'Nome não disponível'}
-              </Text>
+              <View style={styles.vaccinesContainer}>
+                <Text style={styles.detailItem}>
+                  Data da Última Consulta:{' '}
+                  {attendance.updated_at
+                    ? formatDate(attendance.updated_at)
+                    : 'Data não disponível'}
+                </Text>
+                <Text style={styles.detailItem}>
+                  Médico da Última Consulta: {attendance.doctor_name ?? 'Nome não disponível'}
+                </Text>
+              </View>
             </>
           )}
           {vaccines.length > 0 && (
@@ -215,7 +266,7 @@ const PacienteDetails = () => {
                 <Text key={vaccine.id} style={styles.detailItem}>
                   {vaccine.vaccine_name} - Dose {vaccine.dose_number} - Aplicada em:{' '}
                   {vaccine.administered_at
-                    ? new Date(vaccine.administered_at).toLocaleDateString()
+                    ? formatDate(vaccine.administered_at)
                     : 'Data não disponível'}
                 </Text>
               ))}

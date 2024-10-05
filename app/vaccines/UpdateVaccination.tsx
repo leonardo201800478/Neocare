@@ -4,8 +4,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-import { useSystem } from '../../../powersync/PowerSync';
-import styles from '../../styles/VaccinationStyles';
+import { useSystem } from '../../powersync/PowerSync';
+import styles from '../styles/VaccinationStyles';
 
 const UpdateVaccine = () => {
   const router = useRouter();
@@ -19,7 +19,7 @@ const UpdateVaccine = () => {
     const fetchVaccineDetails = async () => {
       if (!vaccineId) {
         Alert.alert('Erro', 'Vacina não encontrada.');
-        router.replace('/(tabs)/vaccines/');
+        router.replace('/vaccines/');
         return;
       }
 
@@ -63,7 +63,7 @@ const UpdateVaccine = () => {
         Alert.alert('Erro', 'Erro ao atualizar vacina.');
       } else {
         Alert.alert('Sucesso', 'Vacina atualizada com sucesso!');
-        router.replace('/(tabs)/vaccines/');
+        router.replace('/vaccines/');
       }
     } catch (error) {
       console.error('Erro ao atualizar vacina:', error);

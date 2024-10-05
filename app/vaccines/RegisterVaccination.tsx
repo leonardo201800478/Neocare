@@ -4,8 +4,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-import { useSystem } from '../../../powersync/PowerSync';
-import styles from '../../styles/VaccinationStyles';
+import { useSystem } from '../../powersync/PowerSync';
+import styles from '../styles/VaccinationStyles';
 
 const RegisterVaccination = () => {
   const router = useRouter();
@@ -16,6 +16,12 @@ const RegisterVaccination = () => {
   const [doseNumber, setDoseNumber] = useState('');
 
   const handleRegister = async () => {
+    // Valida se os campos estão preenchidos e se o paciente foi passado corretamente
+    if (!parsedPatient) {
+      Alert.alert('Erro', 'Paciente não encontrado.');
+      return;
+    }
+
     if (!vaccineName || !doseNumber) {
       Alert.alert('Erro', 'Preencha todos os campos.');
       return;
@@ -34,7 +40,8 @@ const RegisterVaccination = () => {
         Alert.alert('Erro', 'Erro ao cadastrar vacina.');
       } else {
         Alert.alert('Sucesso', 'Vacina cadastrada com sucesso!');
-        router.replace('/(tabs)/vaccines/');
+        // Redireciona para a lista de vacinas do paciente
+        router.replace(`/vaccines/?patient=${encodeURIComponent(JSON.stringify(parsedPatient))}`);
       }
     } catch (error) {
       console.error('Erro ao cadastrar vacina:', error);
@@ -58,6 +65,7 @@ const RegisterVaccination = () => {
         placeholderTextColor="#888"
         value={doseNumber}
         onChangeText={setDoseNumber}
+        keyboardType="numeric" // Define o tipo de teclado apropriado
       />
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>REGISTRAR VACINA</Text>
