@@ -1,4 +1,4 @@
-//powersync/AppSchema.ts
+// powersync/AppSchema.ts
 
 import { column, Schema, Table } from '@powersync/react-native';
 
