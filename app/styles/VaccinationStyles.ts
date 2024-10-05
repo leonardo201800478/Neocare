@@ -1,45 +1,72 @@
+// app/styles/VaccinationStyles.ts
+
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+const VaccinationStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#151515', // Mantendo o background padrão da aplicação principal
+    padding: 16,
+    backgroundColor: '#f2f2f2',
   },
   header: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#A700FF',
+    color: '#333',
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
   },
-  input: {
-    width: '100%',
-    marginBottom: 15,
-    padding: 15,
-    backgroundColor: '#363636',
-    borderRadius: 10,
-    color: '#fff',
-    fontSize: 16,
-  },
-  buttonContainer: {
-    marginTop: 20,
+  tableHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 2,
+    borderColor: '#ddd',
+    backgroundColor: '#e6e6e6',
+    paddingHorizontal: 10,
+  },
+  tableHeaderText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+    textAlign: 'center',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+    marginBottom: 5,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  vaccineName: {
+    flex: 2,
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'left',
+  },
+  doseNumber: {
+    flex: 1,
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
   },
   button: {
-    flex: 1,
-    padding: 15,
-    backgroundColor: '#A700FF',
+    backgroundColor: '#008000',
+    paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginHorizontal: 5,
+    marginVertical: 20,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });
 
-export default styles;
+export default VaccinationStyles;

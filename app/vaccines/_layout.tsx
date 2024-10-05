@@ -11,7 +11,6 @@ export default function VaccineLayout() {
       }}>
       <Stack.Screen name="index" options={{ title: 'Lista de Vacinações' }} />
       <Stack.Screen name="RegisterVaccination" options={{ title: 'Registrar Vacinação' }} />
-      <Stack.Screen name="UpdateVaccination" options={{ title: 'Atualizar Vacinação' }} />
     </Stack>
   );
 }
