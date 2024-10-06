@@ -3,7 +3,7 @@
 import React from 'react';
 import { TextInput, Alert } from 'react-native';
 
-import styles from '../app/styles/CadastroPacienteStyles';
+import styles from '../app/(tabs)/patients/styles/PacienteStyles';
 import { formatCEP, removeCEPFormat } from '../utils/formatUtils';
 
 const CEPInput = ({

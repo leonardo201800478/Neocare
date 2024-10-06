@@ -1,17 +1,21 @@
-//APP/PATIENTS/[CPF].TSX
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 
-import { Patient } from '../../../powersync/AppSchema';
 import { useSystem } from '../../../powersync/PowerSync';
+import { usePatient } from '../../context/PatientContext';
+import { useDoctor } from '../../context/DoctorContext';
+import { Attendance, Vaccination } from '../../../powersync/AppSchema';
 
 const PacienteDetails: React.FC = () => {
   const { cpf } = useLocalSearchParams<{ cpf: string }>(); // Pegando o parâmetro dinâmico da URL de forma tipada
-  const { db } = useSystem();
-  const [paciente, setPaciente] = useState<Patient | null>(null);
+  const { db, supabaseConnector } = useSystem();
   const [loading, setLoading] = useState<boolean>(true);
+  const [attendance, setAttendance] = useState<Attendance | null>(null);
+  const [hasVaccinations, setHasVaccinations] = useState<boolean>(false);
+
+  const { selectedPatient, setSelectedPatient } = usePatient();
+  const { doctorId } = useDoctor();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,16 +30,23 @@ const PacienteDetails: React.FC = () => {
   const loadPaciente = async (cpf: string) => {
     setLoading(true);
     try {
-      const result = await db.selectFrom('patients').selectAll().where('cpf', '=', cpf).execute();
-      if (result.length > 0) {
-        setPaciente(result[0]);
+      const { data, error } = await supabaseConnector.client
+        .from('patients')
+        .select('*')
+        .eq('cpf', cpf)
+        .single();
+
+      if (error) {
+        console.error('Erro ao carregar paciente:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os detalhes do paciente.');
+      } else if (data) {
+        setSelectedPatient(data);
       } else {
-        setPaciente(null);
+        setSelectedPatient(null);
       }
     } catch (error) {
       console.error('Erro ao carregar paciente:', error);
-      console.log('Detalhes do erro ao buscar paciente:', error); // Adicionando log para depurar erros do Supabase
-      Alert.alert('Erro', 'Não foi possível carregar os detalhes do paciente.');
+      Alert.alert('Erro', 'Ocorreu um erro ao carregar os detalhes do paciente.');
     } finally {
       setLoading(false);
     }
@@ -49,17 +60,59 @@ const PacienteDetails: React.FC = () => {
         style: 'destructive',
         onPress: async () => {
           try {
-            await db.deleteFrom('patients').where('cpf', '=', cpf).execute();
-            Alert.alert('Sucesso', 'Paciente excluído com sucesso.');
-            router.replace('/(tabs)/home/');
+            setLoading(true);
+            if (selectedPatient) {
+              await supabaseConnector.client
+                .from('attendances')
+                .delete()
+                .eq('patient_id', selectedPatient.id);
+              await supabaseConnector.client
+                .from('vaccinations')
+                .delete()
+                .eq('patient_id', selectedPatient.id);
+              const { error } = await supabaseConnector.client
+                .from('patients')
+                .delete()
+                .eq('cpf', selectedPatient.cpf);
+
+              if (error) {
+                console.error('Erro ao excluir paciente do Supabase:', error);
+                Alert.alert('Erro', 'Erro ao excluir o paciente do Supabase.');
+              } else {
+                setSelectedPatient(null);
+                Alert.alert('Sucesso', 'Paciente excluído com sucesso.');
+                router.replace('/(tabs)/home/');
+              }
+            }
           } catch (error) {
             console.error('Erro ao excluir paciente:', error);
-            console.log('Detalhes do erro ao excluir paciente:', error); // Adicionando log para depurar erros ao excluir
             Alert.alert('Erro', 'Ocorreu um erro ao excluir o paciente.');
+          } finally {
+            setLoading(false);
           }
         },
       },
     ]);
+  };
+
+  const handleOpenConsulta = () => {
+    if (selectedPatient?.id) {
+      router.push(
+        `/attendences/RegisterAttendance?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
+      );
+    } else {
+      Alert.alert('Erro', 'ID do paciente não encontrado.');
+    }
+  };
+
+  const handleRegisterVaccination = () => {
+    if (selectedPatient?.id) {
+      router.push(
+        `/vaccines/RegisterVaccination?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
+      );
+    } else {
+      Alert.alert('Erro', 'ID do paciente não encontrado.');
+    }
   };
 
   if (loading) {
@@ -71,7 +124,7 @@ const PacienteDetails: React.FC = () => {
     );
   }
 
-  if (!paciente) {
+  if (!selectedPatient) {
     return (
       <View style={styles.loadingContainer}>
         <Text>Paciente não encontrado.</Text>
@@ -86,24 +139,30 @@ const PacienteDetails: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Detalhes do Paciente</Text>
       <View style={styles.detailsContainer}>
-        <Text style={styles.detailItem}>Nome: {paciente.name}</Text>
-        <Text style={styles.detailItem}>CPF: {paciente.cpf}</Text>
+        <Text style={styles.detailItem}>Nome: {selectedPatient.name}</Text>
+        <Text style={styles.detailItem}>CPF: {selectedPatient.cpf}</Text>
         <Text style={styles.detailItem}>
           Data de Nascimento:{' '}
-          {paciente.birth_date
-            ? new Date(paciente.birth_date).toLocaleDateString()
+          {selectedPatient.birth_date
+            ? new Date(selectedPatient.birth_date).toLocaleDateString()
             : 'Data não disponível'}
         </Text>
-        <Text style={styles.detailItem}>Sexo: {paciente.gender}</Text>
-        <Text style={styles.detailItem}>Telefone: {paciente.phone_number}</Text>
-        <Text style={styles.detailItem}>CEP: {paciente.zip_code}</Text>
-        <Text style={styles.detailItem}>UF: {paciente.uf}</Text>
-        <Text style={styles.detailItem}>Cidade: {paciente.city}</Text>
-        <Text style={styles.detailItem}>Endereço: {paciente.address}</Text>
+        <Text style={styles.detailItem}>Sexo: {selectedPatient.gender}</Text>
+        <Text style={styles.detailItem}>Telefone: {selectedPatient.phone_number}</Text>
+        <Text style={styles.detailItem}>CEP: {selectedPatient.zip_code}</Text>
+        <Text style={styles.detailItem}>UF: {selectedPatient.uf}</Text>
+        <Text style={styles.detailItem}>Cidade: {selectedPatient.city}</Text>
+        <Text style={styles.detailItem}>Endereço: {selectedPatient.address}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonDelete} onPress={handleDeletePaciente}>
           <Text style={styles.buttonText}>DELETAR PACIENTE</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonConsulta} onPress={handleOpenConsulta}>
+          <Text style={styles.buttonText}>ABRIR CONSULTA</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonVaccine} onPress={handleRegisterVaccination}>
+          <Text style={styles.buttonText}>REGISTRAR VACINA</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -152,6 +211,21 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonConsulta: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonVaccine: {
+    backgroundColor: '#FFA500',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   buttonHome: {
     backgroundColor: '#4CAF50',

@@ -1,30 +1,25 @@
-//APP/ATTENDANCES/_LAYOUT.TSX
+// powersync/SupabaseConnector.tsx
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import 'react-native-url-polyfill/auto';
 import {
   AbstractPowerSyncDatabase,
   CrudEntry,
   PowerSyncBackendConnector,
   UpdateType,
 } from '@powersync/react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import 'react-native-url-polyfill/auto';
-
-/// Postgres Response codes that we cannot recover from by retrying.
-const FATAL_RESPONSE_CODES = [
-  // Class 22 — Data Exception
-  // Examples include data type mismatch.
-  new RegExp('^22...$'),
-  // Class 23 — Integrity Constraint Violation.
-  // Examples include NOT NULL, FOREIGN KEY and UNIQUE violations.
-  new RegExp('^23...$'),
-  // INSUFFICIENT PRIVILEGE - typically a row-level security violation
-  new RegExp('^42501$'),
-];
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
 const powersyncUrl = process.env.EXPO_PUBLIC_POWERSYNC_URL as string;
+
+// Definindo códigos de resposta fatais que não podem ser recuperados por meio de novas tentativas
+const FATAL_RESPONSE_CODES = [
+  new RegExp('^22...$'), // Class 22 — Data Exception (ex.: tipo de dado incorreto)
+  new RegExp('^23...$'), // Class 23 — Integrity Constraint Violation (ex.: restrições NOT NULL, UNIQUE, etc.)
+  new RegExp('^42501$'), // INSUFFICIENT PRIVILEGE - geralmente uma violação de segurança em nível de linha
+];
 
 export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
@@ -96,14 +91,14 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         }
 
         if (result.error) {
-          throw new Error(`Could not ${op.op} data to Supabase error: ${JSON.stringify(result)}`);
+          throw new Error(`Could not ${op.op} data to Supabase. Error: ${JSON.stringify(result)}`);
         }
       }
 
       await transaction.complete();
     } catch (ex: any) {
       console.debug(ex);
-      if (typeof ex.code == 'string' && FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))) {
+      if (typeof ex.code === 'string' && FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))) {
         console.error(`Data upload error - discarding ${lastOp}`, ex);
         await transaction.complete();
       } else {

@@ -1,11 +1,16 @@
 // app/context/VaccinationContext.tsx
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+
 import { Vaccination } from '../../powersync/AppSchema';
 
 type VaccinationContextType = {
   vaccinations: Vaccination[];
-  addVaccination: (vaccination: Vaccination) => void;
+  addVaccination: (
+    vaccination: Partial<Vaccination>,
+    doctorId: string,
+    patientId: string
+  ) => Promise<void>;
   removeVaccination: (id: string) => void;
 };
 
@@ -14,8 +19,12 @@ const VaccinationContext = createContext<VaccinationContextType | undefined>(und
 export const VaccinationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
 
-  const addVaccination = (vaccination: Vaccination) => {
-    setVaccinations((prev) => [...prev, vaccination]);
+  const addVaccination = async (
+    vaccination: Partial<Vaccination>,
+    doctorId: string,
+    patientId: string
+  ) => {
+    // Implementar lógica para adicionar vacinação associando doctor_id e patient_id
   };
 
   const removeVaccination = (id: string) => {

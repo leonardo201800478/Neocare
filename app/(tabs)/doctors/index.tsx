@@ -1,5 +1,3 @@
-// app/(tabs)/doctors/index.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
@@ -9,7 +7,7 @@ import { useDoctor } from '../../context/DoctorContext';
 
 const DoctorProfile: React.FC = () => {
   const { supabaseConnector } = useSystem();
-  const { setDoctorId } = useDoctor();
+  const { setSelectedDoctor } = useDoctor();
   const [doctor, setDoctor] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -22,28 +20,45 @@ const DoctorProfile: React.FC = () => {
     setLoading(true);
     try {
       // Obtendo as credenciais do usuário autenticado
-      const { userID, client } = await supabaseConnector.fetchCredentials();
+      const { client } = supabaseConnector;
+      const { data: userData, error: userError } = await client.auth.getUser();
 
-      if (!userID) {
+      if (userError || !userData.user) {
+        throw new Error('Erro ao obter informações do usuário. Faça login novamente.');
+      }
+
+      const userId = userData.user.id;
+
+      if (!userId) {
         throw new Error('Usuário não autenticado ou credenciais inválidas.');
       }
 
-      // Buscar os dados do médico no Supabase utilizando o userID
+      // Buscar os dados do médico no Supabase utilizando o auth_user_id
       const { data, error } = await client
         .from('doctors')
         .select('*')
-        .eq('id', userID) // Certifique-se de que o campo está correto para vincular com userID.
+        .eq('auth_user_id', userId) // Corrigido para usar auth_user_id
         .single();
 
       if (error) {
-        throw new Error(`Erro ao buscar dados do médico: ${error.message}`);
-      }
-
-      if (data) {
+        if (error.code === 'PGRST116') {
+          // Se não encontrar, significa que o médico não foi registrado
+          Alert.alert(
+            'Aviso',
+            'Nenhum médico registrado para esse usuário. Por favor, registre-se.',
+            [
+              {
+                text: 'Registrar Médico',
+                onPress: () => router.replace('/(tabs)/doctors/register'),
+              },
+            ]
+          );
+        } else {
+          throw new Error(`Erro ao buscar dados do médico: ${error.message}`);
+        }
+      } else if (data) {
         setDoctor(data);
-        setDoctorId(data.id); // Armazenando o doctor_id no contexto
-      } else {
-        console.warn('Dados do médico não encontrados para o ID:', userID);
+        setSelectedDoctor(data); // Armazenando o doctor_id no contexto
       }
     } catch (error) {
       console.error('Erro ao carregar os dados do médico:', error);

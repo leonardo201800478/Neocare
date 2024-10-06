@@ -1,28 +1,23 @@
+// app/auth/index.tsx
+
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  StyleSheet,
-} from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { useSystem } from '../../powersync/PowerSync';
+import { useDoctor } from '../context/DoctorContext';
 import { authStyles } from '../styles/AuthStyles';
 
-const Login = () => {
+const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { supabaseConnector } = useSystem();
+  const { setSelectedDoctor } = useDoctor(); // Corrigido para definir o médico selecionado no contexto
   const router = useRouter();
 
   const onSignInPress = async () => {
-    // Verificação dos tipos de email e senha
     if (
       typeof email !== 'string' ||
       typeof password !== 'string' ||
@@ -37,8 +32,53 @@ const Login = () => {
     try {
       console.log('Tentando logar com:', { email, password });
 
-      // Tentativa de login
-      await supabaseConnector.login(email, password);
+      // Tentativa de login no Supabase
+      const { data, error } = await supabaseConnector.client.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Buscando o ID do usuário após o login
+      const userId = data.user?.id;
+
+      if (!userId) {
+        throw new Error('Erro ao obter ID do usuário.');
+      }
+
+      console.log('ID do usuário autenticado:', userId); // Log para verificar o userId
+
+      // Buscar o registro do médico usando o campo auth_user_id
+      const { data: doctorData, error: doctorError } = await supabaseConnector.client
+        .from('doctors')
+        .select('*')
+        .eq('auth_user_id', userId)
+        .single();
+
+      if (doctorError) {
+        console.error('Erro ao buscar dados do médico:', doctorError.message); // Log detalhado do erro
+        throw new Error('Erro ao buscar dados do médico.');
+      }
+
+      if (!doctorData) {
+        // Médico não encontrado, redirecionar para registro de médico
+        Alert.alert('Erro', 'Dados do médico não encontrados. Você precisa registrar seus dados.', [
+          {
+            text: 'Registrar',
+            onPress: () => router.push('/auth/Register'),
+          },
+          {
+            text: 'Cancelar',
+            style: 'cancel',
+          },
+        ]);
+        return;
+      }
+
+      setSelectedDoctor(doctorData); // Definindo o médico no contexto
       console.log('Login bem-sucedido');
       router.replace('/(tabs)/home'); // Redireciona para a tela Home
     } catch (error: any) {
@@ -75,7 +115,7 @@ const Login = () => {
 
       {/* Campo de Email com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="envelope" size={20} color="#999" adjustsFontSizeToFit style={authStyles.icon} />
+        <Icon name="envelope" size={20} color="#999" style={authStyles.icon} />
         <TextInput
           placeholder="Email"
           value={email}
@@ -100,9 +140,8 @@ const Login = () => {
         />
       </View>
 
-      {/* Botão de Login com Ícone */}
-      <TouchableOpacity onPress={onSignInPress} style={[authStyles.button, styles.buttonWithIcon]}>
-        <Icon name="sign-in" size={20} color="#fff" style={styles.buttonIcon} />
+      {/* Botão de Login */}
+      <TouchableOpacity onPress={onSignInPress} style={authStyles.button}>
         <Text style={authStyles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
@@ -119,14 +158,4 @@ const Login = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  buttonWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonIcon: {
-    marginRight: 10,
-  },
-});
 export default Login;

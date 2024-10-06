@@ -1,4 +1,4 @@
-// powersync/uuid.ts
+// utils/uuid.ts
 import * as Crypto from 'expo-crypto';
 
 export function uuid() {

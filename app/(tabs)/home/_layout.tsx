@@ -1,5 +1,3 @@
-// app/home/_layout.tsx
-
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, router } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
@@ -12,7 +10,7 @@ const Layout: React.FC = () => {
 
   const onSignOut = async () => {
     try {
-      await powersync.disconnectAndClear();
+      await powersync.disconnect();
       await supabaseConnector.client.auth.signOut();
       // Redireciona para a tela de login após o logout
       router.replace('/auth/');

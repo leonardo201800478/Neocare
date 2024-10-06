@@ -4,19 +4,41 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, ActivityIndicator } from 'react-native';
 
+import { useSystem } from '../powersync/PowerSync';
+
 const Index = () => {
   const router = useRouter();
+  const { supabaseConnector } = useSystem();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulando tempo de exibição da splash screen antes do redirecionamento
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      router.replace('/auth/'); // Redireciona para a tela de Login após a splash
-    }, 3000); // Exibe a splash por 3 segundos
+    // Verificando se há sessão de usuário para redirecionar automaticamente
+    const checkUserSession = async () => {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabaseConnector.client.auth.getSession();
+        if (error) {
+          console.error('Erro ao obter a sessão do usuário:', error);
+        }
 
-    return () => clearTimeout(timer);
-  }, [router]);
+        if (session) {
+          // Se o usuário estiver logado, redireciona para a página inicial
+          router.replace('/(tabs)/home/');
+        } else {
+          // Se não estiver logado, redireciona para a página de login
+          router.replace('/auth/');
+        }
+      } catch (error) {
+        console.error('Erro ao verificar a sessão do usuário:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkUserSession();
+  }, [router, supabaseConnector]);
 
   return (
     <View style={styles.container}>

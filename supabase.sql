@@ -1,145 +1,119 @@
--- Tabela Doctors (Médicos)
-CREATE TABLE public.doctors (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  name text NOT NULL,
-  owner_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE,
-  UNIQUE (owner_id)
-);
+create table
+  public.doctors (
+    id uuid not null default gen_random_uuid (),
+    created_at timestamp with time zone not null default now(),
+    email text not null,
+    name text null,
+    auth_user_id uuid null default auth.uid (),
+    constraint doctors_pkey primary key (id)
+  ) tablespace pg_default;
 
--- Tabela Patients (Pacientes)
-CREATE TABLE public.patients (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  nome_patients text NOT NULL,
-  cpf_patients text UNIQUE NOT NULL,
-  data_nasc_patients date,
-  sexo_patients text,
-  email_patients text,
-  fone_patients text,
-  cep_patients text,
-  uf_patients text,
-  cidade_patients text,
-  endereco_patients text,
-  numero_endereco_patients text,
-  created_by uuid NULL REFERENCES auth.users (id) ON DELETE SET NULL,
-  doctor_id uuid NOT NULL REFERENCES public.doctors (id) ON DELETE CASCADE,
-  updated_at timestamp with time zone DEFAULT now(),
-  UNIQUE (cpf_patients)
-);
+create index if not exists doctors_email_idx on public.doctors using btree (email) tablespace pg_default;
 
--- Tabela Attendances (Prontuários)
-CREATE TABLE public.attendances (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  patient_id uuid NOT NULL REFERENCES public.patients (id) ON DELETE CASCADE,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp with time zone DEFAULT now(),
+create table
+  public.patients (
+    id uuid not null default gen_random_uuid (),
+    created_at timestamp with time zone not null default now(),
+    updated_at timestamp with time zone null default now(),
+    name text not null,
+    cpf text not null,
+    birth_date text not null,
+    gender text null,
+    phone_number text null,
+    address text null,
+    city text null,
+    uf text null,
+    zip_code text null,
+    created_by uuid null default auth.uid (),
+    doctor_id uuid null,
+    constraint patients_pkey primary key (id),
+    constraint patients_cpf_unique unique (cpf),
+    constraint patients_created_by_fkey foreign key (created_by) references auth.users (id) on delete set null,
+    constraint patients_doctor_id_fkey foreign key (doctor_id) references doctors (id) on update cascade on delete set default
+  ) tablespace pg_default;
 
-  -- Informações gerais
-  data_atendimento text NOT NULL,
-  primeira_consulta text, -- Sim/Não
-  consulta_retorno text, -- Sim/Não
-  motivo_consulta text,
-  peso_kg text,
-  comprimento_cm text,
-  perimetro_cefalico_cm text,
-  
-  -- Pergunta: Quais os problemas da criança?
-  problemas_da_crianca text,
-  
-  -- Avaliar sinais gerais de perigo
-  nao_bebe_ou_mama text, -- Sim/Não
-  vomita_tudo text, -- Sim/Não
-  convulsoes text, -- Sim/Não
-  letargica text, -- Sim/Não
-  enchimento_capilar text, -- Sim/Não
-  batimento_asa text, -- Sim/Não
-  
-  -- Tosse ou dificuldade para respirar
-  tem_tosse text, -- Sim/Não
-  tosse_ha_quanto_tempo text,
-  numero_respiracoes_por_minuto text,
-  respiracao_rapida text, -- Sim/Não
-  tiragem_subcostal text, -- Sim/Não
-  estridor text, -- Sim/Não
-  sibilancia text, -- Sim/Não
-  sibilancia_ha_quanto_tempo text,
-  primeira_crise text, -- Sim/Não
-  broncodilatador text, -- Sim/Não
-  
-  -- Diarreia
-  tem_diarreia text, -- Sim/Não
-  diarreia_ha_quanto_tempo text,
-  sangue_nas_fezes text, -- Sim/Não
-  
-  -- Febre
-  tem_febre text, -- Sim/Não
-  area_risco_malaria text, -- 'sem risco', 'alto risco', 'baixo risco'
-  febre_ha_quanto_tempo text,
-  febre_todos_os_dias text, -- Sim/Não
-  rigidez_nuca text, -- Sim/Não
-  petequias text, -- Sim/Não
-  abaulamento_fontanela text, -- Sim/Não
-  
-  -- Problemas de ouvido
-  problema_ouvido text, -- Sim/Não
-  dor_no_ouvido text, -- Sim/Não
-  secrecao_ouvido text, -- Sim/Não
-  secrecao_ha_quanto_tempo text,
-  
-  -- Dor de garganta
-  dor_garganta text, -- Sim/Não
-  ganglios_cervicais text, -- Sim/Não
-  abaulamento_palato text, -- Sim/Não
-  amigdalas_membrana text, -- Sim/Não
-  amigdalas_pontos_purulentos text, -- Sim/Não
-  vesiculas_hiperemia text, -- Sim/Não
+create index if not exists patients_cpf_idx on public.patients using btree (cpf) tablespace pg_default;
 
-  -- Doença grave ou infecção local (para recém-nascidos)
-  gemido text, -- Sim/Não
-  cianose_periferica text, -- Sim/Não
-  ictericia text, -- Sim/Não
-  secrecao_umbilical text, -- Sim/Não
-  distensao_abdominal text, -- Sim/Não
-  anomalias_congenitas text, -- Sim/Não
+create table
+  public.attendances (
+    id uuid not null default gen_random_uuid (),
+    created_at timestamp with time zone not null default now(),
+    updated_at timestamp with time zone null default now(),
+    patient_id uuid not null,
+    created_by uuid null default auth.uid (),
+    data_atendimento text not null,
+    primeira_consulta text null,
+    consulta_retorno text null,
+    motivo_consulta text null,
+    doctor_id uuid null,
+    constraint attendances_pkey primary key (id),
+    constraint attendances_doctor_id_fkey foreign key (doctor_id) references doctors (id) on update cascade on delete set default,
+    constraint attendances_patient_id_fkey foreign key (patient_id) references patients (id) on delete cascade,
+    constraint attendances_registrado_por_fkey foreign key (created_by) references auth.users (id) on delete set null
+  ) tablespace pg_default;
 
-  -- Desnutrição ou anemia
-  emagrecimento text, -- Sim/Não
-  edema text, -- Sim/Não
-  palidez_palmar text, -- 'leve' ou 'grave'
-  peso_para_idade text, -- 'muito baixo', 'baixo', 'adequado', 'elevado'
-  ganho_insuficiente_peso text, -- Sim/Não
+  create table
+  public.attendance_vitals (
+    id uuid not null default gen_random_uuid (),
+    attendance_id uuid not null,
+    peso_kg text null,
+    comprimento_cm text null,
+    perimetro_cefalico_cm text null,
+    numero_respiracoes_por_minuto text null,
+    constraint attendance_vitals_pkey primary key (id),
+    constraint attendance_vitals_attendance_id_fkey foreign key (attendance_id) references attendances (id) on delete cascade
+  ) tablespace pg_default;
 
-  -- Alimentação da criança
-  amamentando text, -- Sim/Não
-  quantas_vezes_amamenta text,
-  amamenta_noite text, -- Sim/Não
-  alimentos_liquidos text,
-  quantidade_refeicoes text,
-  recebe_proporcao text, -- Sim/Não
-  tipo_alimentacao text,
-  mudou_alimentacao text, -- Sim/Não
-  como_mudou_alimentacao text,
+  create table
+  public.attendance_symptoms (
+    id uuid not null default gen_random_uuid (),
+    attendance_id uuid not null,
+    nao_bebe_ou_mama text null,
+    vomita_tudo text null,
+    convulsoes text null,
+    letargica text null,
+    enchimento_capilar text null,
+    batimento_asa text null,
+    tem_tosse text null,
+    sibilancia text null,
+    tem_diarreia text null,
+    tem_febre text null,
+    rigidez_nuca text null,
+    problema_ouvido text null,
+    dor_garganta text null,
+    gemido text null,
+    cianose_periferica text null,
+    ictericia text null,
+    distensao_abdominal text null,
+    emagrecimento text null,
+    edema text null,
+    constraint attendance_symptoms_pkey primary key (id),
+    constraint attendance_symptoms_attendance_id_fkey foreign key (attendance_id) references attendances (id) on delete cascade
+  ) tablespace pg_default;
 
-  -- Avaliar desenvolvimento
-  perda_peso_primeira_semana text, -- Sim/Não
-  tendencia_crescimento text,
-  habilidades_desenvolvimento text,
-
-  -- Prática de atividade física
-  atividade_fisica_vezes_semana text,
-  tempo_atividade_fisica text,
-  tempo_sedentario text,
-
-  -- Possibilidade de violência e outros problemas
-  avaliacao_violencia text,
-  outros_problemas text,
-
-  -- Registro do profissional que fez o atendimento
-  registrado_por uuid NULL REFERENCES auth.users (id) ON DELETE SET NULL
-);
-
-
+  create table
+  public.attendance_nutrition_development (
+    id uuid not null default gen_random_uuid (),
+    attendance_id uuid not null,
+    amamentando text null,
+    quantas_vezes_amamenta text null,
+    amamenta_noite text null,
+    alimentos_liquidos text null,
+    quantidade_refeicoes text null,
+    tipo_alimentacao text null,
+    mudou_alimentacao text null,
+    como_mudou_alimentacao text null,
+    perda_peso_primeira_semana text null,
+    tendencia_crescimento text null,
+    habilidades_desenvolvimento text null,
+    atividade_fisica_vezes_semana text null,
+    tempo_atividade_fisica text null,
+    tempo_sedentario text null,
+    avaliacao_violencia text null,
+    outros_problemas text null,
+    constraint attendance_nutrition_development_pkey primary key (id),
+    constraint attendance_nutrition_development_attendance_id_fkey foreign key (attendance_id) references attendances (id) on delete cascade
+  ) tablespace pg_default;
 
 
 -- Publicar tabelas para sincronização no powersync;
@@ -148,3 +122,6 @@ CREATE PUBLICATION powersync FOR TABLE
   public.doctors,
   public.patients,
   public.attendances;
+  public.attendance_vitals;
+  public.attendance_symptoms;
+  public.attendance_nutrition_development;

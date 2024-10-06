@@ -1,4 +1,4 @@
-//APP/PATIENTS/_LAYOUT.TSX
+//APP/(tabs)/PATIENTS/_LAYOUT.TSX
 
 import { Slot } from 'expo-router';
 import React from 'react';

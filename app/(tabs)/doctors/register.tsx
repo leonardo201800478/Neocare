@@ -1,22 +1,17 @@
 // app/doctors/register.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
 
 import { useSystem } from '../../../powersync/PowerSync';
+import { useDoctor } from '../../context/DoctorContext';
+import DoctorsStyles from '../../styles/DoctorsStyles';
 
-const RegisterDoctor = () => {
+const RegisterDoctor: React.FC = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const { supabaseConnector } = useSystem();
+  const { setSelectedDoctor } = useDoctor(); // Usando o contexto do médico para definir o médico selecionado
   const router = useRouter();
 
   const handleRegisterDoctor = async () => {
@@ -25,10 +20,9 @@ const RegisterDoctor = () => {
       return;
     }
 
-    setLoading(true); // Mostrar o indicador de carregamento durante o processo
+    setLoading(true);
     try {
-      // Obter ID e email do usuário logado
-      const { userID, client } = await supabaseConnector.fetchCredentials();
+      const { client } = supabaseConnector;
       const { data: userData, error: userError } = await client.auth.getUser();
 
       if (userError || !userData.user) {
@@ -36,8 +30,9 @@ const RegisterDoctor = () => {
       }
 
       const userEmail = userData.user.email;
+      const userId = userData.user.id;
 
-      if (!userID || !userEmail) {
+      if (!userId || !userEmail) {
         Alert.alert(
           'Erro',
           'Não foi possível obter as informações do usuário. Faça login novamente.'
@@ -45,36 +40,52 @@ const RegisterDoctor = () => {
         return;
       }
 
-      // Verificar se o médico já está registrado
+      // Verificar se o médico já existe para o auth_user_id
       const { data: existingDoctor, error: fetchError } = await client
         .from('doctors')
         .select('*')
-        .eq('id', userID)
+        .eq('auth_user_id', userId)
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
         throw new Error(`Erro ao verificar o médico no Supabase: ${fetchError.message}`);
       }
 
+      let doctorData;
       if (existingDoctor) {
-        Alert.alert('Atenção', 'Este médico já está registrado.');
-        router.replace('/(tabs)/home/'); // Redireciona para a tela Home se o médico já estiver registrado
-        return;
+        // Atualizar o nome do médico existente
+        const { data, error } = await client
+          .from('doctors')
+          .update({ name: name.trim() })
+          .eq('auth_user_id', userId)
+          .select('*')
+          .single();
+
+        if (error) {
+          throw new Error(`Erro ao atualizar o médico no Supabase: ${error.message}`);
+        }
+        doctorData = data;
+      } else {
+        // Inserir novo médico com nome e email e associar ao auth_user_id
+        const { data, error } = await client
+          .from('doctors')
+          .insert({
+            auth_user_id: userId,
+            name: name.trim(),
+            email: userEmail,
+          })
+          .select('*')
+          .single();
+
+        if (error) {
+          throw new Error(`Erro ao inserir o médico no Supabase: ${error.message}`);
+        }
+        doctorData = data;
       }
 
-      // Caso não exista, inserir novo médico com nome e email
-      const { error } = await client.from('doctors').upsert({
-        id: userID,
-        name: name.trim(),
-        email: userEmail,
-      });
-
-      if (error) {
-        throw new Error(`Erro ao inserir o médico no Supabase: ${error.message}`);
-      }
-
-      Alert.alert('Sucesso', 'Médico registrado com sucesso!');
-      router.replace('/(tabs)/doctors/'); // Redireciona para a tela de médicos após o registro
+      setSelectedDoctor(doctorData); // Atualiza o contexto do médico com os dados do registro/atualização
+      Alert.alert('Sucesso', 'Médico registrado/atualizado com sucesso!');
+      router.replace('/(tabs)/home/'); // Redireciona para a tela Home após o registro
     } catch (error) {
       console.error('Erro ao registrar o médico:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o médico.');
@@ -84,87 +95,32 @@ const RegisterDoctor = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={DoctorsStyles.container}>
       {loading && (
-        <View style={styles.loadingOverlay}>
+        <View style={DoctorsStyles.loadingOverlay}>
           <ActivityIndicator size="large" color="#fff" />
-          <Text style={styles.loadingText}>Registrando médico...</Text>
+          <Text style={DoctorsStyles.loadingText}>Registrando médico...</Text>
         </View>
       )}
-
-      <Text style={styles.header}>Cadastro do Médico</Text>
-
+      <Text style={DoctorsStyles.header}>Cadastro do Médico</Text>
       <TextInput
         placeholder="Nome Completo"
         value={name}
         onChangeText={setName}
-        style={styles.input}
+        style={DoctorsStyles.input}
         placeholderTextColor="#b0b0b0"
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleRegisterDoctor} disabled={loading}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
+      <TouchableOpacity
+        style={DoctorsStyles.button}
+        onPress={handleRegisterDoctor}
+        disabled={loading}>
+        <Text style={DoctorsStyles.buttonText}>Cadastrar/Atualizar</Text>
       </TouchableOpacity>
-
       <TouchableOpacity onPress={() => router.replace('/(tabs)/home/')}>
-        <Text style={styles.linkText}>Voltar para Home</Text>
+        <Text style={DoctorsStyles.linkText}>Voltar para Home</Text>
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#151515',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  },
-  loadingText: {
-    color: '#fff',
-    marginTop: 10,
-    fontSize: 18,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    color: '#fff',
-  },
-  input: {
-    width: '100%',
-    padding: 12,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 16,
-    color: '#fff',
-    backgroundColor: '#363636',
-  },
-  button: {
-    width: '80%',
-    padding: 12,
-    backgroundColor: '#A700FF',
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  linkText: {
-    color: '#A700FF',
-    fontSize: 16,
-    marginTop: 8,
-  },
-});
 
 export default RegisterDoctor;

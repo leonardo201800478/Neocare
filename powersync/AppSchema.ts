@@ -1,5 +1,3 @@
-// powersync/AppSchema.ts
-
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Tabela de médicos
@@ -10,7 +8,7 @@ const doctors = new Table({
   created_at: column.text,
   email: column.text,
   name: column.text,
-  user_id: column.text,
+  auth_user_id: column.text, // Mantendo a relação com o auth.users
 });
 
 // Tabela de pacientes
@@ -29,7 +27,8 @@ const patients = new Table({
   city: column.text,
   uf: column.text,
   zip_code: column.text,
-  created_by: column.text,
+  created_by: column.text, // Relacionado ao ID do usuário (auth.users)
+  doctor_id: column.text, // Associado ao ID do médico (doctors)
 });
 
 // Tabela de prontuários
@@ -40,15 +39,15 @@ const attendances = new Table({
   created_at: column.text,
   updated_at: column.text,
   patient_id: column.text,
-  registered_by: column.text,
+  created_by: column.text, // Criado pelo ID do usuário (auth.users)
   data_atendimento: column.text,
   primeira_consulta: column.text,
   consulta_retorno: column.text,
   motivo_consulta: column.text,
+  doctor_id: column.text, // Associado ao ID do médico (doctors)
 });
 
 // Tabela de sinais vitais
-
 export const ATTENDANCE_VITALS_TABLE = 'attendance_vitals';
 
 const attendance_vitals = new Table({
@@ -61,7 +60,6 @@ const attendance_vitals = new Table({
 });
 
 // Tabela de sintomas
-
 export const ATTENDANCE_SYMPTOMS_TABLE = 'attendance_symptoms';
 
 const attendance_symptoms = new Table({
@@ -89,7 +87,6 @@ const attendance_symptoms = new Table({
 });
 
 // Tabela de nutrição e desenvolvimento
-
 export const ATTENDANCE_NUTRITION_DEVELOPMENT_TABLE = 'attendance_nutrition_development';
 
 const attendance_nutrition_development = new Table({
@@ -114,7 +111,6 @@ const attendance_nutrition_development = new Table({
 });
 
 // Tabela de vacinações
-
 export const VACCINATIONS_TABLE = 'vaccinations';
 
 const vaccinations = new Table({

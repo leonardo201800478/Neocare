@@ -47,9 +47,9 @@ export default function AppTabsLayout() {
         tabBarStyle: {
           position: 'absolute', // Posiciona a tab bar de forma absoluta
           backgroundColor: 'transparent', // Torna o fundo transparente
-          borderTopWidth: 0, // Remove a borda superior
-          elevation: 0, // Remove a sombra no Android
-          shadowOpacity: 0, // Remove a sombra no iOS
+          borderTopWidth: 1, // Remove a borda superior
+          elevation: 1, // Remove a sombra no Android
+          shadowOpacity: 1, // Remove a sombra no iOS
           height: 55, // Ajusta a altura para maior personalização (opcional)
         },
       }}>

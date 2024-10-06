@@ -1,5 +1,3 @@
-// app/patients/register.tsx
-
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -44,7 +42,7 @@ const CadastroPaciente = () => {
   const [endereco, setEndereco] = useState('');
   const [numero, setNumero] = useState('');
   const router = useRouter();
-  const { supabaseConnector, powersync } = useSystem();
+  const { supabaseConnector, db } = useSystem();
 
   const handleCadastro = async () => {
     setLoading(true);
@@ -90,15 +88,25 @@ const CadastroPaciente = () => {
 
       console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
 
-      // Inserir o paciente diretamente via Supabase client
+      // Salvar paciente no banco local usando Kysely
+      await db
+        .insertInto('patients')
+        .values(newPatient)
+        .execute();
+
+      console.log('Paciente salvo localmente com sucesso.');
+
+      // Tentar sincronizar com Supabase
       const { data, error } = await supabaseConnector.client.from('patients').insert([newPatient]);
 
       if (error) {
-        throw error;
+        console.warn('Erro ao sincronizar com Supabase:', error.message);
+        Alert.alert('Aviso', 'Paciente salvo localmente, mas a sincronização com o Supabase falhou.');
+      } else {
+        console.log('Dados inseridos no Supabase:', data);
+        Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
       }
 
-      console.log('Dados inseridos no Supabase:', data);
-      Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
       router.replace(`/(tabs)/patients/PacienteDetails`);
     } catch (error) {
       console.error('Erro ao cadastrar o paciente:', error);
@@ -166,80 +174,11 @@ const CadastroPaciente = () => {
           <Picker
             selectedValue={sexo}
             style={styles.picker}
-            onValueChange={(itemValue) => setSexo(itemValue)}>
+            onValueChange={(itemValue) => setSexo(itemValue)}
+          >
             <Picker.Item label="Masculino" value="Masculino" />
             <Picker.Item label="Feminino" value="Feminino" />
           </Picker>
-        </View>
-
-        {/* Telefone com Código do País */}
-        <View style={styles.row}>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={codigoPais}
-              style={styles.picker}
-              onValueChange={(itemValue) => setCodigoPais(itemValue)}>
-              {countryCodes.map(({ code, country }) => (
-                <Picker.Item key={code} label={`${country} ${code}`} value={code} />
-              ))}
-            </Picker>
-          </View>
-          <TextInput
-            placeholder="Telefone:"
-            value={telefone}
-            onChangeText={setTelefone}
-            style={styles.inputSmall}
-            keyboardType="phone-pad"
-            placeholderTextColor="#ccc"
-          />
-        </View>
-
-        {/* Endereço */}
-        <View style={styles.container}>
-          <CEPInput
-            cep={cep}
-            setCep={setCep}
-            onAddressFound={(data) => {
-              setUf(data.uf);
-              setCidade(data.localidade);
-              setEndereco(data.logradouro);
-            }}
-          />
-        </View>
-        <View style={styles.row}>
-          <TextInput
-            placeholder="Logradouro"
-            value={endereco}
-            onChangeText={setEndereco}
-            style={styles.input}
-            placeholderTextColor="#ccc"
-          />
-        </View>
-        <View style={styles.row}>
-          <TextInput
-            placeholder="Número"
-            value={numero}
-            onChangeText={setNumero}
-            style={styles.inputSmall}
-            keyboardType="numeric"
-            placeholderTextColor="#ccc"
-          />
-        </View>
-        <View style={styles.row}>
-          <TextInput
-            placeholder="UF"
-            value={uf}
-            onChangeText={setUf}
-            style={styles.inputSmall}
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            placeholder="Cidade"
-            value={cidade}
-            onChangeText={setCidade}
-            style={styles.inputSmall}
-            placeholderTextColor="#ccc"
-          />
         </View>
 
         {/* Botões */}
