@@ -181,6 +181,74 @@ const CadastroPaciente = () => {
           </Picker>
         </View>
 
+        {/* Telefone com Código do País */}
+        <View style={styles.row}>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={codigoPais}
+              style={styles.picker}
+              onValueChange={(itemValue) => setCodigoPais(itemValue)}>
+              {countryCodes.map(({ code, country }) => (
+                <Picker.Item key={code} label={`${country} ${code}`} value={code} />
+              ))}
+            </Picker>
+          </View>
+          <TextInput
+            placeholder="Telefone:"
+            value={telefone}
+            onChangeText={setTelefone}
+            style={styles.inputSmall}
+            keyboardType="phone-pad"
+            placeholderTextColor="#ccc"
+          />
+        </View>
+        {/* Endereço */}
+        <View style={styles.container}>
+          <CEPInput
+            cep={cep}
+            setCep={setCep}
+            onAddressFound={(data) => {
+              setUf(data.uf);
+              setCidade(data.localidade);
+              setEndereco(data.logradouro);
+            }}
+          />
+        </View>
+        <View style={styles.row}>
+          <TextInput
+            placeholder="Logradouro"
+            value={endereco}
+            onChangeText={setEndereco}
+            style={styles.input}
+            placeholderTextColor="#ccc"
+          />
+        </View>
+        <View style={styles.row}>
+          <TextInput
+            placeholder="Número"
+            value={numero}
+            onChangeText={setNumero}
+            style={styles.inputSmall}
+            keyboardType="numeric"
+            placeholderTextColor="#ccc"
+          />
+        </View>
+        <View style={styles.row}>
+          <TextInput
+            placeholder="UF"
+            value={uf}
+            onChangeText={setUf}
+            style={styles.inputSmall}
+            placeholderTextColor="#ccc"
+          />
+          <TextInput
+            placeholder="Cidade"
+            value={cidade}
+            onChangeText={setCidade}
+            style={styles.inputSmall}
+            placeholderTextColor="#ccc"
+          />
+        </View>
         {/* Botões */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => router.replace('/(tabs)/home/')}>
