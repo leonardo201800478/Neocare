@@ -1,14 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  ScrollView,
-  SafeAreaView,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
 
 import styles from './styles/PacienteStyles';
 import LoadingOverlay from '../../../components/LoadingOverlay';
@@ -22,7 +14,7 @@ const PacienteDetails = () => {
   const router = useRouter();
   const { supabaseConnector } = useSystem();
   const { selectedPatient } = usePatient();
-  const { doctorId } = useDoctor();
+  const { selectedDoctor, setSelectedDoctor } = useDoctor();
   const { createAttendance } = useAttendance();
   const { addVaccination } = useVaccination();
 
@@ -32,6 +24,7 @@ const PacienteDetails = () => {
   useEffect(() => {
     if (selectedPatient) {
       checkAttendance(selectedPatient.id);
+      fetchDoctorIfNeeded();
     } else {
       Alert.alert('Erro', 'Paciente não encontrado.');
       router.replace('/(tabs)/home/');
@@ -61,19 +54,40 @@ const PacienteDetails = () => {
     }
   };
 
+  const fetchDoctorIfNeeded = async () => {
+    if (!selectedDoctor) {
+      try {
+        setLoading(true);
+        const { data, error } = await supabaseConnector.client.from('doctors').select('*').single(); // Supondo que há apenas um médico logado
+
+        if (error) {
+          console.error('Erro ao buscar dados do médico:', error);
+          Alert.alert('Erro', 'Não foi possível obter os detalhes do médico.');
+        } else {
+          setSelectedDoctor(data);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar dados do médico:', error);
+        Alert.alert('Erro', 'Erro ao buscar os detalhes do médico.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const handleCreateAttendance = async () => {
-    if (selectedPatient && doctorId) {
+    if (selectedPatient && selectedDoctor) {
       setLoading(true);
       try {
         const newAttendance = {
-          id: selectedPatient.id + doctorId, // Criando um identificador único baseado no paciente e médico
+          id: selectedPatient.id + selectedDoctor.id, // Criando um identificador único baseado no paciente e médico
           patient_id: selectedPatient.id,
-          created_by: doctorId,
+          created_by: selectedDoctor.id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
 
-        await createAttendance(newAttendance, doctorId, selectedPatient.id);
+        await createAttendance(newAttendance, selectedDoctor.id, selectedPatient.id);
 
         Alert.alert('Sucesso', 'Atendimento criado com sucesso.');
         setHasAttendance(true);
@@ -88,28 +102,25 @@ const PacienteDetails = () => {
     }
   };
 
-  const handleRegisterVaccination = async () => {
-    if (selectedPatient && doctorId) {
-      setLoading(true);
-      try {
-        const newVaccination = {
-          id: selectedPatient.id + doctorId + '-vaccine', // Criando um identificador único baseado no paciente e médico
-          patient_id: selectedPatient.id,
-          doctor_id: doctorId,
-          administered_at: new Date().toISOString(),
-        };
+  const handleRegisterVaccination = () => {
+    console.log('selectedPatient:', selectedPatient);
+    console.log('selectedDoctor:', selectedDoctor);
 
-        await addVaccination(newVaccination, doctorId, selectedPatient.id);
-
-        Alert.alert('Sucesso', 'Vacinação registrada com sucesso.');
-      } catch (error) {
-        console.error('Erro ao registrar vacinação:', error);
-        Alert.alert('Erro', 'Erro ao registrar vacinação.');
-      } finally {
-        setLoading(false);
-      }
+    if (selectedPatient && selectedDoctor) {
+      router.push(`/vaccines/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`);
     } else {
       Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
+    }
+  };
+
+  const handleViewVaccinationCard = () => {
+    if (selectedPatient) {
+      // Redirecionar para a tela do cartão de vacinação
+      router.push(
+        `/vaccines/CardVaccination/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
+      );
+    } else {
+      Alert.alert('Erro', 'Dados insuficientes para visualizar o cartão de vacinação.');
     }
   };
 
@@ -158,6 +169,11 @@ const PacienteDetails = () => {
           )}
           <TouchableOpacity style={styles.buttonVaccine} onPress={handleRegisterVaccination}>
             <Text style={styles.buttonText}>REGISTRAR VACINAÇÃO</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonVaccine}
+            onPress={() => router.push('/vaccines/CardVaccination')}>
+            <Text style={styles.buttonText}>VER CARTÃO DE VACINAÇÃO</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

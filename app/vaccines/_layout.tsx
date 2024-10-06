@@ -11,8 +11,8 @@ export default function VaccineLayout() {
         headerTitleAlign: 'center',
         headerStyle: { backgroundColor: '#f0f0f0' },
       }}>
-      <Stack.Screen name="index" options={{ title: 'Lista de Vacinações' }} />
-      <Stack.Screen name="RegisterVaccination" options={{ title: 'Registrar Vacinação' }} />
+      <Stack.Screen name="index" options={{ title: 'Cadastrar Vacinas' }} />
+      <Stack.Screen name="CardVaccination" options={{ title: 'Cartão de Vacinação' }} />
     </Stack>
   );
 }

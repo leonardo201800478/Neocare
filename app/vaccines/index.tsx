@@ -1,53 +1,49 @@
-// app/vaccines/index.tsx
-
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Para os ícones de incremento e decremento
 
 import { VACCINATIONS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
-import { calcularIdade } from '../../utils/idadeCalculator';
+import { useDoctor } from '../context/DoctorContext';
 import { usePatient } from '../context/PatientContext';
-import VaccinationStyles from '../styles/VaccinationStyles';
+import styles from '../styles/VaccinationStyles';
 
 type VaccineSchedule = {
-  [key: string]: { doses: number; minAge: number; maxAge: number };
+  [key: string]: number;
 };
 
-// Atualizado com as informações de doses por vacina
+// Informações de doses por vacina
 const vaccineSchedule: VaccineSchedule = {
-  BCG: { doses: 1, minAge: 0, maxAge: 0 },
-  'Hepatite B': { doses: 4, minAge: 0, maxAge: 3 },
-  Rotavírus: { doses: 3, minAge: 0.5, maxAge: 7 },
-  'Tríplice bacteriana (DTP)': { doses: 5, minAge: 2, maxAge: 72 },
-  'Haemophilus influenzae B (Hib)': { doses: 4, minAge: 2, maxAge: 18 },
-  'Poliomielite (VIP)': { doses: 4, minAge: 2, maxAge: 48 },
-  'Pneumocócica conjugada': { doses: 3, minAge: 2, maxAge: 18 },
-  'Meningocócica conjugada C': { doses: 3, minAge: 3, maxAge: 60 },
-  'Meningocócica B': { doses: 3, minAge: 3, maxAge: 23 },
-  Influenza: { doses: 999, minAge: 6, maxAge: 999 },
-  'Febre Amarela': { doses: 2, minAge: 9, maxAge: 999 },
-  'Hepatite A': { doses: 2, minAge: 12, maxAge: 60 },
-  'Tríplice viral (SCR)': { doses: 2, minAge: 12, maxAge: 999 },
-  Varicela: { doses: 2, minAge: 15, maxAge: 999 },
-  HPV: { doses: 2, minAge: 108, maxAge: 180 },
-  Dengue: { doses: 2, minAge: 48, maxAge: 999 },
-  'Covid-19': { doses: 3, minAge: 6, maxAge: 60 },
+  BCG: 1,
+  'Hepatite B': 4,
+  Rotavírus: 3,
+  'Tríplice bacteriana (DTP)': 5,
+  'Haemophilus influenzae B (Hib)': 4,
+  'Poliomielite (VIP)': 4,
+  'Pneumocócica conjugada': 3,
+  'Meningocócica conjugada C': 3,
+  'Meningocócica B': 3,
+  Influenza: 999, // Vacinação contínua anual
+  'Febre Amarela': 2,
+  'Hepatite A': 2,
+  'Tríplice viral (SCR)': 2,
+  Varicela: 2,
+  HPV: 2,
+  Dengue: 2,
+  'Covid-19': 3,
 };
 
-const VaccinationCard = () => {
+const RegisterVaccination = () => {
+  const router = useRouter();
   const { selectedPatient } = usePatient();
+  const { selectedDoctor } = useDoctor(); // Obtemos o médico selecionado
   const { supabaseConnector } = useSystem();
-  const [vaccines, setVaccines] = useState<{ [key: string]: any[] }>({});
-  const [patientAge, setPatientAge] = useState<string>('');
+  const [vaccines, setVaccines] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
+    // Buscar vacinas atuais do paciente
     if (selectedPatient) {
-      const birthDate = selectedPatient.birth_date
-        ? new Date(selectedPatient.birth_date)
-        : new Date();
-      setPatientAge(calcularIdade(birthDate, 'p0'));
-
       const fetchVaccinations = async () => {
         try {
           const { data, error } = await supabaseConnector.client
@@ -59,12 +55,14 @@ const VaccinationCard = () => {
             console.error('Erro ao buscar vacinas:', error);
             Alert.alert('Erro', 'Erro ao buscar vacinas do paciente.');
           } else {
-            const vaccineData: { [key: string]: any[] } = {};
+            // Atualizar doses de vacinas no estado
+            const vaccineData: { [key: string]: number } = {};
             data.forEach((vaccine: any) => {
-              if (!vaccineData[vaccine.vaccine_name]) {
-                vaccineData[vaccine.vaccine_name] = [];
+              if (vaccineData[vaccine.vaccine_name]) {
+                vaccineData[vaccine.vaccine_name] += 1;
+              } else {
+                vaccineData[vaccine.vaccine_name] = 1;
               }
-              vaccineData[vaccine.vaccine_name].push(vaccine);
             });
             setVaccines(vaccineData);
           }
@@ -78,78 +76,129 @@ const VaccinationCard = () => {
     }
   }, [selectedPatient]);
 
-  const getStatusColor = (vaccineName: string) => {
-    const ageData = vaccineSchedule[vaccineName];
-    if (!ageData) return 'transparent';
-
-    const [years, months] = patientAge
-      .split(' ')
-      .filter((v) => !isNaN(Number(v)))
-      .map(Number);
-    const totalMonths = years * 12 + months;
-
-    if (totalMonths < ageData.minAge) {
-      return 'transparent';
+  const handleRegister = async (vaccineName: string, dose: number) => {
+    if (!selectedPatient) {
+      Alert.alert('Erro', 'Paciente não encontrado.');
+      return;
     }
 
-    const dosesTaken = vaccines[vaccineName] ? vaccines[vaccineName].length : 0;
+    if (!selectedDoctor) {
+      // Verifica se o médico está selecionado
+      Alert.alert('Erro', 'ID do médico não encontrado.');
+      return;
+    }
 
-    if (dosesTaken < ageData.doses) {
-      return 'lightcoral';
-    } else {
-      return 'lightgreen';
+    if (dose > vaccineSchedule[vaccineName]) {
+      Alert.alert('Erro', `Número máximo de doses para ${vaccineName} já foi atingido.`);
+      return;
+    }
+
+    try {
+      const { error } = await supabaseConnector.client.from(VACCINATIONS_TABLE).insert({
+        patient_id: selectedPatient.id,
+        doctor_id: selectedDoctor.id, // Usando o ID do médico selecionado
+        vaccine_name: vaccineName,
+        dose_number: dose,
+        administered_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        console.error('Erro ao cadastrar vacina:', error);
+        Alert.alert('Erro', 'Erro ao cadastrar vacina.');
+      } else {
+        Alert.alert('Sucesso', `Vacina ${vaccineName} (Dose ${dose}) cadastrada com sucesso!`);
+        setVaccines((prevVaccines) => ({
+          ...prevVaccines,
+          [vaccineName]: dose,
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar vacina:', error);
+      Alert.alert('Erro', 'Erro ao cadastrar vacina.');
     }
   };
 
-  const handleVaccineClick = (vaccineName: string) => {
-    const ageData = vaccineSchedule[vaccineName];
-    if (!ageData) return;
+  const handleIncrement = (vaccineName: string) => {
+    const currentDose = vaccines[vaccineName] ? vaccines[vaccineName] + 1 : 1;
+    handleRegister(vaccineName, currentDose);
+  };
 
-    const dosesTaken = vaccines[vaccineName] ? vaccines[vaccineName].length : 0;
-    if (dosesTaken < ageData.doses) {
-      const dosesMissing = ageData.doses - dosesTaken;
-      Alert.alert(
-        'Vacina em Atraso',
-        `A criança deveria ter tomado ${ageData.doses} doses da vacina ${vaccineName}, mas tomou apenas ${dosesTaken}. Estão faltando ${dosesMissing} dose(s).`
-      );
+  const handleDecrement = async (vaccineName: string) => {
+    if (!selectedPatient || !vaccines[vaccineName] || vaccines[vaccineName] <= 0) {
+      return;
+    }
+
+    const currentDose = vaccines[vaccineName];
+
+    try {
+      const { error } = await supabaseConnector.client
+        .from(VACCINATIONS_TABLE)
+        .delete()
+        .eq('patient_id', selectedPatient.id)
+        .eq('vaccine_name', vaccineName)
+        .eq('dose_number', currentDose);
+
+      if (error) {
+        console.error('Erro ao excluir vacina:', error);
+        Alert.alert('Erro', 'Erro ao excluir vacina.');
+      } else {
+        Alert.alert('Sucesso', `Vacina ${vaccineName} (Dose ${currentDose}) removida com sucesso!`);
+        setVaccines((prevVaccines) => ({
+          ...prevVaccines,
+          [vaccineName]: currentDose - 1,
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao excluir vacina:', error);
+      Alert.alert('Erro', 'Erro ao excluir vacina.');
     }
   };
 
   return (
-    <SafeAreaView style={VaccinationStyles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Text style={VaccinationStyles.header}>Caderneta de Vacinação</Text>
-        <Text style={{ fontSize: 18, marginBottom: 8 }}>Nome: {selectedPatient?.name}</Text>
-        <Text style={{ fontSize: 18, marginBottom: 8 }}>Idade: {patientAge}</Text>
-        <View style={VaccinationStyles.tableHeader}>
-          <Text style={VaccinationStyles.tableHeaderText}>Vacina</Text>
-          <Text style={VaccinationStyles.tableHeaderText}>Dose</Text>
-          <Text style={VaccinationStyles.tableHeaderText}>Data de Aplicação</Text>
+        <Text style={styles.header}>Cadastrar Vacina</Text>
+        <View style={styles.tableHeader}>
+          <Text style={[styles.tableHeaderText, { width: '50%' }]}>Vacina</Text>
+          <Text style={[styles.tableHeaderText, { width: '20%', textAlign: 'center' }]}>
+            Dose Atual
+          </Text>
+          <Text style={[styles.tableHeaderText, { width: '30%', textAlign: 'center' }]}>Ações</Text>
         </View>
-        {Object.keys(vaccineSchedule).map((vaccineName, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleVaccineClick(vaccineName)}
-            style={[VaccinationStyles.tableRow, { backgroundColor: getStatusColor(vaccineName) }]}>
-            <Text style={VaccinationStyles.vaccineName}>{vaccineName}</Text>
-            <Text style={VaccinationStyles.doseNumber}>
-              {vaccines[vaccineName] ? vaccines[vaccineName].length : 'Nenhuma dose aplicada'}
+        {Object.keys(vaccineSchedule).map((vaccine, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.vaccineName, { width: '50%' }]}>{vaccine}</Text>
+            <Text style={[styles.doseNumber, { width: '20%', textAlign: 'center' }]}>
+              {vaccines[vaccine] ? vaccines[vaccine] : '0'}
             </Text>
-            <Text style={VaccinationStyles.doseNumber}>
-              {vaccines[vaccineName]
-                ? vaccines[vaccineName]
-                    .map((v) => new Date(v.administered_at).toLocaleDateString())
-                    .join(', ')
-                : '-'}
-            </Text>
-          </TouchableOpacity>
+            <View style={{ flexDirection: 'row', width: '30%', justifyContent: 'space-around' }}>
+              <TouchableOpacity
+                onPress={() => handleIncrement(vaccine)}
+                disabled={vaccines[vaccine] >= vaccineSchedule[vaccine]}>
+                <Icon
+                  name="plus-circle"
+                  size={30}
+                  color={vaccines[vaccine] >= vaccineSchedule[vaccine] ? 'gray' : 'green'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleDecrement(vaccine)}
+                disabled={!vaccines[vaccine] || vaccines[vaccine] <= 0}>
+                <Icon
+                  name="minus-circle"
+                  size={30}
+                  color={!vaccines[vaccine] || vaccines[vaccine] <= 0 ? 'gray' : 'red'}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
         ))}
-        <TouchableOpacity style={VaccinationStyles.button} onPress={() => router.back()}>
-          <Text style={VaccinationStyles.buttonText}>Retornar</Text>
+        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>SAIR</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default VaccinationCard;
+export default RegisterVaccination;

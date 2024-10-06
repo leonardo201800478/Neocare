@@ -116,6 +116,7 @@ export const VACCINATIONS_TABLE = 'vaccinations';
 const vaccinations = new Table({
   id: column.text,
   patient_id: column.text,
+  doctor_id: column.text,
   vaccine_name: column.text,
   dose_number: column.text,
   administered_at: column.text,

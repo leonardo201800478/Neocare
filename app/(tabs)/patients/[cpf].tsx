@@ -2,20 +2,20 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 
-import { useSystem } from '../../../powersync/PowerSync';
-import { usePatient } from '../../context/PatientContext';
-import { useDoctor } from '../../context/DoctorContext';
 import { Attendance, Vaccination } from '../../../powersync/AppSchema';
+import { useSystem } from '../../../powersync/PowerSync';
+import { useDoctor } from '../../context/DoctorContext';
+import { usePatient } from '../../context/PatientContext';
 
 const PacienteDetails: React.FC = () => {
   const { cpf } = useLocalSearchParams<{ cpf: string }>(); // Pegando o parâmetro dinâmico da URL de forma tipada
-  const { db, supabaseConnector } = useSystem();
+  const { supabaseConnector } = useSystem();
   const [loading, setLoading] = useState<boolean>(true);
   const [attendance, setAttendance] = useState<Attendance | null>(null);
-  const [hasVaccinations, setHasVaccinations] = useState<boolean>(false);
+  const [hasVaccinations] = useState<boolean>(false);
 
   const { selectedPatient, setSelectedPatient } = usePatient();
-  const { doctorId } = useDoctor();
+  const { selectedDoctor } = useDoctor(); // Obtendo o médico selecionado
   const router = useRouter();
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const PacienteDetails: React.FC = () => {
   const handleOpenConsulta = () => {
     if (selectedPatient?.id) {
       router.push(
-        `/attendences/RegisterAttendance?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
+        `/attendances/RegisterAttendance?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
       );
     } else {
       Alert.alert('Erro', 'ID do paciente não encontrado.');
