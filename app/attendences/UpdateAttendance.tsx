@@ -10,19 +10,20 @@ import NutritionDevelopmentForm from './NutritionDevelopmentForm';
 import VitalInfoForm from './VitalInfoForm';
 import { BasicInfo, VitalInfo, GeneralSymptoms, NutritionDevelopment } from './types';
 import { useSystem } from '../../powersync/PowerSync';
-import styles from '../styles/Styles';
+import { uuid } from '../../utils/uuid'; // Importe a função uuid() para gerar IDs
 
 const UpdateAttendance: React.FC = () => {
-  const { supabaseConnector } = useSystem();
+  const { db } = useSystem();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const router = useRouter();
 
-  const [attendanceId, setAttendanceId] = useState<string | null>(null);
+  const [attendanceId, setAttendanceId] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     motivo_consulta: '',
     consulta_retorno: '',
     primeira_consulta: '',
-    data_atendimento: '',
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
@@ -73,8 +74,6 @@ const UpdateAttendance: React.FC = () => {
     outros_problemas: '',
   });
 
-  const [loading, setLoading] = useState<boolean>(true);
-
   useEffect(() => {
     if (!patientId) {
       Alert.alert('Erro', 'ID do paciente não encontrado.');
@@ -85,70 +84,92 @@ const UpdateAttendance: React.FC = () => {
     const fetchAttendanceData = async () => {
       setLoading(true);
       try {
-        // Buscar se existe um prontuário para o paciente
-        const { data, error } = await supabaseConnector.client
-          .from('attendances')
-          .select('*')
-          .eq('patient_id', patientId)
-          .order('updated_at', { ascending: false }) // Buscar a consulta mais recente
-          .single();
+        const attendance = await db
+          .selectFrom('attendances')
+          .selectAll()
+          .where('patient_id', '=', patientId)
+          .orderBy('updated_at', 'desc')
+          .executeTakeFirst();
 
-        if (error && error.code !== 'PGRST116') {
-          throw error;
-        }
+        if (attendance) {
+          setAttendanceId(attendance.id);
+          setBasicInfo({
+            motivo_consulta: attendance.motivo_consulta || '',
+            consulta_retorno: attendance.consulta_retorno || '',
+            primeira_consulta: attendance.primeira_consulta || '',
+          });
 
-        if (data) {
-          // Se existir um prontuário, setar os dados para atualização
-          setAttendanceId(data.id);
-          setBasicInfo(data);
-
-          // Fetch `attendance_vitals`
-          const { data: vitalData, error: vitalError } = await supabaseConnector.client
-            .from('attendance_vitals')
-            .select('*')
-            .eq('attendance_id', data.id)
-            .single();
-
-          if (vitalError && vitalError.code !== 'PGRST116') {
-            throw vitalError;
-          }
+          const vitalData = await db
+            .selectFrom('attendance_vitals')
+            .selectAll()
+            .where('attendance_id', '=', attendance.id)
+            .executeTakeFirst();
 
           if (vitalData) {
-            setVitalInfo(vitalData);
+            setVitalInfo({
+              peso_kg: vitalData.peso_kg || '',
+              comprimento_cm: vitalData.comprimento_cm || '',
+              perimetro_cefalico_cm: vitalData.perimetro_cefalico_cm || '',
+              numero_respiracoes_por_minuto: vitalData.numero_respiracoes_por_minuto || '',
+            });
           }
 
-          // Fetch `attendance_symptoms`
-          const { data: symptomsData, error: symptomsError } = await supabaseConnector.client
-            .from('attendance_symptoms')
-            .select('*')
-            .eq('attendance_id', data.id)
-            .single();
-
-          if (symptomsError && symptomsError.code !== 'PGRST116') {
-            throw symptomsError;
-          }
+          const symptomsData = await db
+            .selectFrom('attendance_symptoms')
+            .selectAll()
+            .where('attendance_id', '=', attendance.id)
+            .executeTakeFirst();
 
           if (symptomsData) {
-            setGeneralSymptoms(symptomsData);
+            setGeneralSymptoms({
+              nao_bebe_ou_mama: symptomsData.nao_bebe_ou_mama || '',
+              vomita_tudo: symptomsData.vomita_tudo || '',
+              convulsoes: symptomsData.convulsoes || '',
+              letargica: symptomsData.letargica || '',
+              enchimento_capilar: symptomsData.enchimento_capilar || '',
+              batimento_asa: symptomsData.batimento_asa || '',
+              tem_tosse: symptomsData.tem_tosse || '',
+              sibilancia: symptomsData.sibilancia || '',
+              tem_diarreia: symptomsData.tem_diarreia || '',
+              tem_febre: symptomsData.tem_febre || '',
+              rigidez_nuca: symptomsData.rigidez_nuca || '',
+              problema_ouvido: symptomsData.problema_ouvido || '',
+              dor_garganta: symptomsData.dor_garganta || '',
+              gemido: symptomsData.gemido || '',
+              cianose_periferica: symptomsData.cianose_periferica || '',
+              ictericia: symptomsData.ictericia || '',
+              distensao_abdominal: symptomsData.distensao_abdominal || '',
+              emagrecimento: symptomsData.emagrecimento || '',
+              edema: symptomsData.edema || '',
+            });
           }
 
-          // Fetch `attendance_nutrition_development`
-          const { data: nutritionData, error: nutritionError } = await supabaseConnector.client
-            .from('attendance_nutrition_development')
-            .select('*')
-            .eq('attendance_id', data.id)
-            .single();
-
-          if (nutritionError && nutritionError.code !== 'PGRST116') {
-            throw nutritionError;
-          }
+          const nutritionData = await db
+            .selectFrom('attendance_nutrition_development')
+            .selectAll()
+            .where('attendance_id', '=', attendance.id)
+            .executeTakeFirst();
 
           if (nutritionData) {
-            setNutritionDevelopment(nutritionData);
+            setNutritionDevelopment({
+              amamentando: nutritionData.amamentando || '',
+              quantas_vezes_amamenta: nutritionData.quantas_vezes_amamenta || '',
+              amamenta_noite: nutritionData.amamenta_noite || '',
+              alimentos_liquidos: nutritionData.alimentos_liquidos || '',
+              quantidade_refeicoes: nutritionData.quantidade_refeicoes || '',
+              tipo_alimentacao: nutritionData.tipo_alimentacao || '',
+              mudou_alimentacao: nutritionData.mudou_alimentacao || '',
+              como_mudou_alimentacao: nutritionData.como_mudou_alimentacao || '',
+              perda_peso_primeira_semana: nutritionData.perda_peso_primeira_semana || '',
+              tendencia_crescimento: nutritionData.tendencia_crescimento || '',
+              habilidades_desenvolvimento: nutritionData.habilidades_desenvolvimento || '',
+              atividade_fisica_vezes_semana: nutritionData.atividade_fisica_vezes_semana || '',
+              tempo_atividade_fisica: nutritionData.tempo_atividade_fisica || '',
+              tempo_sedentario: nutritionData.tempo_sedentario || '',
+              avaliacao_violencia: nutritionData.avaliacao_violencia || '',
+              outros_problemas: nutritionData.outros_problemas || '',
+            });
           }
-        } else {
-          // Se não existir um prontuário, configurar como novo registro
-          setAttendanceId(null);
         }
       } catch (error) {
         Alert.alert('Erro', 'Erro ao buscar os dados do prontuário.');
@@ -169,35 +190,35 @@ const UpdateAttendance: React.FC = () => {
     setLoading(true);
     try {
       if (attendanceId) {
-        // Atualizar `attendances` se já existe um registro
-        const { error: attendanceError } = await supabaseConnector.client
-          .from('attendances')
-          .update(basicInfo)
-          .eq('id', attendanceId);
-
-        if (attendanceError) throw attendanceError;
-
-        // Atualizar os registros das outras tabelas
-        await updateOtherTables();
-      } else {
-        // Criar novo registro de `attendances` se não existe
-        const { data: newAttendance, error: attendanceError } = await supabaseConnector.client
-          .from('attendances')
-          .insert({
+        await db
+          .updateTable('attendances')
+          .set({
             ...basicInfo,
+            updated_at: new Date().toISOString(),
+          })
+          .where('id', '=', attendanceId)
+          .execute();
+
+        await updateOtherTables(attendanceId);
+      } else {
+        const [newAttendance] = await db
+          .insertInto('attendances')
+          .values({
+            id: uuid(),
             patient_id: patientId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
+            motivo_consulta: basicInfo.motivo_consulta,
+            consulta_retorno: basicInfo.consulta_retorno,
+            primeira_consulta: basicInfo.primeira_consulta,
           })
-          .select()
-          .single();
+          .returning('id')
+          .execute();
 
-        if (attendanceError) throw attendanceError;
-
-        setAttendanceId(newAttendance.id);
-
-        // Inserir dados nas outras tabelas relacionadas
-        await updateOtherTables(newAttendance.id);
+        if (newAttendance && newAttendance.id) {
+          setAttendanceId(newAttendance.id);
+          await updateOtherTables(newAttendance.id);
+        }
       }
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
@@ -211,36 +232,31 @@ const UpdateAttendance: React.FC = () => {
     }
   };
 
-  const updateOtherTables = async (attendanceIdParam?: string) => {
-    const id = attendanceIdParam || attendanceId;
+  const updateOtherTables = async (attendanceId: string) => {
+    await db
+      .insertInto('attendance_vitals')
+      .values({ id: uuid(), ...vitalInfo, attendance_id: attendanceId })
+      .onConflict((oc) =>
+        oc.column('attendance_id').doUpdateSet({
+          peso_kg: vitalInfo.peso_kg,
+          comprimento_cm: vitalInfo.comprimento_cm,
+          perimetro_cefalico_cm: vitalInfo.perimetro_cefalico_cm,
+          numero_respiracoes_por_minuto: vitalInfo.numero_respiracoes_por_minuto,
+        })
+      )
+      .execute();
 
-    if (!id) {
-      throw new Error('ID do prontuário não encontrado.');
-    }
+    await db
+      .insertInto('attendance_symptoms')
+      .values({ id: uuid(), ...generalSymptoms, attendance_id: attendanceId })
+      .onConflict((oc) => oc.column('attendance_id').doUpdateSet(generalSymptoms))
+      .execute();
 
-    // Update `attendance_vitals`
-    const { error: vitalsError } = await supabaseConnector.client
-      .from('attendance_vitals')
-      .upsert({ attendance_id: id, ...vitalInfo })
-      .eq('attendance_id', id);
-
-    if (vitalsError) throw vitalsError;
-
-    // Update `attendance_symptoms`
-    const { error: symptomsError } = await supabaseConnector.client
-      .from('attendance_symptoms')
-      .upsert({ attendance_id: id, ...generalSymptoms })
-      .eq('attendance_id', id);
-
-    if (symptomsError) throw symptomsError;
-
-    // Update `attendance_nutrition_development`
-    const { error: nutritionError } = await supabaseConnector.client
-      .from('attendance_nutrition_development')
-      .upsert({ attendance_id: id, ...nutritionDevelopment })
-      .eq('attendance_id', id);
-
-    if (nutritionError) throw nutritionError;
+    await db
+      .insertInto('attendance_nutrition_development')
+      .values({ id: uuid(), ...nutritionDevelopment, attendance_id: attendanceId })
+      .onConflict((oc) => oc.column('attendance_id').doUpdateSet(nutritionDevelopment))
+      .execute();
   };
 
   if (loading) {
@@ -279,5 +295,21 @@ const UpdateAttendance: React.FC = () => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#ffffff',
+  },
+  buttonContainer: {
+    marginVertical: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default UpdateAttendance;

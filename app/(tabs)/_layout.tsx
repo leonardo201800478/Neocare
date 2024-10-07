@@ -46,7 +46,7 @@ export default function AppTabsLayout() {
         headerShown: false,
         tabBarStyle: {
           position: 'absolute', // Posiciona a tab bar de forma absoluta
-          backgroundColor: 'transparent', // Torna o fundo transparente
+          backgroundColor: 'white', // Torna o fundo transparente
           borderTopWidth: 1, // Remove a borda superior
           elevation: 1, // Remove a sombra no Android
           shadowOpacity: 1, // Remove a sombra no iOS

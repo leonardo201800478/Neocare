@@ -1,9 +1,9 @@
-// types.ts
+// app/attendences/types.ts
+
 export interface BasicInfo {
   motivo_consulta: string;
   consulta_retorno: string;
   primeira_consulta: string;
-  data_atendimento: string;
 }
 
 export interface VitalInfo {

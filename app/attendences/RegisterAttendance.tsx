@@ -1,7 +1,7 @@
 // app/attendences/RegisterAttendance.tsx
 
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Button, Alert, Text } from 'react-native';
 
 import BasicInfoForm from './BasicInfoForm';
@@ -9,20 +9,27 @@ import GeneralSymptomsForm from './GeneralSymptomsForm';
 import NutritionDevelopmentForm from './NutritionDevelopmentForm';
 import VitalInfoForm from './VitalInfoForm';
 import { BasicInfo, VitalInfo, GeneralSymptoms, NutritionDevelopment } from './types';
-import { useSystem } from '../../powersync/PowerSync';
+import { uuid } from '../../utils/uuid';
+import { useAttendance } from '../context/AttendanceContext';
+import { useAttendanceNutritionDevelopment } from '../context/AttendanceNutritionDevelopmentContext';
+import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
+import { useAttendanceVital } from '../context/AttendanceVitalContext';
 import styles from '../styles/Styles';
 
 const RegisterAttendance: React.FC = () => {
-  const { supabaseConnector } = useSystem();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const router = useRouter();
+
+  const { createAttendance } = useAttendance();
+  const { createVitalSigns } = useAttendanceVital();
+  const { createSymptom } = useAttendanceSymptom();
+  const { createNutritionDevelopment } = useAttendanceNutritionDevelopment();
 
   // Definindo os estados com valores iniciais corretos
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     motivo_consulta: '',
     consulta_retorno: '',
     primeira_consulta: '',
-    data_atendimento: '',
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
@@ -97,56 +104,18 @@ const RegisterAttendance: React.FC = () => {
     }
 
     try {
-      // Inserir dados de `attendances`
-      const { data: attendanceData, error: attendanceError } = await supabaseConnector.client
-        .from('attendances')
-        .insert({
-          ...basicInfo,
-          patient_id: patientId, // Incluindo o patient_id na inserção
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .select();
+      // Criar o registro de atendimento (prontuário)
+      const attendanceId = uuid();
+      await createAttendance({ ...basicInfo, id: attendanceId }, 'doctorId', patientId);
 
-      if (attendanceError) throw attendanceError;
+      // Criar os sinais vitais associados ao atendimento
+      await createVitalSigns({ ...vitalInfo, id: uuid() }, attendanceId);
 
-      const attendanceId = attendanceData[0].id;
+      // Criar os sintomas gerais associados ao atendimento
+      await createSymptom({ ...generalSymptoms, id: uuid() }, attendanceId);
 
-      // Inserir dados de `attendance_vitals`
-      const vitalsData = {
-        attendance_id: attendanceId,
-        ...vitalInfo,
-      };
-
-      const { error: vitalsError } = await supabaseConnector.client
-        .from('attendance_vitals')
-        .insert(vitalsData);
-
-      if (vitalsError) throw vitalsError;
-
-      // Inserir dados de `attendance_symptoms`
-      const symptomsData = {
-        attendance_id: attendanceId,
-        ...generalSymptoms,
-      };
-
-      const { error: symptomsError } = await supabaseConnector.client
-        .from('attendance_symptoms')
-        .insert(symptomsData);
-
-      if (symptomsError) throw symptomsError;
-
-      // Inserir dados de `attendance_nutrition_development`
-      const nutritionDevelopmentData = {
-        attendance_id: attendanceId,
-        ...nutritionDevelopment,
-      };
-
-      const { error: nutritionError } = await supabaseConnector.client
-        .from('attendance_nutrition_development')
-        .insert(nutritionDevelopmentData);
-
-      if (nutritionError) throw nutritionError;
+      // Criar o registro de nutrição e desenvolvimento associado ao atendimento
+      await createNutritionDevelopment({ ...nutritionDevelopment, id: uuid() }, attendanceId);
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
       // Redirecionar para a tela de detalhes do paciente após salvar
@@ -154,7 +123,8 @@ const RegisterAttendance: React.FC = () => {
         `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify({ id: patientId }))}`
       );
     } catch (error) {
-      Alert.alert('Erro', `Erro ao salvar prontuário: ${(error as any).message}`);
+      console.error('Erro ao salvar prontuário:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao salvar o prontuário. Tente novamente.');
     }
   };
 

@@ -1,4 +1,7 @@
+// app/context/VaccinationContext.tsx
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+
 import { Vaccination } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
@@ -49,7 +52,9 @@ export const VaccinationProvider: React.FC<{ children: ReactNode }> = ({ childre
 
       if (error) {
         console.warn('Erro ao sincronizar vacinação com o Supabase:', error.message);
-        throw new Error('Vacinação adicionada localmente, mas a sincronização com o Supabase falhou.');
+        throw new Error(
+          'Vacinação adicionada localmente, mas a sincronização com o Supabase falhou.'
+        );
       }
     } catch (error) {
       console.error('Erro ao adicionar vacinação:', error);

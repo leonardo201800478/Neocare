@@ -1,3 +1,5 @@
+// powersync/AppSchema.ts
+
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Tabela de médicos
@@ -40,7 +42,6 @@ const attendances = new Table({
   updated_at: column.text,
   patient_id: column.text,
   created_by: column.text, // Criado pelo ID do usuário (auth.users)
-  data_atendimento: column.text,
   primeira_consulta: column.text,
   consulta_retorno: column.text,
   motivo_consulta: column.text,

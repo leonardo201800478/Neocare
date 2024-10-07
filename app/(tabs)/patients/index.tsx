@@ -91,10 +91,7 @@ const CadastroPaciente = () => {
       console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
 
       // Salvar paciente no banco local usando Kysely
-      await db
-        .insertInto('patients')
-        .values(newPatient)
-        .execute();
+      await db.insertInto('patients').values(newPatient).execute();
 
       console.log('Paciente salvo localmente com sucesso.');
 
@@ -103,7 +100,10 @@ const CadastroPaciente = () => {
 
       if (error) {
         console.warn('Erro ao sincronizar com Supabase:', error.message);
-        Alert.alert('Aviso', 'Paciente salvo localmente, mas a sincronização com o Supabase falhou.');
+        Alert.alert(
+          'Aviso',
+          'Paciente salvo localmente, mas a sincronização com o Supabase falhou.'
+        );
       } else {
         console.log('Dados inseridos no Supabase:', data);
         Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
@@ -176,8 +176,7 @@ const CadastroPaciente = () => {
           <Picker
             selectedValue={sexo}
             style={styles.picker}
-            onValueChange={(itemValue) => setSexo(itemValue)}
-          >
+            onValueChange={(itemValue) => setSexo(itemValue)}>
             <Picker.Item label="Masculino" value="Masculino" />
             <Picker.Item label="Feminino" value="Feminino" />
           </Picker>

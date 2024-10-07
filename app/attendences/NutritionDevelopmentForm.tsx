@@ -1,7 +1,10 @@
+// app/attendences/NutritionDevelopmentForm.tsx
+
+import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-import { NutritionDevelopment } from './types'; // Importando o tipo
+import { NutritionDevelopment } from './types';
 
 interface NutritionDevelopmentProps {
   data: NutritionDevelopment;
@@ -12,104 +15,188 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Nutrição e Desenvolvimento</Text>
+
+      {/* Amamentando (Sim/Não) */}
+      <Text style={styles.label}>Amamentando:</Text>
+      <Picker
+        selectedValue={data.amamentando}
+        onValueChange={(value) => onChange('amamentando', value)}
+        style={styles.picker}>
+        <Picker.Item label="Selecione" value="" />
+        <Picker.Item label="Sim" value="yes" />
+        <Picker.Item label="Não" value="no" />
+      </Picker>
+
+      {/* Quantas Vezes Amamenta por Dia */}
+      <Text style={styles.label}>Quantas Vezes Amamenta por Dia:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Amamentando? (Sim/Não)"
-        value={data.amamentando}
-        onChangeText={(text) => onChange('amamentando', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Quantas Vezes Amamenta por Dia"
+        placeholder="Ex: 6"
         value={data.quantas_vezes_amamenta}
-        onChangeText={(text) => onChange('quantas_vezes_amamenta', text)}
+        onChangeText={(text) => {
+          if (/^\d*$/.test(text)) {
+            onChange('quantas_vezes_amamenta', text);
+          }
+        }}
         keyboardType="numeric"
       />
+
+      {/* Amamenta à Noite (Sim/Não) */}
+      <Text style={styles.label}>Amamenta à Noite:</Text>
+      <Picker
+        selectedValue={data.amamenta_noite}
+        onValueChange={(value) => onChange('amamenta_noite', value)}
+        style={styles.picker}>
+        <Picker.Item label="Selecione" value="" />
+        <Picker.Item label="Sim" value="yes" />
+        <Picker.Item label="Não" value="no" />
+      </Picker>
+
+      {/* Recebe outros Líquidos/Alimentos? */}
+      <Text style={styles.label}>Recebe Outros Líquidos/Alimentos:</Text>
+      <Picker
+        selectedValue={data.alimentos_liquidos}
+        onValueChange={(value) => onChange('alimentos_liquidos', value)}
+        style={styles.picker}>
+        <Picker.Item label="Selecione" value="" />
+        <Picker.Item label="Sim" value="yes" />
+        <Picker.Item label="Não" value="no" />
+      </Picker>
+
+      {/* Quantas Refeições por Dia */}
+      <Text style={styles.label}>Quantas Refeições por Dia:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Amamenta à Noite? (Sim/Não)"
-        value={data.amamenta_noite}
-        onChangeText={(text) => onChange('amamenta_noite', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Recebe outros Líquidos/Alimentos?"
-        value={data.alimentos_liquidos}
-        onChangeText={(text) => onChange('alimentos_liquidos', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Quantas Refeições por Dia"
+        placeholder="Ex: 3"
         value={data.quantidade_refeicoes}
-        onChangeText={(text) => onChange('quantidade_refeicoes', text)}
+        onChangeText={(text) => {
+          if (/^\d*$/.test(text)) {
+            onChange('quantidade_refeicoes', text);
+          }
+        }}
         keyboardType="numeric"
       />
+
+      {/* Tipo de Alimentação */}
+      <Text style={styles.label}>Tipo de Alimentação:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Tipo de Alimentação"
+        placeholder="Descreva o tipo de alimentação"
         value={data.tipo_alimentacao}
         onChangeText={(text) => onChange('tipo_alimentacao', text)}
       />
+
+      {/* Mudou a Alimentação Recentemente? (Sim/Não) */}
+      <Text style={styles.label}>Mudou a Alimentação Recentemente:</Text>
+      <Picker
+        selectedValue={data.mudou_alimentacao}
+        onValueChange={(value) => onChange('mudou_alimentacao', value)}
+        style={styles.picker}>
+        <Picker.Item label="Selecione" value="" />
+        <Picker.Item label="Sim" value="yes" />
+        <Picker.Item label="Não" value="no" />
+      </Picker>
+
+      {/* Como Mudou a Alimentação */}
+      <Text style={styles.label}>Como Mudou a Alimentação:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Mudou a Alimentação Recentemente? (Sim/Não)"
-        value={data.mudou_alimentacao}
-        onChangeText={(text) => onChange('mudou_alimentacao', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Como Mudou a Alimentação?"
+        placeholder="Descreva a mudança"
         value={data.como_mudou_alimentacao}
         onChangeText={(text) => onChange('como_mudou_alimentacao', text)}
+        multiline
       />
+
+      {/* Perda de Peso na Primeira Semana >10%? (Sim/Não) */}
+      <Text style={styles.label}>Perda de Peso na Primeira Semana &gt;10%:</Text>
+      <Picker
+        selectedValue={data.perda_peso_primeira_semana}
+        onValueChange={(value) => onChange('perda_peso_primeira_semana', value)}
+        style={styles.picker}>
+        <Picker.Item label="Selecione" value="" />
+        <Picker.Item label="Sim" value="yes" />
+        <Picker.Item label="Não" value="no" />
+      </Picker>
+
+      {/* Tendência de Crescimento */}
+      <Text style={styles.label}>Tendência de Crescimento:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Perda de Peso na Primeira Semana >10%? (Sim/Não)"
-        value={data.perda_peso_primeira_semana}
-        onChangeText={(text) => onChange('perda_peso_primeira_semana', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Tendência de Crescimento"
+        placeholder="Descreva a tendência de crescimento"
         value={data.tendencia_crescimento}
         onChangeText={(text) => onChange('tendencia_crescimento', text)}
       />
+
+      {/* Habilidades de Desenvolvimento */}
+      <Text style={styles.label}>Habilidades de Desenvolvimento:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Habilidades de Desenvolvimento"
+        placeholder="Descreva as habilidades de desenvolvimento"
         value={data.habilidades_desenvolvimento}
         onChangeText={(text) => onChange('habilidades_desenvolvimento', text)}
+        multiline
       />
+
+      {/* Atividade Física (Vezes por Semana) */}
+      <Text style={styles.label}>Atividade Física (Vezes por Semana):</Text>
       <TextInput
         style={styles.input}
-        placeholder="Atividade Física (Vezes por Semana)"
+        placeholder="Ex: 4"
         value={data.atividade_fisica_vezes_semana}
-        onChangeText={(text) => onChange('atividade_fisica_vezes_semana', text)}
+        onChangeText={(text) => {
+          if (/^\d*$/.test(text)) {
+            onChange('atividade_fisica_vezes_semana', text);
+          }
+        }}
         keyboardType="numeric"
       />
+
+      {/* Tempo de Atividade Física */}
+      <Text style={styles.label}>Tempo de Atividade Física (minutos):</Text>
       <TextInput
         style={styles.input}
-        placeholder="Tempo de Atividade Física"
+        placeholder="Ex: 60"
         value={data.tempo_atividade_fisica}
-        onChangeText={(text) => onChange('tempo_atividade_fisica', text)}
+        onChangeText={(text) => {
+          if (/^\d*$/.test(text)) {
+            onChange('tempo_atividade_fisica', text);
+          }
+        }}
+        keyboardType="numeric"
       />
+
+      {/* Tempo Sedentário */}
+      <Text style={styles.label}>Tempo Sedentário (horas):</Text>
       <TextInput
         style={styles.input}
-        placeholder="Tempo Sedentário"
+        placeholder="Ex: 8"
         value={data.tempo_sedentario}
-        onChangeText={(text) => onChange('tempo_sedentario', text)}
+        onChangeText={(text) => {
+          if (/^\d*$/.test(text)) {
+            onChange('tempo_sedentario', text);
+          }
+        }}
+        keyboardType="numeric"
       />
+
+      {/* Avaliação de Violência */}
+      <Text style={styles.label}>Avaliação de Violência:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Avaliação de Violência"
+        placeholder="Descreva se houve sinais de violência"
         value={data.avaliacao_violencia}
         onChangeText={(text) => onChange('avaliacao_violencia', text)}
+        multiline
       />
+
+      {/* Outros Problemas */}
+      <Text style={styles.label}>Outros Problemas:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Outros Problemas"
+        placeholder="Descreva outros problemas observados"
         value={data.outros_problemas}
         onChangeText={(text) => onChange('outros_problemas', text)}
+        multiline
       />
     </View>
   );
@@ -117,18 +204,29 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
-    paddingHorizontal: 15,
+    marginVertical: 20,
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
+  },
   input: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    marginBottom: 15,
+    marginBottom: 20,
+    padding: 8,
+    fontSize: 16,
+  },
+  picker: {
+    marginBottom: 20,
     padding: 8,
   },
 });

@@ -1,3 +1,5 @@
+// app/attendences/index.tsx
+
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -12,12 +14,21 @@ import {
 
 import { Attendance, ATTENDANCES_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
+import { useAttendance } from '../context/AttendanceContext';
+import { useAttendanceNutritionDevelopment } from '../context/AttendanceNutritionDevelopmentContext';
+import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
+import { useAttendanceVital } from '../context/AttendanceVitalContext';
 
 const AttendanceList = () => {
   const router = useRouter();
   const { db } = useSystem();
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const { setSelectedAttendance } = useAttendance();
+  const { setVitalSigns } = useAttendanceVital();
+  const { setSymptoms } = useAttendanceSymptom();
+  const { setNutritionDevelopment } = useAttendanceNutritionDevelopment();
 
   useEffect(() => {
     loadAttendances();
@@ -42,20 +53,49 @@ const AttendanceList = () => {
     }
   };
 
+  const handleAttendanceSelect = async (attendance: Attendance) => {
+    try {
+      // Definir o atendimento selecionado
+      setSelectedAttendance(attendance);
+
+      // Carregar e definir os sinais vitais relacionados
+      const vitals = await db
+        .selectFrom('attendance_vitals')
+        .selectAll()
+        .where('attendance_id', '=', attendance.id)
+        .execute();
+      setVitalSigns(vitals.length > 0 ? vitals[0] : null);
+
+      // Carregar e definir os sintomas relacionados
+      const symptoms = await db
+        .selectFrom('attendance_symptoms')
+        .selectAll()
+        .where('attendance_id', '=', attendance.id)
+        .execute();
+      setSymptoms(symptoms.length > 0 ? symptoms[0] : null);
+
+      // Carregar e definir os dados de nutrição e desenvolvimento relacionados
+      const nutrition = await db
+        .selectFrom('attendance_nutrition_development')
+        .selectAll()
+        .where('attendance_id', '=', attendance.id)
+        .execute();
+      setNutritionDevelopment(nutrition.length > 0 ? nutrition[0] : null);
+
+      // Navegar para a tela de registro de atendimento
+      router.push({
+        pathname: '/attendences/RegisterAttendance',
+        params: { patientId: attendance.patient_id ?? '' },
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados do atendimento:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os dados do atendimento.');
+    }
+  };
+
   const renderItem = ({ item }: { item: Attendance }) => (
-    <TouchableOpacity
-      style={styles.attendanceItem}
-      onPress={() => {
-        if (item.patient_id) {
-          router.push({
-            pathname: '/attendences/RegisterAttendance',
-            params: { patientId: item.patient_id },
-          });
-        } else {
-          Alert.alert('Erro', 'ID do paciente não encontrado.');
-        }
-      }}>
-      <Text style={styles.text}>Médico: {item.registered_by ?? 'Médico não informado'}</Text>
+    <TouchableOpacity style={styles.attendanceItem} onPress={() => handleAttendanceSelect(item)}>
+      <Text style={styles.text}>Médico: {item.doctor_id ?? 'Médico não informado'}</Text>
       <Text style={styles.text}>
         Data:{' '}
         {item.updated_at ? new Date(item.updated_at).toLocaleDateString() : 'Data não disponível'}
