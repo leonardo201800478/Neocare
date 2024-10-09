@@ -4,7 +4,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "android": "expo run:android",
-    "docs": "typedoc"
+    "docs": "typedoc",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "ios": "expo run:ios",
@@ -61,6 +61,7 @@
     "react-native-web": "~0.19.10",
     "stack": "^0.1.0",
     "text-encoding": "^0.7.0",
+    "typedoc": "^0.26.8",
     "uuid": "^10.0.0",
     "web-streams-polyfill": "3.2.1"
   },

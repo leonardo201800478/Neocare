@@ -143,6 +143,13 @@ const HomeScreen: React.FC = () => {
             <Text style={styles.buttonText}>Cadastrar Novo Paciente</Text>
           </TouchableOpacity>
 
+          {/* Botão para ir para a tela de termo de aceite */}
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#007BFF' }]}
+            onPress={() => router.push('/terms/')}>
+            <Text style={styles.buttonText}>Termo de Aceite</Text>
+          </TouchableOpacity>
+
           {/* Indicador de carregamento durante a busca */}
           {loading && <ActivityIndicator size="large" color="#005F9E" />}
 
