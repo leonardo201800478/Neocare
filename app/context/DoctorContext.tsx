@@ -1,3 +1,5 @@
+// app/context/DoctorContext.tsx
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { Doctor } from '../../powersync/AppSchema';
@@ -5,6 +7,7 @@ import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
 
 type DoctorContextType = {
+  db: any; // Corrigir o tipo de 'db' de acordo com a estrutura do seu sistema, se disponível.
   selectedDoctor: Doctor | null;
   setSelectedDoctor: (doctor: Doctor | null) => void;
   createDoctor: (doctor: Partial<Doctor>) => Promise<void>;
@@ -15,7 +18,7 @@ const DoctorContext = createContext<DoctorContextType | undefined>(undefined);
 
 export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const { db } = useSystem();
+  const { db } = useSystem(); // Obtém 'db' de useSystem
 
   const createDoctor = async (doctor: Partial<Doctor>) => {
     if (!doctor.name || !doctor.email) {
@@ -83,7 +86,8 @@ export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   return (
     <DoctorContext.Provider
-      value={{ selectedDoctor, setSelectedDoctor, createDoctor, updateDoctor }}>
+      value={{ db, selectedDoctor, setSelectedDoctor, createDoctor, updateDoctor }} // Inclui 'db'
+    >
       {children}
     </DoctorContext.Provider>
   );

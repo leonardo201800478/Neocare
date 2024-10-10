@@ -1,68 +1,59 @@
 import { useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 
-import { useSystem } from '../../../powersync/PowerSync';
+import DoctorsStyles from './styles/DoctorsStyles';
+import { useAttendance } from '../../context/AttendanceContext';
 import { useDoctor } from '../../context/DoctorContext';
+import { usePatient } from '../../context/PatientContext';
+import { useVaccination } from '../../context/VaccinationContext';
 
 const DoctorProfile: React.FC = () => {
-  const { supabaseConnector } = useSystem();
-  const { setSelectedDoctor } = useDoctor();
-  const [doctor, setDoctor] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { selectedDoctor } = useDoctor();
+  const { db } = useDoctor().db;
+  const [patientsCount, setPatientsCount] = useState<number>(0);
+  const [recordsCount, setRecordsCount] = useState<number>(0);
+  const [vaccinesCount, setVaccinesCount] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDoctorData();
-  }, []);
+    if (!selectedDoctor) {
+      Alert.alert('Erro', 'Nenhum médico selecionado. Faça login novamente.');
+      router.replace('/(tabs)/doctors/register');
+    } else {
+      fetchData();
+    }
+  }, [selectedDoctor]);
 
-  const loadDoctorData = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      // Obtendo as credenciais do usuário autenticado
-      const { client } = supabaseConnector;
-      const { data: userData, error: userError } = await client.auth.getUser();
+      // Fetch number of patients associated with the doctor
+      const patients = await db
+        .selectFrom('patients')
+        .selectCount()
+        .where('doctor_id', '=', selectedDoctor!.id)
+        .execute();
+      setPatientsCount(patients[0].count);
 
-      if (userError || !userData.user) {
-        throw new Error('Erro ao obter informações do usuário. Faça login novamente.');
-      }
+      // Fetch number of attendances (medical records) made by the doctor
+      const attendances = await db
+        .selectFrom('attendances')
+        .selectCount()
+        .where('doctor_id', '=', selectedDoctor!.id)
+        .execute();
+      setRecordsCount(attendances[0].count);
 
-      const userId = userData.user.id;
-
-      if (!userId) {
-        throw new Error('Usuário não autenticado ou credenciais inválidas.');
-      }
-
-      // Buscar os dados do médico no Supabase utilizando o auth_user_id
-      const { data, error } = await client
-        .from('doctors')
-        .select('*')
-        .eq('auth_user_id', userId) // Corrigido para usar auth_user_id
-        .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // Se não encontrar, significa que o médico não foi registrado
-          Alert.alert(
-            'Aviso',
-            'Nenhum médico registrado para esse usuário. Por favor, registre-se.',
-            [
-              {
-                text: 'Registrar Médico',
-                onPress: () => router.replace('/(tabs)/doctors/register'),
-              },
-            ]
-          );
-        } else {
-          throw new Error(`Erro ao buscar dados do médico: ${error.message}`);
-        }
-      } else if (data) {
-        setDoctor(data);
-        setSelectedDoctor(data); // Armazenando o doctor_id no contexto
-      }
+      // Fetch number of vaccinations applied by the doctor
+      const vaccinations = await db
+        .selectFrom('vaccinations')
+        .selectCount()
+        .where('doctor_id', '=', selectedDoctor!.id)
+        .execute();
+      setVaccinesCount(vaccinations[0].count);
     } catch (error) {
-      console.error('Erro ao carregar os dados do médico:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os dados do médico. Verifique sua conexão.');
+      Alert.alert('Erro', 'Erro ao carregar dados. Tente novamente mais tarde.');
     } finally {
       setLoading(false);
     }
@@ -70,83 +61,48 @@ const DoctorProfile: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#A700FF" />
-        <Text>Carregando os dados do médico...</Text>
+      <View style={DoctorsStyles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text>Carregando os dados...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {doctor ? (
-        <>
-          <Text style={styles.header}>Perfil do Médico</Text>
-          <Text style={styles.text}>Nome: {doctor.name ?? 'Nome não disponível'}</Text>
-          <Text style={styles.text}>Email: {doctor.email ?? 'Email não disponível'}</Text>
-          <Text style={styles.text}>
-            Data de Criação:{' '}
-            {doctor.created_at
-              ? new Date(doctor.created_at).toLocaleDateString()
-              : 'Data não disponível'}
-          </Text>
+    <View style={DoctorsStyles.container}>
+      <Text style={DoctorsStyles.header}>{selectedDoctor?.name ?? 'Médico'}</Text>
+      <Text style={DoctorsStyles.subHeader}>
+        {selectedDoctor?.email ?? 'E-mail não disponível'}
+      </Text>
 
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#007BFF' }]}
-            onPress={() => router.push('/(tabs)/doctors/update')}>
-            <Text style={styles.buttonText}>Atualizar Dados</Text>
-          </TouchableOpacity>
+      <View style={DoctorsStyles.infoBoxContainer}>
+        <View style={DoctorsStyles.infoBox}>
+          <Text style={DoctorsStyles.infoBoxTitle}>Pacientes</Text>
+          <Text style={DoctorsStyles.infoBoxValue}>{patientsCount}</Text>
+        </View>
+        <View style={DoctorsStyles.infoBox}>
+          <Text style={DoctorsStyles.infoBoxTitle}>Prontuários</Text>
+          <Text style={DoctorsStyles.infoBoxValue}>{recordsCount}</Text>
+        </View>
+        <View style={DoctorsStyles.infoBox}>
+          <Text style={DoctorsStyles.infoBoxTitle}>Vacinas</Text>
+          <Text style={DoctorsStyles.infoBoxValue}>{vaccinesCount}</Text>
+        </View>
+      </View>
 
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/home/')}>
-            <Text style={styles.buttonText}>Voltar para Home</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <Text style={styles.errorText}>
-          Dados do médico não encontrados. Tente novamente mais tarde.
-        </Text>
-      )}
+      <TouchableOpacity
+        style={DoctorsStyles.button}
+        onPress={() => router.push('/(tabs)/doctors/update')}>
+        <Text style={DoctorsStyles.buttonText}>Atualizar Dados</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={DoctorsStyles.buttonSecondary}
+        onPress={() => router.replace('/(tabs)/home')}>
+        <Text style={DoctorsStyles.buttonText}>Voltar para Home</Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 12,
-  },
-  button: {
-    width: '80%',
-    padding: 12,
-    backgroundColor: '#A700FF',
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
-  },
-});
 
 export default DoctorProfile;
