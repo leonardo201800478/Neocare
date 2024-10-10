@@ -13,7 +13,7 @@ export default function Polivitaminas() {
         <Text style={styles.title}>POLIVITAMINAS</Text>
 
         {/* ScrollView Horizontal para a Tabela */}
-        <ScrollView horizontal={true} style={styles.horizontalScroll}>
+        <ScrollView horizontal style={styles.horizontalScroll}>
           <View style={styles.table}>
             {/* Cabeçalho da Tabela */}
             <View style={[styles.tableRow, styles.tableHeader]}>

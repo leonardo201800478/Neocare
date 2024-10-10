@@ -63,13 +63,11 @@ const DoctorsStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   switchContainer: {
-
     flexDirection: 'row',
 
     alignItems: 'center',
 
     marginVertical: 10,
-
   },
 });
 

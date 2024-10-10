@@ -97,7 +97,10 @@ const UpdateDoctorProfile: React.FC = () => {
         router.replace('/(tabs)/doctors/'); // Redireciona para a tela do perfil do médico após a atualização
       } else {
         console.error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
-        Alert.alert('Erro', 'Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
+        Alert.alert(
+          'Erro',
+          'Nenhum registro foi atualizado. Verifique os dados e tente novamente.'
+        );
       }
     } catch (error) {
       console.error('Erro ao atualizar o médico:', error);

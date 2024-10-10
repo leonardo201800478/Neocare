@@ -14,7 +14,6 @@ interface BasicInfoProps {
 const BasicInfoForm: React.FC<BasicInfoProps> = ({ data, onChange }) => {
   const [showDatePicker, setShowDatePicker] = React.useState(false);
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Informações Básicas do Paciente</Text>

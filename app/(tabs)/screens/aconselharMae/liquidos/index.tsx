@@ -15,15 +15,18 @@ export default function AumentarLiquidos() {
 
         <Text style={styles.sectionTitle}>Para Qualquer Criança Doente:</Text>
         <Text style={styles.content}>
-          - Amamentar ao peito com maior frequência e sempre por períodos mais longos, de dia e de noite.
+          - Amamentar ao peito com maior frequência e sempre por períodos mais longos, de dia e de
+          noite.
         </Text>
         <Text style={styles.content}>
-          - Aumentar a quantidade de líquidos. Por exemplo: dar sopas, água de arroz, bebidas à base de iogurte ou água potável.
+          - Aumentar a quantidade de líquidos. Por exemplo: dar sopas, água de arroz, bebidas à base
+          de iogurte ou água potável.
         </Text>
 
         <Text style={styles.sectionTitle}>Para a Criança com Diarreia:</Text>
         <Text style={styles.content}>
-          - Administração de líquidos adicionais pode salvar a vida da criança. Dar líquidos segundo indicado no Plano A ou no Plano B tal como aparece no quadro TRATAR A CRIANÇA.
+          - Administração de líquidos adicionais pode salvar a vida da criança. Dar líquidos segundo
+          indicado no Plano A ou no Plano B tal como aparece no quadro TRATAR A CRIANÇA.
         </Text>
 
         <TouchableOpacity style={styles.button} onPress={() => router.back()}>

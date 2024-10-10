@@ -9,7 +9,6 @@ export default function DoctorsLayout() {
     <>
       {/* Tabs Navigation */}
 
-
       {/* Renderiza as rotas internas (index, update, etc.) */}
       <View style={styles.container}>
         <Slot />

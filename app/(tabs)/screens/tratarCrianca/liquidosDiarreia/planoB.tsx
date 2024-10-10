@@ -11,7 +11,9 @@ export default function TratarDesidratacao() {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Plano B: Tratar a Desidratação com SRO</Text>
         <Text style={styles.content}>
-          As crianças com desidratação deverão permanecer no serviço de saúde até a reidratação completa. Durante um período de 4 horas administrar, no serviço de saúde, a quantidade recomendada de SRO.
+          As crianças com desidratação deverão permanecer no serviço de saúde até a reidratação
+          completa. Durante um período de 4 horas administrar, no serviço de saúde, a quantidade
+          recomendada de SRO.
         </Text>
         <Text style={styles.sectionTitle}>
           Determinar a quantidade de SRO a ser administrada durante as primeiras 4 horas:

@@ -11,7 +11,6 @@ export default function HomeAidpi() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-
         <Text style={styles.title}>AIDPI Neonatal - NEOCARE</Text>
 
         {/* Navegando para as subseções */}

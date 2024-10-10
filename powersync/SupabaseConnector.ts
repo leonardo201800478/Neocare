@@ -98,7 +98,10 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
       await transaction.complete();
     } catch (ex: any) {
       console.debug(ex);
-      if (typeof ex.code === 'string' && FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))) {
+      if (
+        typeof ex.code === 'string' &&
+        FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))
+      ) {
         console.error(`Data upload error - discarding ${lastOp}`, ex);
         await transaction.complete();
       } else {
