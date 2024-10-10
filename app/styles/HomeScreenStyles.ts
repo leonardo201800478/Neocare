@@ -27,6 +27,7 @@ export default StyleSheet.create({
     fontSize: 16,
   },
   searchContainer: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
@@ -37,13 +38,18 @@ export default StyleSheet.create({
     borderColor: '#ccc',
   },
   searchIcon: {
-    marginRight: 8,
+    position: 'absolute',
+    left: 20, // Ajuste para posicionar o ícone à esquerda
+    zIndex: 1, // Coloca o ícone acima do TextInput
+    marginTop: 30, // Ajuste para centralizar o ícone verticalmente
   },
   searchInput: {
+    paddingLeft: 35, // Adiciona espaço para o ícone no lado esquerdo do texto
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 8,
     flex: 1,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: '#000',
   },
   button: {
     backgroundColor: '#2e7d32', // Verde escuro para os botões principais

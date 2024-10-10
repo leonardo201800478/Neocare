@@ -1,5 +1,3 @@
-// app/context/DoctorContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { Doctor } from '../../powersync/AppSchema';
@@ -28,7 +26,7 @@ export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       // Gerar um UUID para o novo médico
       const doctorId = uuid();
 
-      // Criar um novo registro do médico
+      // Criar um novo registro do médico, incluindo o campo terms_accepted como 0 por padrão
       await db
         .insertInto('doctors')
         .values({
@@ -37,6 +35,7 @@ export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           email: doctor.email,
           created_at: new Date().toISOString(),
           auth_user_id: doctor.auth_user_id ?? null,
+          terms_accepted: 0, // Por padrão, os termos não são aceitos (valor 0 como integer)
         })
         .execute();
 

@@ -1,5 +1,3 @@
-// powersync/AppSchema.ts
-
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Tabela de médicos
@@ -11,6 +9,7 @@ const doctors = new Table({
   email: column.text,
   name: column.text,
   auth_user_id: column.text, // Mantendo a relação com o auth.users
+  terms_accepted: column.integer, // Definindo como boolean para aceitar true/false
 });
 
 // Tabela de pacientes

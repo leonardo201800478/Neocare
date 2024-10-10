@@ -114,6 +114,7 @@ const HomeScreen: React.FC = () => {
         <View style={styles.container}>
           <Text style={styles.header}>NEOCARE</Text>
           <View style={styles.searchContainer}>
+            {/* O ícone de pesquisa dentro do campo de texto */}
             <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
             <TextInput
               placeholder="Pesquisar por nome ou CPF"

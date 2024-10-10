@@ -46,11 +46,11 @@ export default function AppTabsLayout() {
         headerShown: false,
         tabBarStyle: {
           position: 'absolute', // Posiciona a tab bar de forma absoluta
-          backgroundColor: 'white', // Torna o fundo transparente
+          backgroundColor: '#00FA9A', // Torna o fundo transparente
           borderTopWidth: 1, // Remove a borda superior
           elevation: 1, // Remove a sombra no Android
           shadowOpacity: 1, // Remove a sombra no iOS
-          height: 55, // Ajusta a altura para maior personalização (opcional)
+          height: 45, // Ajusta a altura para maior personalização (opcional)
         },
       }}>
       {/* Aba Paciente */}
@@ -93,8 +93,8 @@ export default function AppTabsLayout() {
               animation={focused ? 'pulse' : undefined}
               iterationCount="infinite"
               duration={1000}
-              style={{ height: 80 }}>
-              <FontAwesome size={60} name="search" color={color} />
+              style={{ height: 30 }}>
+              <FontAwesome size={30} name="search" color={color} />
             </Animatable.View>
           ),
         }}

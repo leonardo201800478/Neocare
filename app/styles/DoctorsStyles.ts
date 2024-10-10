@@ -62,6 +62,15 @@ const DoctorsStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  switchContainer: {
+
+    flexDirection: 'row',
+
+    alignItems: 'center',
+
+    marginVertical: 10,
+
+  },
 });
 
 export default DoctorsStyles;

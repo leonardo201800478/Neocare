@@ -1,12 +1,44 @@
 // app/terms/index.tsx
 import { Ionicons } from '@expo/vector-icons';
+import CheckBox from '@react-native-community/checkbox';
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, StyleSheet, ScrollView, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useSystem } from '../../powersync/PowerSync';
 
 export default function Terms() {
   const router = useRouter();
+  const [accepted, setAccepted] = useState(false);
+  const { supabaseConnector } = useSystem(); // Acessa o conector Supabase
+
+  const handleAccept = async () => {
+    if (!accepted) {
+      Alert.alert('Erro', 'Você precisa aceitar os termos para continuar.');
+      return;
+    }
+
+    const {
+      data: { user },
+    } = await supabaseConnector.client.auth.getUser(); // Acessa o usuário autenticado
+    if (user) {
+      // Atualiza o campo 'terms_accepted' na tabela 'doctors'
+      const { error } = await supabaseConnector.client
+        .from('doctors')
+        .update({ terms_accepted: '1' }) // '1' para indicar que os termos foram aceitos
+        .eq('auth_user_id', user.id); // Baseado no ID do usuário autenticado
+
+      if (error) {
+        Alert.alert('Erro', 'Não foi possível atualizar o status de aceite dos termos.');
+      } else {
+        // Redireciona o usuário para a tela principal
+        router.push('/(tabs)/home/HomeScreen');
+      }
+    } else {
+      Alert.alert('Erro', 'Usuário não autenticado.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,16 +157,35 @@ export default function Terms() {
           ou pelo telefone [número de contato].
         </Text>
 
-        {/* Botão "Voltar" no Final da Página */}
+        <View style={styles.checkboxContainer}>
+          <CheckBox
+            value={accepted}
+            onValueChange={(newValue: boolean) => setAccepted(newValue)}
+            style={styles.checkbox}
+          />
+          <Text style={styles.label}>Eu li e aceito os Termos de Consentimento</Text>
+        </View>
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.push('/(tabs)/home/HomeScreen')}>
-            <Ionicons name="arrow-back" size={20} color="white" />
-            <Text style={styles.backText}>Voltar</Text>
+            style={[styles.acceptButton, !accepted && styles.disabledButton]}
+            onPress={handleAccept}
+            disabled={!accepted} // Desativa o botão se o termo não for aceito
+          >
+            <Text style={styles.buttonText}>Aceitar e Continuar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Botão "Voltar" no Final da Página */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push('/(tabs)/home/HomeScreen')}>
+          <Ionicons name="arrow-back" size={20} color="white" />
+          <Text style={styles.backText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -180,6 +231,36 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     lineHeight: 22,
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  checkbox: {
+    alignSelf: 'center',
+  },
+  label: {
+    marginLeft: 8,
+    fontSize: 16,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
+  disabledButton: {
+    backgroundColor: '#bdbdbd', // Desativa o botão se os termos não forem aceitos
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -193,10 +274,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     marginLeft: 8,
-  },
-  buttonContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 30,
   },
 });

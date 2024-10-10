@@ -1,5 +1,3 @@
-// app/(tabs)/doctors/update.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
@@ -59,35 +57,51 @@ const UpdateDoctorProfile: React.FC = () => {
       return;
     }
 
+    if (!selectedDoctor) {
+      Alert.alert('Erro', 'Médico não encontrado. Faça login novamente.');
+      return;
+    }
+
     setLoading(true);
     try {
-      if (!selectedDoctor) {
-        console.error('Médico não encontrado no contexto. Não é possível atualizar.');
-        throw new Error('Médico não encontrado no contexto. Faça login novamente.');
+      const updatedName = name.trim();
+
+      // Verificando se o nome realmente foi alterado
+      if (selectedDoctor.name === updatedName) {
+        Alert.alert('Aviso', 'Nenhuma alteração foi feita no nome.');
+        setLoading(false);
+        return;
       }
 
       console.log('Iniciando atualização do nome do médico no banco de dados local...');
+      console.log('Nome atual:', selectedDoctor.name, 'Novo nome:', updatedName);
 
-      // Atualizando o nome do médico no banco de dados local (Kysely/PowerSync)
+      // Atualizando apenas o campo `name` no banco de dados local (Kysely/PowerSync)
       const updatedRows = await db
         .updateTable('doctors')
-        .set({ name: name.trim() })
+        .set({ name: updatedName })
         .where('id', '=', selectedDoctor.id)
-        .executeTakeFirstOrThrow(); // Modificado para lançar um erro se a atualização falhar
+        .executeTakeFirst();
 
-      if (updatedRows.numUpdatedRows > 0) {
-        console.log('Dados do médico atualizados localmente:', updatedRows);
-        // Atualiza o contexto com os dados modificados
-        setSelectedDoctor({ ...selectedDoctor, name: name.trim() });
-        Alert.alert('Sucesso', 'Dados do médico atualizados com sucesso!');
+      console.log('Resultado da atualização:', updatedRows);
+
+      // Verifique se a atualização foi aplicada com sucesso
+      if (updatedRows && updatedRows.numUpdatedRows && updatedRows.numUpdatedRows > 0n) {
+        console.log('Nome do médico atualizado localmente:', updatedRows);
+        // Atualiza o contexto com o novo nome
+        setSelectedDoctor({
+          ...selectedDoctor,
+          name: updatedName,
+        });
+        Alert.alert('Sucesso', 'Nome do médico atualizado com sucesso!');
         router.replace('/(tabs)/doctors/'); // Redireciona para a tela do perfil do médico após a atualização
       } else {
         console.error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
-        throw new Error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
+        Alert.alert('Erro', 'Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
       }
     } catch (error) {
       console.error('Erro ao atualizar o médico:', error);
-      Alert.alert('Erro', 'Ocorreu um erro ao atualizar o médico.');
+      Alert.alert('Erro', 'Ocorreu um erro ao atualizar o nome do médico.');
     } finally {
       setLoading(false);
     }
@@ -109,6 +123,7 @@ const UpdateDoctorProfile: React.FC = () => {
         style={DoctorsStyles.input}
         placeholderTextColor="#b0b0b0"
       />
+
       <TouchableOpacity
         style={DoctorsStyles.button}
         onPress={handleUpdateDoctor}
