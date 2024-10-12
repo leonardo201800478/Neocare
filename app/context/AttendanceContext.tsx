@@ -30,7 +30,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     doctorId: string,
     patientId: string
   ) => {
-    if (!doctorId || !patientId || !attendance.motivo_consulta) {
+    if (!doctorId || !patientId) {
       throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
     }
 
@@ -43,11 +43,11 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         id: attendanceId,
         doctor_id: doctorId,
         patient_id: patientId,
-        motivo_consulta: attendance.motivo_consulta,
+        motivo_consulta: attendance.motivo_consulta ?? 'false',
         primeira_consulta: attendance.primeira_consulta ?? 'false',
         consulta_retorno: attendance.consulta_retorno ?? 'false',
-        alergias: attendance.alergias ?? '',
-        medicamentos: attendance.medicamentos ?? '',
+        alergias: attendance.alergias ?? 'false',
+        medicamentos: attendance.medicamentos ?? 'false',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

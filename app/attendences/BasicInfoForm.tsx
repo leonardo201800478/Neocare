@@ -49,6 +49,26 @@ const BasicInfoForm: React.FC<BasicInfoProps> = ({ data, onChange }) => {
         onChangeText={(text) => onChange('motivo_consulta', text)}
         multiline
       />
+
+      {/* Alergias */}
+      <Text style={styles.label}>Alergias:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Descreva as alergias do paciente"
+        value={data.alergias}
+        onChangeText={(text) => onChange('alergias', text)}
+        multiline
+      />
+
+      {/* Medicamentos */}
+      <Text style={styles.label}>Medicamentos:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Descreva os medicamentos do paciente"
+        value={data.medicamentos}
+        onChangeText={(text) => onChange('medicamentos', text)}
+        multiline
+      />
     </View>
   );
 };

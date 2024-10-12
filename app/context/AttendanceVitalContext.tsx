@@ -20,7 +20,7 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
   const { db, supabaseConnector } = useSystem();
 
   const createVitalSigns = async (vitals: Partial<AttendanceVital>, attendanceId: string) => {
-    if (!attendanceId || !vitals.peso_kg || !vitals.comprimento_cm) {
+    if (!attendanceId) {
       throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
     }
 
@@ -32,8 +32,8 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
       const newVitalSigns = {
         id: vitalId,
         attendance_id: attendanceId,
-        peso_kg: vitals.peso_kg,
-        comprimento_cm: vitals.comprimento_cm,
+        peso_kg: vitals.peso_kg ?? null,
+        comprimento_cm: vitals.comprimento_cm ?? null,
         perimetro_cefalico_cm: vitals.perimetro_cefalico_cm ?? null,
         numero_respiracoes_por_minuto: vitals.numero_respiracoes_por_minuto ?? null,
       };

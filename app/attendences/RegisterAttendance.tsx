@@ -30,6 +30,8 @@ const RegisterAttendance: React.FC = () => {
     motivo_consulta: '',
     consulta_retorno: '',
     primeira_consulta: '',
+    alergias: '',
+    medicamentos: '',
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
@@ -106,7 +108,13 @@ const RegisterAttendance: React.FC = () => {
     try {
       // Criar o registro de atendimento (prontuário)
       const attendanceId = uuid();
-      await createAttendance({ ...basicInfo, id: attendanceId }, 'doctorId', patientId);
+      await createAttendance(
+        { ...basicInfo, id: attendanceId },
+        'doctorId',
+        patientId,
+        'additionalArg1',
+        'additionalArg2'
+      );
 
       // Criar os sinais vitais associados ao atendimento
       await createVitalSigns({ ...vitalInfo, id: uuid() }, attendanceId);
@@ -120,7 +128,7 @@ const RegisterAttendance: React.FC = () => {
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
       // Redirecionar para a tela de detalhes do paciente após salvar
       router.replace(
-        `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify({ id: patientId }))}`
+        `/patients/PacienteDetails:${encodeURIComponent(JSON.stringify({ id: patientId }))}`
       );
     } catch (error) {
       console.error('Erro ao salvar prontuário:', error);

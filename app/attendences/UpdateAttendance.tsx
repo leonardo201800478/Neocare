@@ -24,6 +24,8 @@ const UpdateAttendance: React.FC = () => {
     motivo_consulta: '',
     consulta_retorno: '',
     primeira_consulta: '',
+    alergias: '',
+    medicamentos: '',
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
@@ -97,6 +99,8 @@ const UpdateAttendance: React.FC = () => {
             motivo_consulta: attendance.motivo_consulta || '',
             consulta_retorno: attendance.consulta_retorno || '',
             primeira_consulta: attendance.primeira_consulta || '',
+            alergias: attendance.alergias || '',
+            medicamentos: attendance.medicamentos || '',
           });
 
           const vitalData = await db
@@ -223,7 +227,7 @@ const UpdateAttendance: React.FC = () => {
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
       router.replace(
-        `/patients/PacienteDetails?patient=${encodeURIComponent(JSON.stringify({ id: patientId }))}`
+        `/patients/PacienteDetails:${encodeURIComponent(JSON.stringify({ id: patientId }))}`
       );
     } catch (error) {
       Alert.alert('Erro', `Erro ao salvar prontuário: ${(error as any).message}`);
