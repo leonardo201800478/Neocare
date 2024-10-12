@@ -12,7 +12,9 @@ type AttendanceContextType = {
   createAttendance: (
     attendance: Partial<Attendance>,
     doctorId: string,
-    patientId: string
+    patientId: string,
+    alergias: string,
+    medicamentos: string
   ) => Promise<void>;
   updateAttendance: (attendanceId: string, updatedFields: Partial<Attendance>) => Promise<void>;
 };
@@ -44,6 +46,8 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         motivo_consulta: attendance.motivo_consulta,
         primeira_consulta: attendance.primeira_consulta ?? 'false',
         consulta_retorno: attendance.consulta_retorno ?? 'false',
+        alergias: attendance.alergias ?? '',
+        medicamentos: attendance.medicamentos ?? '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

@@ -3,72 +3,67 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
-import { useSystem } from '../../powersync/PowerSync'; // Corrigindo a importação para pegar o sistema
+import { useSystem } from '../../powersync/PowerSync'; // Acessar Supabase e Powersync
+import { useDoctor } from '../context/DoctorContext'; // Acessar o contexto de médicos
 
 export const useAuth = () => {
-  const { supabaseConnector, db } = useSystem(); // Certifique-se de usar 'useSystem' para acessar o supabaseConnector
+  const { supabaseConnector } = useSystem();
   const router = useRouter();
+  const { createOrUpdateDoctor } = useDoctor(); // Função para criar ou atualizar médico no contexto
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
       try {
+        // Verificar a autenticação do usuário no Supabase
+        console.log('Verificando autenticação...');
         const credentials = await supabaseConnector.fetchCredentials();
-        const { client, userID } = credentials;
+        const { client } = credentials;
 
         // Obter o usuário autenticado
         const { data, error } = await client.auth.getUser();
-
-        if (error) {
+        if (error || !data?.user) {
           console.error('Erro ao obter usuário autenticado:', error);
           return;
         }
 
-        // Verificar se o usuário está registrado como médico
+        const userId = data.user.id;
+        const email = data.user.email;
+
+        // Criar ou atualizar o médico usando o contexto
+        console.log('Criando ou atualizando o registro do médico...');
+        await createOrUpdateDoctor({
+          auth_user_id: userId,
+          email,
+        });
+
+        // Verificar o status do médico para definir o redirecionamento
         const { data: doctorData, error: doctorError } = await client
           .from('doctors')
-          .select('id, name')
-          .eq('id', userID)
+          .select('name, terms_accepted')
+          .eq('auth_user_id', userId)
           .single();
 
         if (doctorError) {
-          // Se o registro do médico não existir, cria um com um nome nulo
-          if (doctorError.code === 'PGRST116') {
-            await addDoctorIfNotExists(userID, data?.user?.email, client);
-            router.replace('/(tabs)/doctors/register');
-          } else {
-            throw doctorError;
-          }
-        } else if (!doctorData?.name) {
-          // Se o médico existir, mas o nome não estiver definido, redireciona para o registro
-          router.replace('/(tabs)/doctors/register');
+          console.error('Erro ao buscar dados do médico:', doctorError);
+          return;
+        }
+
+        // Verificar se o médico já preencheu o nome
+        if (!doctorData?.name) {
+          console.log('Médico sem nome. Redirecionando para cadastro de nome...');
+          router.replace('/(tabs)/doctors/register'); // Redirecionar para cadastro de nome do médico
+        } else if (doctorData.terms_accepted !== 1) {
+          console.log('Termos de aceite não aceitos. Redirecionando...');
+          router.replace('/terms/'); // Redirecionar para tela de termos de aceite
         } else {
-          // Médico existe e nome está definido, pode prosseguir para a Home
-          router.replace('/(tabs)/home/');
+          console.log('Tudo certo. Redirecionando para Home...');
+          router.replace('/(tabs)/home'); // Redirecionar para a tela principal
         }
       } catch (e) {
-        console.error('Erro ao verificar a autenticação:', e);
+        console.error('Erro ao verificar a autenticação e status do médico:', e);
       }
     };
 
     checkUserAndRedirect();
-  }, [router, supabaseConnector, db]);
-};
-
-// Função para adicionar o médico se não existir
-const addDoctorIfNotExists = async (userID: string, email?: string, client?: any) => {
-  try {
-    const { error: insertError } = await client.from('doctors').insert({
-      id: userID,
-      email,
-      created_at: new Date().toISOString(),
-      name: null,
-    });
-
-    if (insertError) {
-      throw insertError;
-    }
-    console.log('Novo médico adicionado com sucesso.');
-  } catch (error) {
-    console.error('Erro ao adicionar médico:', error);
-  }
+  }, [router, supabaseConnector, createOrUpdateDoctor]);
 };

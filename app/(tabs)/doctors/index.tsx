@@ -1,17 +1,17 @@
+// app/(tabs)/doctors/index.tsx
+
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 
 import DoctorsStyles from './styles/DoctorsStyles';
-import { useAttendance } from '../../context/AttendanceContext';
+import { useSystem } from '../../../powersync/PowerSync'; // Acessar o Supabase
 import { useDoctor } from '../../context/DoctorContext';
-import { usePatient } from '../../context/PatientContext';
-import { useVaccination } from '../../context/VaccinationContext';
 
 const DoctorProfile: React.FC = () => {
   const router = useRouter();
   const { selectedDoctor } = useDoctor();
-  const { db } = useDoctor().db;
+  const { supabaseConnector } = useSystem(); // Acessar Supabase via Powersync
   const [patientsCount, setPatientsCount] = useState<number>(0);
   const [recordsCount, setRecordsCount] = useState<number>(0);
   const [vaccinesCount, setVaccinesCount] = useState<number>(0);
@@ -29,29 +29,34 @@ const DoctorProfile: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      const { client } = await supabaseConnector.fetchCredentials(); // Obter o cliente Supabase
+
       // Fetch number of patients associated with the doctor
-      const patients = await db
-        .selectFrom('patients')
-        .selectCount()
-        .where('doctor_id', '=', selectedDoctor!.id)
-        .execute();
-      setPatientsCount(patients[0].count);
+      const { data: patients, error: patientsError } = await client
+        .from('patients')
+        .select('id', { count: 'exact' })
+        .eq('doctor_id', selectedDoctor!.id);
+
+      if (patientsError) throw patientsError;
+      setPatientsCount(patients?.length || 0);
 
       // Fetch number of attendances (medical records) made by the doctor
-      const attendances = await db
-        .selectFrom('attendances')
-        .selectCount()
-        .where('doctor_id', '=', selectedDoctor!.id)
-        .execute();
-      setRecordsCount(attendances[0].count);
+      const { data: attendances, error: attendancesError } = await client
+        .from('attendances')
+        .select('id', { count: 'exact' })
+        .eq('doctor_id', selectedDoctor!.id);
+
+      if (attendancesError) throw attendancesError;
+      setRecordsCount(attendances?.length || 0);
 
       // Fetch number of vaccinations applied by the doctor
-      const vaccinations = await db
-        .selectFrom('vaccinations')
-        .selectCount()
-        .where('doctor_id', '=', selectedDoctor!.id)
-        .execute();
-      setVaccinesCount(vaccinations[0].count);
+      const { data: vaccinations, error: vaccinationsError } = await client
+        .from('vaccinations')
+        .select('id', { count: 'exact' })
+        .eq('doctor_id', selectedDoctor!.id);
+
+      if (vaccinationsError) throw vaccinationsError;
+      setVaccinesCount(vaccinations?.length || 0);
     } catch (error) {
       Alert.alert('Erro', 'Erro ao carregar dados. Tente novamente mais tarde.');
     } finally {

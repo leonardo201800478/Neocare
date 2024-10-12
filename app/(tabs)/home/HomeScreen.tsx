@@ -144,6 +144,13 @@ const HomeScreen: React.FC = () => {
             <Text style={styles.buttonText}>Cadastrar Novo Paciente</Text>
           </TouchableOpacity>
 
+          {/* Botão para ir para a tela de médico */}
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#007BFF' }]}
+            onPress={() => router.push('/(tabs)/doctors/')}>
+            <Text style={styles.buttonText}>Perfil</Text>
+          </TouchableOpacity>
+
           {/* Botão para ir para a tela de termo de aceite */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#007BFF' }]}

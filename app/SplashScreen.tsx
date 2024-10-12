@@ -1,4 +1,5 @@
 // app/SplashScreen.tsx
+
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 

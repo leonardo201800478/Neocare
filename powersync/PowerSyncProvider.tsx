@@ -1,5 +1,3 @@
-// powersync/PowerSyncProvider.tsx
-
 import { PowerSyncContext } from '@powersync/react-native';
 import { ReactNode, useMemo } from 'react';
 

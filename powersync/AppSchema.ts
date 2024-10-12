@@ -8,8 +8,8 @@ const doctors = new Table({
   created_at: column.text,
   email: column.text,
   name: column.text,
-  auth_user_id: column.text, // Mantendo a relação com o auth.users
-  terms_accepted: column.integer, // Definindo como boolean para aceitar true/false
+  auth_user_id: column.text,
+  terms_accepted: column.integer,
 });
 
 // Tabela de pacientes
@@ -28,8 +28,8 @@ const patients = new Table({
   city: column.text,
   uf: column.text,
   zip_code: column.text,
-  created_by: column.text, // Relacionado ao ID do usuário (auth.users)
-  doctor_id: column.text, // Associado ao ID do médico (doctors)
+  created_by: column.text,
+  doctor_id: column.text,
 });
 
 // Tabela de prontuários
@@ -40,11 +40,13 @@ const attendances = new Table({
   created_at: column.text,
   updated_at: column.text,
   patient_id: column.text,
-  created_by: column.text, // Criado pelo ID do usuário (auth.users)
+  created_by: column.text,
   primeira_consulta: column.text,
   consulta_retorno: column.text,
   motivo_consulta: column.text,
-  doctor_id: column.text, // Associado ao ID do médico (doctors)
+  alergias: column.text,
+  medicamentos: column.text,
+  doctor_id: column.text,
 });
 
 // Tabela de sinais vitais

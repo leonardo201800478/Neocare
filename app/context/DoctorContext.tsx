@@ -1,99 +1,114 @@
 // app/context/DoctorContext.tsx
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState } from 'react';
 
-import { Doctor } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
 
-type DoctorContextType = {
-  db: any; // Corrigir o tipo de 'db' de acordo com a estrutura do seu sistema, se disponível.
-  selectedDoctor: Doctor | null;
-  setSelectedDoctor: (doctor: Doctor | null) => void;
-  createDoctor: (doctor: Partial<Doctor>) => Promise<void>;
-  updateDoctor: (doctorId: string, updatedFields: Partial<Doctor>) => Promise<void>;
+// Definindo o tipo para o médico
+type Doctor = {
+  id: string;
+  created_at: string;
+  email: string;
+  name: string | null;
+  auth_user_id: string;
+  terms_accepted: number | null;
 };
 
+// Definindo o tipo de contexto
+type DoctorContextType = {
+  selectedDoctor: Doctor | null;
+  setSelectedDoctor: (doctor: Doctor | null) => void;
+  createOrUpdateDoctor: (doctor: Partial<Doctor>) => Promise<void>;
+};
+
+// Inicializando o contexto
 const DoctorContext = createContext<DoctorContextType | undefined>(undefined);
 
 export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const { db } = useSystem(); // Obtém 'db' de useSystem
+  const { supabaseConnector } = useSystem(); // Acessando Supabase através de Powersync
 
-  const createDoctor = async (doctor: Partial<Doctor>) => {
-    if (!doctor.name || !doctor.email) {
-      throw new Error('Todos os campos obrigatórios devem ser preenchidos');
-    }
-
+  // Função para criar ou atualizar o médico verificando duplicidade
+  const createOrUpdateDoctor = async (doctor: Partial<Doctor>) => {
     try {
-      // Gerar um UUID para o novo médico
-      const doctorId = uuid();
+      // Obter o cliente do Supabase através do Powersync
+      console.log('[INFO] Tentando obter o cliente do Supabase...');
+      const { client } = await supabaseConnector.fetchCredentials();
 
-      // Criar um novo registro do médico, incluindo o campo terms_accepted como 0 por padrão
-      await db
-        .insertInto('doctors')
-        .values({
-          id: doctorId,
-          name: doctor.name,
-          email: doctor.email,
-          created_at: new Date().toISOString(),
-          auth_user_id: doctor.auth_user_id ?? null,
-          terms_accepted: 0, // Por padrão, os termos não são aceitos (valor 0 como integer)
-        })
-        .execute();
-
-      console.log('Médico criado com sucesso:', doctorId);
-    } catch (error) {
-      console.error('Erro ao criar o médico:', error);
-      throw new Error('Ocorreu um erro ao cadastrar o médico.');
-    }
-  };
-
-  const updateDoctor = async (doctorId: string, updatedFields: Partial<Doctor>) => {
-    if (!doctorId) {
-      throw new Error('O ID do médico é obrigatório para a atualização');
-    }
-
-    try {
-      console.log(
-        'Iniciando atualização do médico. ID:',
-        doctorId,
-        'Campos a serem atualizados:',
-        updatedFields
-      );
-
-      // Atualizar o registro do médico
-      const result = await db
-        .updateTable('doctors')
-        .set(updatedFields)
-        .where('id', '=', doctorId)
-        .execute();
-
-      console.log('Resultado da atualização do médico:', result);
-
-      const totalUpdatedRows = result.reduce((sum, res) => sum + res.numUpdatedRows, 0n);
-      if (totalUpdatedRows === 0n) {
-        console.error('Nenhum registro foi atualizado. Verifique o ID e os campos enviados.');
-        throw new Error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
+      if (!client) {
+        console.error('[ERRO] Supabase client não encontrado.');
+        throw new Error('Erro ao acessar o Supabase.');
       }
 
-      console.log('Médico atualizado com sucesso:', doctorId);
+      console.log('[INFO] Supabase client obtido com sucesso.');
+
+      // Verificar se o médico já existe com base no 'auth_user_id'
+      console.log(
+        `[INFO] Verificando se o médico com auth_user_id=${doctor.auth_user_id} já existe...`
+      );
+      const { data: existingDoctor, error: doctorError } = await client
+        .from('doctors')
+        .select('id')
+        .eq('auth_user_id', doctor.auth_user_id)
+        .single();
+
+      if (doctorError) {
+        console.error(`[ERRO] Erro ao buscar médico: ${doctorError.message}`);
+        if (doctorError.code !== 'PGRST116') {
+          throw new Error(`Erro ao buscar médico: ${doctorError.message}`);
+        }
+      }
+
+      if (existingDoctor) {
+        // Se o médico já existir, atualize os dados
+        console.log(
+          `[INFO] Médico com auth_user_id=${doctor.auth_user_id} encontrado. Atualizando dados...`
+        );
+        const { error: updateError } = await client
+          .from('doctors')
+          .update(doctor)
+          .eq('auth_user_id', doctor.auth_user_id);
+
+        if (updateError) {
+          console.error(`[ERRO] Erro ao atualizar médico: ${updateError.message}`);
+          throw new Error(`Erro ao atualizar médico: ${updateError.message}`);
+        }
+
+        console.log('[INFO] Médico atualizado com sucesso.');
+      } else {
+        // Se não existir, crie um novo registro com auth_user_id
+        console.log(
+          `[INFO] Médico com auth_user_id=${doctor.auth_user_id} não encontrado. Criando novo registro...`
+        );
+        const { error: insertError } = await client.from('doctors').insert({
+          id: uuid(), // Gerando um UUID
+          created_at: new Date().toISOString(),
+          ...doctor,
+        });
+
+        if (insertError) {
+          console.error(`[ERRO] Erro ao criar médico: ${insertError.message}`);
+          throw new Error(`Erro ao criar médico: ${insertError.message}`);
+        }
+
+        console.log('[INFO] Médico criado com sucesso.');
+      }
     } catch (error) {
-      console.error('Erro ao atualizar o médico:', error);
-      throw new Error('Ocorreu um erro ao atualizar o médico.');
+      console.error('[ERRO] Erro ao criar ou atualizar médico:', error);
+      throw error;
     }
   };
 
   return (
-    <DoctorContext.Provider
-      value={{ db, selectedDoctor, setSelectedDoctor, createDoctor, updateDoctor }} // Inclui 'db'
-    >
+    <DoctorContext.Provider value={{ selectedDoctor, setSelectedDoctor, createOrUpdateDoctor }}>
       {children}
     </DoctorContext.Provider>
   );
 };
 
-export const useDoctor = (): DoctorContextType => {
+// Hook para acessar o contexto
+export const useDoctor = () => {
   const context = useContext(DoctorContext);
   if (!context) {
     throw new Error('useDoctor deve ser usado dentro de um DoctorProvider');

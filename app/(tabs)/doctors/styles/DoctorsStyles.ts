@@ -1,3 +1,5 @@
+// app/(tabs)/doctors/styles/DoctorsStyles.ts
+
 import { StyleSheet, StatusBar } from 'react-native';
 
 const DoctorsStyles = StyleSheet.create({

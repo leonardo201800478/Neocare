@@ -1,5 +1,3 @@
-// powersync/SupabaseConnector.tsx
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';

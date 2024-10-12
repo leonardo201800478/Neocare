@@ -68,7 +68,7 @@ const Login: React.FC = () => {
         Alert.alert('Erro', 'Dados do médico não encontrados. Você precisa registrar seus dados.', [
           {
             text: 'Registrar',
-            onPress: () => router.push('/auth/Register'),
+            onPress: () => router.push('/auth/register'),
           },
           {
             text: 'Cancelar',
@@ -93,7 +93,7 @@ const Login: React.FC = () => {
   };
 
   const onSignUpPress = () => {
-    router.push('/auth/Register');
+    router.push('/auth/register');
   };
 
   const onForgotPasswordPress = () => {
