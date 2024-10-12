@@ -17,11 +17,12 @@ const PacienteDetails = () => {
   const { selectedDoctor, setSelectedDoctor } = useDoctor();
 
   const [loading, setLoading] = useState(true);
-  const [hasAttendance, setHasAttendance] = useState<boolean>(false);
+  const [lastAttendance, setLastAttendance] = useState<any>(null);
+  const [lastVaccination, setLastVaccination] = useState<any>(null);
 
   useEffect(() => {
     if (selectedPatient) {
-      checkAttendance(selectedPatient.id);
+      fetchDetails(selectedPatient.id);
       fetchDoctorIfNeeded();
     } else {
       Alert.alert('Erro', 'Paciente não encontrado.');
@@ -30,23 +31,43 @@ const PacienteDetails = () => {
     }
   }, [selectedPatient]);
 
-  const checkAttendance = async (patientId: string) => {
+  const fetchDetails = async (patientId: string) => {
+    setLoading(true);
     try {
-      const { data, error } = await supabaseConnector.client
+      // Buscar a última consulta do paciente
+      const { data: attendanceData, error: attendanceError } = await supabaseConnector.client
         .from('attendances')
         .select('*')
         .eq('patient_id', patientId)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erro ao buscar prontuário:', error);
+      if (attendanceError && attendanceError.code !== 'PGRST116') {
+        console.error('Erro ao buscar prontuário:', attendanceError);
         Alert.alert('Erro', 'Erro ao buscar prontuário do paciente.');
       } else {
-        setHasAttendance(!!data);
+        setLastAttendance(attendanceData);
+      }
+
+      // Buscar a última vacinação do paciente
+      const { data: vaccinationData, error: vaccinationError } = await supabaseConnector.client
+        .from('vaccinations')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('administered_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (vaccinationError && vaccinationError.code !== 'PGRST116') {
+        console.error('Erro ao buscar vacinações:', vaccinationError);
+        Alert.alert('Erro', 'Erro ao buscar vacinações do paciente.');
+      } else {
+        setLastVaccination(vaccinationData);
       }
     } catch (error) {
-      console.error('Erro ao buscar prontuário:', error);
-      Alert.alert('Erro', 'Erro ao buscar prontuário do paciente.');
+      console.error('Erro ao carregar detalhes do paciente:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao carregar os detalhes do paciente.');
     } finally {
       setLoading(false);
     }
@@ -56,7 +77,7 @@ const PacienteDetails = () => {
     if (!selectedDoctor) {
       try {
         setLoading(true);
-        const { data, error } = await supabaseConnector.client.from('doctors').select('*').single(); // Supondo que há apenas um médico logado
+        const { data, error } = await supabaseConnector.client.from('doctors').select('*').single();
 
         if (error) {
           console.error('Erro ao buscar dados do médico:', error);
@@ -85,7 +106,7 @@ const PacienteDetails = () => {
   };
 
   const handleRegisterVaccination = () => {
-    if (selectedPatient && selectedDoctor) {
+    if (selectedPatient) {
       router.push(`/vaccines/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`);
     } else {
       Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
@@ -136,15 +157,41 @@ const PacienteDetails = () => {
           <Text style={styles.detailItem}>UF: {selectedPatient.uf}</Text>
           <Text style={styles.detailItem}>Cidade: {selectedPatient.city}</Text>
           <Text style={styles.detailItem}>Endereço: {selectedPatient.address}</Text>
+
+          {/* Exibir dados da última consulta */}
+          {lastAttendance && (
+            <>
+              <Text style={styles.sectionTitle}>Última Consulta</Text>
+              <Text style={styles.detailItem}>
+                Data da última consulta:{' '}
+                {new Date(lastAttendance.created_at).toLocaleDateString() ?? 'Não disponível'}
+              </Text>
+              <Text style={styles.detailItem}>
+                Médico responsável: {lastAttendance.doctor_id ?? 'Não disponível'}
+              </Text>
+              <Text style={styles.detailItem}>
+                Alergias: {lastAttendance.allergies ?? 'Não registrado'}
+              </Text>
+            </>
+          )}
+
+          {/* Exibir dados da última vacinação */}
+          {lastVaccination && (
+            <>
+              <Text style={styles.sectionTitle}>Última Vacina</Text>
+              <Text style={styles.detailItem}>
+                Data da última vacinação:{' '}
+                {new Date(lastVaccination.administered_at).toLocaleDateString() ?? 'Não disponível'}
+              </Text>
+            </>
+          )}
         </View>
 
         {/* Botões para Atendimentos e Vacinações */}
         <View style={styles.buttonContainer}>
-          {!hasAttendance && (
-            <TouchableOpacity style={styles.buttonConsulta} onPress={handleCreateAttendance}>
-              <Text style={styles.buttonText}>CRIAR ATENDIMENTO</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.buttonConsulta} onPress={handleCreateAttendance}>
+            <Text style={styles.buttonText}>CRIAR ATENDIMENTO</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.buttonVaccine} onPress={handleRegisterVaccination}>
             <Text style={styles.buttonText}>REGISTRAR VACINAÇÃO</Text>
           </TouchableOpacity>

@@ -42,15 +42,16 @@ export default function AppTabsLayout() {
       screenOptions={{
         tabBarShowLabel: true,
         tabBarActiveTintColor: '#008000',
-        tabBarInactiveTintColor: '#000000', // Cor da aba não selecionada
+        tabBarInactiveTintColor: '#000000',
         headerShown: false,
         tabBarStyle: {
-          position: 'absolute', // Posiciona a tab bar de forma absoluta
-          backgroundColor: '#00FA9A', // Torna o fundo transparente
-          borderTopWidth: 1, // Remove a borda superior
-          elevation: 1, // Remove a sombra no Android
-          shadowOpacity: 1, // Remove a sombra no iOS
-          height: 45, // Ajusta a altura para maior personalização (opcional)
+          position: 'absolute',
+          backgroundColor: '#00FA9A',
+          borderTopWidth: 1,
+          elevation: 1,
+          shadowOpacity: 1,
+          height: 45,
+          paddingBottom: 10, // Adiciona espaçamento inferior na barra de abas
         },
       }}>
       {/* Aba Paciente */}
@@ -78,7 +79,7 @@ export default function AppTabsLayout() {
               animation={focused ? 'pulse' : undefined}
               iterationCount="infinite"
               duration={1000}>
-              <FontAwesome size={28} name="info-circle" color={color} />
+              <FontAwesome size={28} name="bar-chart" color={color} />
             </Animatable.View>
           ),
         }}
@@ -125,6 +126,21 @@ export default function AppTabsLayout() {
               iterationCount="infinite"
               duration={1000}>
               <FontAwesome size={28} name="user-md" color={color} />
+            </Animatable.View>
+          ),
+        }}
+      />
+      {/* Aba About */}
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: 'Sobre',
+          tabBarIcon: ({ color, focused }) => (
+            <Animatable.View
+              animation={focused ? 'pulse' : undefined}
+              iterationCount="infinite"
+              duration={1000}>
+              <FontAwesome size={28} name="info-circle" color={color} />
             </Animatable.View>
           ),
         }}

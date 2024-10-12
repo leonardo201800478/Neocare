@@ -1,4 +1,5 @@
-// app/screens/aconselharMae/alimentacao/index.tsx
+// app/(tabs)/screens/aconselharMae/alimentacao/index.tsx
+
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';

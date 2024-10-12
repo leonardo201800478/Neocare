@@ -16,7 +16,6 @@ import {
 
 import CEPInput from '../../../components/CEPInput';
 import { isCPFValid } from '../../../components/CPFValidator';
-import { useSystem } from '../../../powersync/PowerSync';
 import {
   formatDateForDatabase,
   formatCPF,
@@ -26,7 +25,8 @@ import {
   countryCodes,
 } from '../../../utils/formatUtils';
 import { calcularIdade } from '../../../utils/idadeCalculator';
-import { uuid } from '../../../utils/uuid';
+import { useDoctor } from '../../context/DoctorContext';
+import { usePatient } from '../../context/PatientContext';
 import styles from '../../styles/Styles';
 
 const CadastroPaciente = () => {
@@ -44,10 +44,13 @@ const CadastroPaciente = () => {
   const [endereco, setEndereco] = useState('');
   const [numero, setNumero] = useState('');
   const router = useRouter();
-  const { supabaseConnector, db } = useSystem();
+
+  const { createPatient } = usePatient(); // Usando o contexto de pacientes
+  const { selectedDoctor } = useDoctor(); // Usando o contexto de médicos
 
   const handleCadastro = async () => {
     setLoading(true);
+
     if (!nome || !cpf || !dataNasc) {
       Alert.alert('Erro', 'Todos os campos obrigatórios devem ser preenchidos');
       setLoading(false);
@@ -64,15 +67,12 @@ const CadastroPaciente = () => {
     const formattedPhoneNumber = formatPhoneNumber(codigoPais, telefone);
 
     try {
-      // Obtendo o ID do médico logado
-      const { userID } = await supabaseConnector.fetchCredentials();
-
-      if (!userID) {
-        throw new Error('Não foi possível obter o ID do médico logado.');
+      if (!selectedDoctor?.id) {
+        throw new Error('Erro ao obter o ID do médico logado.');
       }
 
+      // Criar um novo paciente usando o PatientContext
       const newPatient = {
-        id: uuid(),
         name: nome,
         cpf: removeCPFMask(cpf),
         birth_date: formatDateForDatabase(dataNasc),
@@ -82,33 +82,14 @@ const CadastroPaciente = () => {
         uf,
         city: cidade,
         address: `${endereco}, ${numero}`,
-        created_by: userID, // Relacionando o paciente ao médico criador
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        doctor_id: userID, // Relacionando ao médico que cadastrou o paciente
       };
 
-      console.log('Dados do paciente sendo enviados para o Supabase:', newPatient);
+      console.log('Dados do paciente a serem criados:', newPatient);
 
-      // Salvar paciente no banco local usando Kysely
-      await db.insertInto('patients').values(newPatient).execute();
+      // Criando paciente no contexto
+      await createPatient(newPatient, selectedDoctor.id); // Usando o doctor_id como referência válida
 
-      console.log('Paciente salvo localmente com sucesso.');
-
-      // Tentar sincronizar com Supabase
-      const { data, error } = await supabaseConnector.client.from('patients').insert([newPatient]);
-
-      if (error) {
-        console.warn('Erro ao sincronizar com Supabase:', error.message);
-        Alert.alert(
-          'Aviso',
-          'Paciente salvo localmente, mas a sincronização com o Supabase falhou.'
-        );
-      } else {
-        console.log('Dados inseridos no Supabase:', data);
-        Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
-      }
-
+      Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
       router.replace(`/(tabs)/patients/PacienteDetails`);
     } catch (error) {
       console.error('Erro ao cadastrar o paciente:', error);
@@ -203,6 +184,7 @@ const CadastroPaciente = () => {
             placeholderTextColor="#ccc"
           />
         </View>
+
         {/* Endereço */}
         <View style={styles.container}>
           <CEPInput
@@ -250,6 +232,7 @@ const CadastroPaciente = () => {
             placeholderTextColor="#ccc"
           />
         </View>
+
         {/* Botões */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => router.replace('/(tabs)/home/')}>

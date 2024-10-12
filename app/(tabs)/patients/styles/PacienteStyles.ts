@@ -1,15 +1,19 @@
+// app/tabs/patients/styles/PacienteStyles.ts
+
 import { StyleSheet, StatusBar } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
+    paddingBottom: 50,
     backgroundColor: '#98FB98', // Fundo verde claro
     alignItems: 'center',
   },
   safeAreaView: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
+    paddingBottom: 20, // Adiciona 30 pixels de espaçamento na parte inferior
     backgroundColor: '#98FB98', // Fundo verde claro
   },
   detailsContainer: {
@@ -17,6 +21,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#A5D6A7', // Verde suave para o fundo do container de detalhes
     borderRadius: 12,
+    paddingBottom: 40,
     borderWidth: 1,
     borderColor: '#66BB6A', // Borda em tom um pouco mais escuro de verde
     shadowColor: '#388E3C', // Sombra em verde escuro
@@ -53,13 +58,13 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    padding: 10,
-    marginBottom: 10,
+    padding: 12,
+    marginBottom: 15,
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    fontSize: 16,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#4B0082',
+    borderColor: '#DDDDDD',
+    fontSize: 16,
   },
   inputSmall: {
     width: '48%',
@@ -94,21 +99,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 10,
+    marginTop: 20,
   },
   button: {
-    width: '48%',
-    backgroundColor: '#4B0082',
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginTop: 10,
+    flex: 1,
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginHorizontal: 5,
   },
   buttonText: {
-    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   buttonVaccine: {
     flex: 1,

@@ -28,7 +28,6 @@ const patients = new Table({
   city: column.text,
   uf: column.text,
   zip_code: column.text,
-  created_by: column.text,
   doctor_id: column.text,
 });
 
