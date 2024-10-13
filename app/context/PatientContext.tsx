@@ -67,6 +67,7 @@ export const PatientProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
+
   return (
     <PatientContext.Provider value={{ selectedPatient, setSelectedPatient, createPatient }}>
       {children}

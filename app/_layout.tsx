@@ -14,7 +14,7 @@ import { DoctorProvider } from './context/DoctorContext';
 import { PatientProvider } from './context/PatientContext';
 import { VaccinationProvider } from './context/VaccinationContext';
 import { useSystem } from '../powersync/PowerSync';
-import { MedicationsProvider } from './context/MedicationsContext';
+import { MedicamentsProvider } from './context/MedicamentsContext'; 
 
 const Layout = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -63,9 +63,9 @@ const Layout = () => {
               <AttendanceNutritionDevelopmentProvider>
                 <VaccinationProvider>
                   <AllergiesProvider>
-                    <MedicationsProvider>
+                    <MedicamentsProvider>
                       <Slot />
-                    </MedicationsProvider>
+                    </MedicamentsProvider>
                   </AllergiesProvider>
                 </VaccinationProvider>
               </AttendanceNutritionDevelopmentProvider>

@@ -132,6 +132,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     marginVertical: 5,
   },
+  buttonMedicament: {
+    flex: 1,
+    backgroundColor: '#66BB6A', // Tom médio de verde para botão de consulta
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    marginVertical: 5,
+  },
   buttonDelete: {
     flex: 1,
     backgroundColor: '#D32F2F', // Vermelho suave para destacar a exclusão

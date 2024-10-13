@@ -105,6 +105,16 @@ const PacienteDetails = () => {
     }
   };
 
+  const handleViewMedicamentsCard = () => {
+    if (selectedPatient) {
+      router.push(
+        `/medications/MedicamentosPaciente/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
+      );
+    } else {
+      Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
+    }
+  };
+
   const handleRegisterVaccination = () => {
     if (selectedPatient) {
       router.push(`/vaccines/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`);
@@ -147,6 +157,87 @@ const PacienteDetails = () => {
       </View>
     );
   }
+
+  const handleDelete = async () => {
+    if (!selectedPatient) {
+      Alert.alert('Erro', 'Paciente não encontrado.');
+      return;
+    }
+
+    Alert.alert(
+      'Confirmar Deleção',
+      'Tem certeza que deseja deletar este paciente e todos os dados relacionados?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Deletar',
+          onPress: async () => {
+            setLoading(true);
+
+            try {
+              const patientId = selectedPatient.id;
+
+              // Deletar prontuários
+              const { error: attendanceError } = await supabaseConnector.client
+                .from('attendances')
+                .delete()
+                .eq('patient_id', patientId);
+              if (attendanceError) {
+                throw new Error(`Erro ao deletar prontuários: ${attendanceError.message}`);
+              }
+
+              // Deletar vacinas
+              const { error: vaccinationError } = await supabaseConnector.client
+                .from('vaccinations')
+                .delete()
+                .eq('patient_id', patientId);
+              if (vaccinationError) {
+                throw new Error(`Erro ao deletar vacinas: ${vaccinationError.message}`);
+              }
+
+              // Deletar alergias
+              const { error: allergiesError } = await supabaseConnector.client
+                .from('allergies')
+                .delete()
+                .eq('patient_id', patientId);
+              if (allergiesError) {
+                throw new Error(`Erro ao deletar alergias: ${allergiesError.message}`);
+              }
+
+              // Deletar medicamentos
+              const { error: medicationsError } = await supabaseConnector.client
+                .from('medications')
+                .delete()
+                .eq('patient_id', patientId);
+              if (medicationsError) {
+                throw new Error(`Erro ao deletar medicamentos: ${medicationsError.message}`);
+              }
+
+              // Deletar o próprio paciente
+              const { error: patientError } = await supabaseConnector.client
+                .from('patients')
+                .delete()
+                .eq('id', patientId);
+              if (patientError) {
+                throw new Error(`Erro ao deletar paciente: ${patientError.message}`);
+              }
+
+              Alert.alert('Sucesso', 'Paciente deletado com sucesso.');
+              router.replace('/(tabs)/home/');
+            } catch (error) {
+              console.error('Erro ao deletar paciente:', error);
+              Alert.alert('Erro', 'Ocorreu um erro ao deletar o paciente.');
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -212,6 +303,12 @@ const PacienteDetails = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonAllergy} onPress={handleViewAllergiesCard}>
             <Text style={styles.buttonText}>Alergias</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonMedicament} onPress={handleViewMedicamentsCard}>
+            <Text style={styles.buttonText}>Medicamentos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleDelete}>
+            <Text style={styles.buttonText}>Deletar Paciente</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
