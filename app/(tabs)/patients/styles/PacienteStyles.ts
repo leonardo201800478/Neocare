@@ -149,6 +149,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '100%',
   },
+  buttonAllergy: {
+    backgroundColor: '#4CAF50', // Verde para o botão de voltar para Home
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    width: '100%',
+  },
   overlay: {
     position: 'absolute',
     top: 0,

@@ -46,8 +46,6 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         motivo_consulta: attendance.motivo_consulta ?? 'false',
         primeira_consulta: attendance.primeira_consulta ?? 'false',
         consulta_retorno: attendance.consulta_retorno ?? 'false',
-        alergias: attendance.alergias ?? 'false',
-        medicamentos: attendance.medicamentos ?? 'false',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

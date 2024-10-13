@@ -123,6 +123,16 @@ const PacienteDetails = () => {
     }
   };
 
+  const handleViewAllergiesCard = () => {
+    if (selectedPatient) {
+      router.push(
+        `/allergies/AllergiesDetails/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
+      );
+    } else {
+      Alert.alert('Erro', 'Dados insuficientes para visualizar o cadastro de Alergias.');
+    }
+  };
+
   if (loading) {
     return <LoadingOverlay message="Carregando detalhes do paciente..." />;
   }
@@ -197,6 +207,11 @@ const PacienteDetails = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonVaccine} onPress={handleViewVaccinationCard}>
             <Text style={styles.buttonText}>VER CARTÃO DE VACINAS</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonAllergy} onPress={handleViewAllergiesCard}>
+            <Text style={styles.buttonText}>Alergias</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

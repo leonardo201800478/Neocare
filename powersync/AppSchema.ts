@@ -39,12 +39,9 @@ const attendances = new Table({
   created_at: column.text,
   updated_at: column.text,
   patient_id: column.text,
-  created_by: column.text,
   primeira_consulta: column.text,
   consulta_retorno: column.text,
   motivo_consulta: column.text,
-  alergias: column.text,
-  medicamentos: column.text,
   doctor_id: column.text,
 });
 
@@ -117,10 +114,60 @@ export const VACCINATIONS_TABLE = 'vaccinations';
 const vaccinations = new Table({
   id: column.text,
   patient_id: column.text,
+  created_at: column.text,
   doctor_id: column.text,
   vaccine_name: column.text,
   dose_number: column.text,
   administered_at: column.text,
+});
+
+// Tabela de alergias
+export const ALLERGIES_TABLE = 'allergies';
+
+const allergies = new Table({
+  id: column.text,
+  patient_id: column.text,
+  created_at: column.text,
+  updated_at: column.text,
+  doctor_id: column.text,
+  allergy_milk: column.integer,
+  allergy_eggs: column.integer,
+  allergy_beef: column.integer,
+  allergy_fish: column.integer,
+  allergy_shellfish: column.integer,
+  allergy_cat: column.integer,
+  allergy_dog: column.integer,
+  allergy_bee: column.integer,
+  allergy_ant: column.integer,
+  allergy_venomous_animals: column.integer,
+  allergy_insects: column.integer,
+  allergy_dipyrone: column.integer,
+  allergy_aspirin: column.integer,
+  allergy_diclofenac: column.integer,
+  allergy_paracetamol: column.integer,
+  allergy_penicillin: column.integer,
+  allergy_magnesium_bisulphate: column.integer,
+  allergy_rivaroxaban: column.integer,
+  allergy_losartan_potassium: column.integer,
+  allergy_metformin: column.integer,
+  allergy_butylscopolamine: column.integer,
+});
+
+// Tabela de medicamentos
+export const MEDICATIONS_TABLE = 'medications';
+
+const medications = new Table({
+  id: column.text, // ID único do medicamento
+  name: column.text, // Nome do medicamento
+  patient_id: column.text, // ID do paciente (referência da tabela patients)
+  doctor_id: column.text, // ID do médico (referência da tabela doctors)
+  dosage_info: column.text, // Informações sobre dosagem
+  max_dosage_info: column.text, // Dosagem máxima permitida
+  indication: column.text, // Indicações para uso do medicamento
+  contraindications: column.text, // Contraindicações
+  instructions: column.text, // Instruções especiais, se houver
+  created_at: column.text, // Data de criação
+  updated_at: column.text, // Data de atualização
 });
 
 // Criando o esquema
@@ -132,6 +179,8 @@ export const AppSchema = new Schema({
   attendance_symptoms,
   attendance_nutrition_development,
   vaccinations,
+  allergies,
+  medications,
 });
 
 // Definindo o tipo Database
@@ -143,3 +192,5 @@ export type AttendanceVital = Database['attendance_vitals'];
 export type AttendanceSymptom = Database['attendance_symptoms'];
 export type AttendanceNutritionDevelopment = Database['attendance_nutrition_development'];
 export type Vaccination = Database['vaccinations'];
+export type Allergy = Database['allergies'];
+export type Medication = Database['medications'];

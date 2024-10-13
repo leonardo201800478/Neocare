@@ -5,6 +5,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
+import { AllergyProvider } from './context/AllergiesContext';
 import { AttendanceProvider } from './context/AttendanceContext';
 import { AttendanceNutritionDevelopmentProvider } from './context/AttendanceNutritionDevelopmentContext';
 import { AttendanceSymptomProvider } from './context/AttendanceSymptomContext';
@@ -13,6 +14,7 @@ import { DoctorProvider } from './context/DoctorContext';
 import { PatientProvider } from './context/PatientContext';
 import { VaccinationProvider } from './context/VaccinationContext';
 import { useSystem } from '../powersync/PowerSync';
+import { MedicationsProvider } from './context/MedicationsContext';
 
 const Layout = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -60,7 +62,11 @@ const Layout = () => {
             <AttendanceSymptomProvider>
               <AttendanceNutritionDevelopmentProvider>
                 <VaccinationProvider>
-                  <Slot />
+                  <AllergyProvider>
+                    <MedicationsProvider>
+                      <Slot />
+                    </MedicationsProvider>
+                  </AllergyProvider>
                 </VaccinationProvider>
               </AttendanceNutritionDevelopmentProvider>
             </AttendanceSymptomProvider>
