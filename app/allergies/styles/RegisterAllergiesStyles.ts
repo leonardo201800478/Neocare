@@ -3,88 +3,78 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: '#f0f0f0', // Cor de fundo para a tela
+    backgroundColor: '#F5F5F5',
   },
   container: {
     padding: 16,
-    backgroundColor: '#ffffff',
-    flexGrow: 1, // Garante que o conteúdo preencha o espaço disponível e permite a rolagem
+    backgroundColor: 'white',
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
+    color: '#333333',
     textAlign: 'center',
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,
-    fontWeight: '600',
+    color: '#666666',
     textAlign: 'center',
-    marginBottom: 10,
-    color: '#333333',
+    marginBottom: 20,
   },
   section: {
     marginBottom: 20,
-    paddingHorizontal: 10,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    color: '#333333',
     marginBottom: 10,
   },
   checkboxContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#cccccc',
-    backgroundColor: '#f9f9f9',
-  },
-  button: {
-    marginTop: 30,
-    backgroundColor: '#007bff',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
     alignItems: 'center',
-  },
-  buttonContainer: {
-    marginTop: 30,
-  },
-  submitButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+    backgroundColor: '#F9F9F9',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   submitButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#0057D9',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
-  buttonCancel: {
-    backgroundColor: '#dc3545',
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
-  buttonDisabled: {
-    backgroundColor: '#ced4da',
+  cancelButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
-  buttonIcon: {
+  cancelButtonText: {
+    color: '#0057D9',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  icon: {
     marginRight: 10,
   },
-  buttonLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttonLabelDisabled: {
-    color: '#ffffff',
-  },
-
 });
 
 export default styles;

@@ -1,3 +1,5 @@
+// app/vaccines/RegisterVaccination.tsx
+
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';

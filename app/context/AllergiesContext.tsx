@@ -1,79 +1,83 @@
-// app/context/AllergiesContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { Allergy } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
 
+// Definindo o tipo para o contexto de alergias
 type AllergyContextType = {
-  allergies: Allergy | null;
-  setAllergies: (allergies: Allergy | null) => void;
+  allergies: Allergy[] | null;
+  setAllergies: (allergies: Allergy[] | null) => void;
   createAllergy: (allergy: Partial<Allergy>, patientId: string, doctorId: string) => Promise<void>;
   updateAllergy: (allergyId: string, updatedFields: Partial<Allergy>) => Promise<void>;
-  fetchAllergiesByPatient: (patientId: string) => Promise<Allergy | null>;
+  fetchAllergiesByPatient: (patientId: string) => Promise<Allergy[] | null>;
 };
 
+// Inicializando o contexto
 const AllergyContext = createContext<AllergyContextType | undefined>(undefined);
 
+// Provider de contexto de alergias
 export const AllergyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [allergies, setAllergies] = useState<Allergy | null>(null);
+  const [allergies, setAllergies] = useState<Allergy[] | null>(null);
   const { db, supabaseConnector } = useSystem();
 
+  // Função para criar uma nova alergia
   const createAllergy = async (allergy: Partial<Allergy>, patientId: string, doctorId: string) => {
     if (!patientId || !doctorId) {
-      throw new Error('Both patientId and doctorId are required.');
+      throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
     }
 
     try {
       const allergyId = uuid();
+
       const newAllergy = {
         id: allergyId,
         patient_id: patientId,
         doctor_id: doctorId,
         created_at: new Date().toISOString(),
-        updated_at: null,
-        allergy_milk: allergy.allergy_milk ?? null,
-        allergy_eggs: allergy.allergy_eggs ?? null,
-        allergy_beef: allergy.allergy_beef ?? null,
-        allergy_fish: allergy.allergy_fish ?? null,
-        allergy_shellfish: allergy.allergy_shellfish ?? null,
-        allergy_cat: allergy.allergy_cat ?? null,
-        allergy_dog: allergy.allergy_dog ?? null,
-        allergy_bee: allergy.allergy_bee ?? null,
-        allergy_ant: allergy.allergy_ant ?? null,
-        allergy_venomous_animals: allergy.allergy_venomous_animals ?? null,
-        allergy_insects: allergy.allergy_insects ?? null,
-        allergy_dipyrone: allergy.allergy_dipyrone ?? null,
-        allergy_aspirin: allergy.allergy_aspirin ?? null,
-        allergy_diclofenac: allergy.allergy_diclofenac ?? null,
-        allergy_paracetamol: allergy.allergy_paracetamol ?? null,
-        allergy_penicillin: allergy.allergy_penicillin ?? null,
-        allergy_magnesium_bisulphate: allergy.allergy_magnesium_bisulphate ?? null,
-        allergy_rivaroxaban: allergy.allergy_rivaroxaban ?? null,
-        allergy_losartan_potassium: allergy.allergy_losartan_potassium ?? null,
-        allergy_metformin: allergy.allergy_metformin ?? null,
-        allergy_butylscopolamine: allergy.allergy_butylscopolamine ?? null,
+        updated_at: new Date().toISOString(),
+        allergy_milk: '0', // Setando valores como '0' para o campo string
+        allergy_eggs: '0',
+        allergy_fish: '0',
+        allergy_shellfish: '0',
+        allergy_cat: '0',
+        allergy_dog: '0',
+        allergy_bee: '0',
+        allergy_ant: '0',
+        allergy_venomous_animals: '0',
+        allergy_insects: '0',
+        allergy_aspirin: '0',
+        allergy_diclofenac: '0',
+        allergy_paracetamol: '0',
+        allergy_penicillin: '0',
+        allergy_magnesium_bisulphate: '0',
+        allergy_rivaroxaban: '0',
+        allergy_losartan_potassium: '0',
+        allergy_metformin: '0',
+        allergy_butylscopolamine: '0',
+        allergy_beef: '0',
+        allergy_dipyrone: '0',
       };
 
       await db.insertInto('allergies').values(newAllergy).execute();
-      setAllergies(newAllergy);
+      setAllergies((prev) => [...(prev || []), newAllergy]);
 
       const { error } = await supabaseConnector.client.from('allergies').insert([newAllergy]);
 
       if (error) {
-        console.warn('Error syncing allergy with Supabase:', error.message);
-        throw new Error('Allergy created locally but sync with Supabase failed.');
+        console.warn('Erro ao sincronizar alergia com o Supabase:', error.message);
+        throw new Error('Alergia criada localmente, mas a sincronização com o Supabase falhou.');
       }
     } catch (error) {
-      console.error('Error creating allergy:', error);
-      throw new Error('Failed to create allergy.');
+      console.error('Erro ao criar alergia:', error);
+      throw new Error('Erro ao criar alergia.');
     }
   };
 
+  // Função para atualizar uma alergia
   const updateAllergy = async (allergyId: string, updatedFields: Partial<Allergy>) => {
     if (!allergyId) {
-      throw new Error('The allergy ID is required to update.');
+      throw new Error('O ID da alergia é obrigatório.');
     }
 
     try {
@@ -85,63 +89,62 @@ export const AllergyProvider: React.FC<{ children: ReactNode }> = ({ children })
         .eq('id', allergyId);
 
       if (error) {
-        console.warn('Error syncing updated allergy with Supabase:', error.message);
-        throw new Error('Allergy updated locally but sync with Supabase failed.');
+        console.warn('Erro ao sincronizar atualização com o Supabase:', error.message);
+        throw new Error(
+          'Alergia atualizada localmente, mas a sincronização com o Supabase falhou.'
+        );
       }
     } catch (error) {
-      console.error('Error updating allergy:', error);
-      throw new Error('Failed to update allergy.');
+      console.error('Erro ao atualizar alergia:', error);
+      throw new Error('Erro ao atualizar alergia.');
     }
   };
 
-  const fetchAllergiesByPatient = async (patientId: string) => {
+  // Função para buscar as alergias de um paciente
+  const fetchAllergiesByPatient = async (patientId: string): Promise<Allergy[] | null> => {
     if (!patientId) {
-      throw new Error('Patient ID is required to fetch allergies.');
+      throw new Error('O ID do paciente é obrigatório.');
     }
 
     try {
-      const result = await db
+      const allergies = await db
         .selectFrom('allergies')
         .selectAll()
         .where('patient_id', '=', patientId)
         .execute();
 
-      if (result.length === 0) {
-        return null; // Não retornar erro, apenas retornar null se não houver alergias
+      if (allergies.length === 0) {
+        console.warn('Nenhuma alergia encontrada para o paciente:', patientId);
+        return null;
       }
 
-      const patientAllergies = result[0];
-      setAllergies(patientAllergies);
-
-      const { data, error } = await supabaseConnector.client
-        .from('allergies')
-        .select('*')
-        .eq('patient_id', patientId);
-
-      if (error) {
-        console.warn('Error syncing allergies with Supabase:', error.message);
-        throw new Error('Failed to fetch allergies from Supabase.');
-      }
-
-      return patientAllergies;
+      setAllergies(allergies);
+      return allergies;
     } catch (error) {
-      console.error('Error fetching allergies by patient ID:', error);
-      throw new Error('Failed to fetch allergies.');
+      console.error('Erro ao buscar alergias do paciente:', error);
+      throw new Error('Erro ao buscar alergias do paciente.');
     }
   };
 
   return (
     <AllergyContext.Provider
-      value={{ allergies, setAllergies, createAllergy, updateAllergy, fetchAllergiesByPatient }}>
+      value={{
+        allergies,
+        setAllergies,
+        createAllergy,
+        updateAllergy,
+        fetchAllergiesByPatient,
+      }}>
       {children}
     </AllergyContext.Provider>
   );
 };
 
+// Hook para acessar o contexto de alergias
 export const useAllergy = (): AllergyContextType => {
   const context = useContext(AllergyContext);
   if (!context) {
-    throw new Error('useAllergy must be used within an AllergyProvider.');
+    throw new Error('useAllergy deve ser usado dentro de um AllergyProvider.');
   }
   return context;
 };
