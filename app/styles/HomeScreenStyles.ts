@@ -5,19 +5,19 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#e6f7e1', // Fundo verde claro para uma aparência acolhedora
+    padding: 20,
+    backgroundColor: '#e6f7e1',
   },
   header: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#2e7d32', // Verde escuro para destacar o título
+    color: '#2e7d32',
   },
   input: {
     padding: 12,
-    borderColor: '#bcd5c2', // Cor da borda suavizada para combinar com o fundo
+    borderColor: '#bcd5c2',
     borderWidth: 1,
     borderRadius: 10,
     marginBottom: 16,
@@ -31,29 +31,36 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 10,
+    paddingVertical: 5,
     borderWidth: 1,
     borderColor: '#ccc',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   searchIcon: {
     position: 'absolute',
-    left: 20, // Ajuste para posicionar o ícone à esquerda
-    zIndex: 1, // Coloca o ícone acima do TextInput
-    marginTop: 30, // Ajuste para centralizar o ícone verticalmente
+    left: 15,
+    zIndex: 1,
   },
   searchInput: {
-    paddingLeft: 35, // Adiciona espaço para o ícone no lado esquerdo do texto
-    height: 50,
+    paddingLeft: 40,
+    height: 45,
     borderColor: 'gray',
-    borderWidth: 1,
+    borderWidth: 0,
     borderRadius: 8,
     flex: 1,
+    backgroundColor: '#ffffff',
+    fontSize: 16,
   },
   button: {
-    backgroundColor: '#2e7d32', // Verde escuro para os botões principais
-    padding: 14,
+    backgroundColor: '#2e7d32',
+    paddingVertical: 15,
     borderRadius: 25,
     marginBottom: 16,
     alignItems: 'center',
@@ -81,8 +88,8 @@ export default StyleSheet.create({
     elevation: 2,
   },
   columnText: {
-    fontSize: 16,
-    color: '#333', // Cor escura para melhor contraste e leitura
+    fontSize: 14,
+    color: '#333',
     textAlign: 'left',
   },
   noResultsText: {
@@ -95,5 +102,28 @@ export default StyleSheet.create({
     height: 1,
     backgroundColor: '#ccc',
     marginVertical: 8,
+  },
+  drawerContainer: {
+    flex: 1,
+    backgroundColor: '#f9f9f9',
+    padding: 20,
+  },
+  drawerButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  drawerButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
