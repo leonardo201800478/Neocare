@@ -1,11 +1,13 @@
 // app/attendences/types.ts
 
 export interface BasicInfo {
-  alergias: string | undefined;
-  medicamentos: string | undefined;
   motivo_consulta: string;
   consulta_retorno: string;
   primeira_consulta: string;
+  hipertensao: string;
+  diabetes: string;
+  doenca_hepatica: string;
+  deficiencia_g6pd: string;
 }
 
 export interface VitalInfo {

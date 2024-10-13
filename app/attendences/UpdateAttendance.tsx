@@ -24,8 +24,10 @@ const UpdateAttendance: React.FC = () => {
     motivo_consulta: '',
     consulta_retorno: '',
     primeira_consulta: '',
-    alergias: '',
-    medicamentos: '',
+    hipertensao: '',
+    diabetes: '',
+    doenca_hepatica: '',
+    deficiencia_g6pd: '',
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
@@ -99,8 +101,10 @@ const UpdateAttendance: React.FC = () => {
             motivo_consulta: attendance.motivo_consulta || '',
             consulta_retorno: attendance.consulta_retorno || '',
             primeira_consulta: attendance.primeira_consulta || '',
-            alergias: attendance.alergias || '',
-            medicamentos: attendance.medicamentos || '',
+            hipertensao: attendance.hipertensao || '',
+            diabetes: attendance.diabetes || '',
+            doenca_hepatica: attendance.doenca_hepatica || '',
+            deficiencia_g6pd: attendance.deficiencia_g6pd || '',
           });
 
           const vitalData = await db

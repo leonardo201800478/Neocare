@@ -30,8 +30,10 @@ const RegisterAttendance: React.FC = () => {
     motivo_consulta: '',
     consulta_retorno: '',
     primeira_consulta: '',
-    alergias: '',
-    medicamentos: '',
+    hipertensao: '',
+    diabetes: '',
+    doenca_hepatica: '',
+    deficiencia_g6pd: '',
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
@@ -108,13 +110,7 @@ const RegisterAttendance: React.FC = () => {
     try {
       // Criar o registro de atendimento (prontuário)
       const attendanceId = uuid();
-      await createAttendance(
-        { ...basicInfo, id: attendanceId },
-        'doctorId',
-        patientId,
-        'additionalArg1',
-        'additionalArg2'
-      );
+      await createAttendance({ ...basicInfo, id: attendanceId }, 'doctorId', patientId);
 
       // Criar os sinais vitais associados ao atendimento
       await createVitalSigns({ ...vitalInfo, id: uuid() }, attendanceId);

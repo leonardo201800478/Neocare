@@ -50,23 +50,42 @@ const BasicInfoForm: React.FC<BasicInfoProps> = ({ data, onChange }) => {
         multiline
       />
 
-      {/* Alergias */}
-      <Text style={styles.label}>Alergias:</Text>
+      {/* Hipertensão */}
+      <Text style={styles.label}>Hipertenso?:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Descreva as alergias do paciente"
-        value={data.alergias}
-        onChangeText={(text) => onChange('alergias', text)}
+        placeholder="Descreva se o paciente é ou não hipertenso"
+        value={data.hipertensao}
+        onChangeText={(text) => onChange('hipertensao', text)}
         multiline
       />
 
-      {/* Medicamentos */}
-      <Text style={styles.label}>Medicamentos:</Text>
+      {/* Diabetes */}
+      <Text style={styles.label}>Diabetes?:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Descreva os medicamentos do paciente"
-        value={data.medicamentos}
-        onChangeText={(text) => onChange('medicamentos', text)}
+        placeholder="Descreva se o paciente é ou não diabético"
+        value={data.diabetes}
+        onChangeText={(text) => onChange('diabetes', text)}
+        multiline
+      />
+      {/* Doenca Hepática */}
+      <Text style={styles.label}>Doenca Hepática?:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Descreva se o paciente tem doenca hepática"
+        value={data.doenca_hepatica}
+        onChangeText={(text) => onChange('doenca_hepatica', text)}
+        multiline
+      />
+
+      {/* Deficiencia G6PD */}
+      <Text style={styles.label}>Deficiencia G6PD?:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Descreva se o paciente é ou não diabético"
+        value={data.deficiencia_g6pd}
+        onChangeText={(text) => onChange('deficiencia_g6pd', text)}
         multiline
       />
     </View>

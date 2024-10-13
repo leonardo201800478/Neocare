@@ -43,6 +43,10 @@ const attendances = new Table({
   consulta_retorno: column.text,
   motivo_consulta: column.text,
   doctor_id: column.text,
+  hipertensao: column.text, // Novo campo para hipertensão (true/false)
+  diabetes: column.text, // Novo campo para diabetes (true/false)
+  doenca_hepatica: column.text, // Novo campo para doença hepática (true/false)
+  deficiencia_g6pd: column.text, // Novo campo para deficiência de G6PD (true/false)
 });
 
 // Tabela de sinais vitais
