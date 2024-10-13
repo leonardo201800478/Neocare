@@ -15,6 +15,7 @@ type AttendanceContextType = {
     patientId: string,
   ) => Promise<void>;
   updateAttendance: (attendanceId: string, updatedFields: Partial<Attendance>) => Promise<void>;
+  fetchAttendanceByPatient: (patientId: string) => Promise<Attendance | null>; // Nova função
 };
 
 const AttendanceContext = createContext<AttendanceContextType | undefined>(undefined);
@@ -123,9 +124,36 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
+  // Função para buscar um atendimento por ID de paciente
+  const fetchAttendanceByPatient = async (patientId: string): Promise<Attendance | null> => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendances')
+        .select('*')
+        .eq('patient_id', patientId)
+        .single();
+
+      if (error) {
+        console.error('Erro ao buscar atendimento por ID do paciente:', error.message);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar atendimento:', error);
+      return null;
+    }
+  };
+
   return (
     <AttendanceContext.Provider
-      value={{ selectedAttendance, setSelectedAttendance, createAttendance, updateAttendance }}>
+      value={{
+        selectedAttendance,
+        setSelectedAttendance,
+        createAttendance,
+        updateAttendance,
+        fetchAttendanceByPatient, // Adicionando a nova função ao provider
+      }}>
       {children}
     </AttendanceContext.Provider>
   );

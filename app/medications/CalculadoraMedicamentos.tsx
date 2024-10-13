@@ -97,10 +97,10 @@ const medicationsList = {
 
 const CalculadoraMedicamentos = ({ patientId }: { patientId: string }) => {
   const { calculateDosage } = useMedicaments();
-  const { selectedPatient, setSelectedPatient } = usePatient();
-  const { selectedDoctor, setSelectedDoctor } = useDoctor();
-  const { selectedAttendance, setSelectedAttendance } = useAttendance();
-  const { vitalSigns, setVitalSigns } = useAttendanceVital();
+  const { selectedPatient, setSelectedPatient, fetchPatientById } = usePatient();
+  const { selectedDoctor, setSelectedDoctor, fetchDoctorById } = useDoctor();
+  const { selectedAttendance, setSelectedAttendance, fetchAttendanceByPatient } = useAttendance();
+  const { vitalSigns, setVitalSigns, fetchVitalsByAttendance } = useAttendanceVital();
   const { fetchAllergiesByPatient } = useAllergies();
 
   const [patientAge, setPatientAge] = useState<string | null>(null);
@@ -121,12 +121,13 @@ const CalculadoraMedicamentos = ({ patientId }: { patientId: string }) => {
       const patient = await fetchPatientById(patientId);
       if (!patient) throw new Error('Paciente não encontrado');
 
+      if (!patient.birth_date) throw new Error('Data de nascimento do paciente não encontrada');
       const age = calcularIdade(new Date(patient.birth_date), 'years');
       setPatientAge(age);
       setSelectedPatient(patient);
 
       // Buscar nome do médico
-      const doctor = await fetchDoctorById(patient.doctor_id);
+      const doctor = patient.doctor_id ? await fetchDoctorById(patient.doctor_id) : null;
       if (doctor) {
         setDoctorName(doctor.name);
         setSelectedDoctor(doctor);
@@ -140,7 +141,7 @@ const CalculadoraMedicamentos = ({ patientId }: { patientId: string }) => {
       setSelectedAttendance(attendance);
 
       // Buscar dados dos sinais vitais (attendance_vitals)
-      const vitals = await fetchVitalsByAttendance(attendance?.id);
+      const vitals = attendance?.id ? await fetchVitalsByAttendance(attendance.id) : null;
       if (!vitals) setErrors((prev) => [...prev, 'Informações de sinais vitais faltando']);
       setVitalSigns(vitals);
 

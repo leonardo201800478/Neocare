@@ -10,6 +10,7 @@ type PatientContextType = {
   selectedPatient: Patient | null;
   setSelectedPatient: (patient: Patient | null) => void;
   createPatient: (patient: Partial<Patient>, doctorId: string) => Promise<void>;
+  fetchPatientById: (patientId: string) => Promise<Patient | null>; // Adicionando a função de buscar paciente
 };
 
 // Inicializando o contexto de pacientes
@@ -67,9 +68,34 @@ export const PatientProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
+  /**
+   * Função para buscar um paciente pelo ID
+   * @param patientId - ID do paciente a ser buscado
+   * @returns Retorna o paciente ou null se não for encontrado
+   */
+  const fetchPatientById = async (patientId: string): Promise<Patient | null> => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('patients')
+        .select('*')
+        .eq('id', patientId)
+        .single();
+
+      if (error) {
+        console.error('Erro ao buscar paciente:', error.message);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar paciente:', error);
+      return null;
+    }
+  };
 
   return (
-    <PatientContext.Provider value={{ selectedPatient, setSelectedPatient, createPatient }}>
+    <PatientContext.Provider
+      value={{ selectedPatient, setSelectedPatient, createPatient, fetchPatientById }}>
       {children}
     </PatientContext.Provider>
   );

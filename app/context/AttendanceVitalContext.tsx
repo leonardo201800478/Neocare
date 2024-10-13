@@ -11,6 +11,7 @@ type AttendanceVitalContextType = {
   setVitalSigns: (vitals: AttendanceVital | null) => void;
   createVitalSigns: (vitals: Partial<AttendanceVital>, attendanceId: string) => Promise<void>;
   updateVitalSigns: (vitalId: string, updatedFields: Partial<AttendanceVital>) => Promise<void>;
+  fetchVitalsByAttendance: (attendanceId: string) => Promise<AttendanceVital | null>; // Nova função
 };
 
 const AttendanceVitalContext = createContext<AttendanceVitalContextType | undefined>(undefined);
@@ -112,9 +113,36 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
     }
   };
 
+  // Função para buscar sinais vitais por ID do atendimento
+  const fetchVitalsByAttendance = async (attendanceId: string): Promise<AttendanceVital | null> => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendance_vitals')
+        .select('*')
+        .eq('attendance_id', attendanceId)
+        .single();
+
+      if (error) {
+        console.error('Erro ao buscar sinais vitais por ID do atendimento:', error.message);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar sinais vitais:', error);
+      return null;
+    }
+  };
+
   return (
     <AttendanceVitalContext.Provider
-      value={{ vitalSigns, setVitalSigns, createVitalSigns, updateVitalSigns }}>
+      value={{
+        vitalSigns,
+        setVitalSigns,
+        createVitalSigns,
+        updateVitalSigns,
+        fetchVitalsByAttendance, // Nova função adicionada ao provider
+      }}>
       {children}
     </AttendanceVitalContext.Provider>
   );

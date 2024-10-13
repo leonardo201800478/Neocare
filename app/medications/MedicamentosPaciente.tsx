@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 import { useMedicaments } from '../context/MedicamentsContext';
 import styles from './styles/MedicamentosStyles';
@@ -15,12 +15,13 @@ const MedicamentosPaciente = ({ patientId }: { patientId: string }) => {
 
   // Função para navegar para a tela de cálculo de medicação
   const handleNavigateToCalculation = () => {
-    router.push(`/MedicationCalculation/${patientId}` as unknown as `${string}:${string}`);
-  };
-
-  // Função para voltar para a tela de detalhes do paciente
-  const handleBackToPatientDetails = () => {
-    router.push(`/(tabs)/patients/PatientDetails/${patientId}` as unknown as `${string}:${string}`);
+    if (patientId) {
+      router.push(
+        `/medications/CalculadoraMedicamentos/?patientId=${patientId}` as unknown as `${string}:${string}`
+      );
+    } else {
+      Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
+    }
   };
 
   return (
@@ -40,8 +41,10 @@ const MedicamentosPaciente = ({ patientId }: { patientId: string }) => {
       <TouchableOpacity style={styles.button} onPress={handleNavigateToCalculation}>
         <Text style={styles.buttonText}>Calcular Medicação</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleBackToPatientDetails}>
-        <Text style={styles.buttonText}>Voltar para Detalhes</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push('/(tabs)/patients/PacienteDetails')}>
+        <Text style={styles.buttonText}>Voltar para Detalhes do Paciente</Text>
       </TouchableOpacity>
     </ScrollView>
   );

@@ -20,6 +20,7 @@ type DoctorContextType = {
   selectedDoctor: Doctor | null;
   setSelectedDoctor: (doctor: Doctor | null) => void;
   createOrUpdateDoctor: (doctor: Partial<Doctor>) => Promise<void>;
+  fetchDoctorById: (doctorId: string) => Promise<Doctor | null>; // Adicionando função para buscar médico pelo ID
 };
 
 // Inicializando o contexto
@@ -100,8 +101,31 @@ export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  // Função para buscar médico pelo ID
+  const fetchDoctorById = async (doctorId: string): Promise<Doctor | null> => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('doctors')
+        .select('*')
+        .eq('id', doctorId)
+        .single();
+
+      if (error) {
+        console.error('Erro ao buscar médico pelo ID:', error.message);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar médico:', error);
+      return null;
+    }
+  };
+
   return (
-    <DoctorContext.Provider value={{ selectedDoctor, setSelectedDoctor, createOrUpdateDoctor }}>
+    <DoctorContext.Provider
+      value={{ selectedDoctor, setSelectedDoctor, createOrUpdateDoctor, fetchDoctorById }}
+    >
       {children}
     </DoctorContext.Provider>
   );
