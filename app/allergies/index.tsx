@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-import styles from './styles/RegisterAllergiesStyles';
+import styles from './styles/AllergiesStyles';
 
 const AllergiesIndex = () => {
   const router = useRouter();

@@ -13,8 +13,6 @@ type AttendanceContextType = {
     attendance: Partial<Attendance>,
     doctorId: string,
     patientId: string,
-    alergias: string,
-    medicamentos: string
   ) => Promise<void>;
   updateAttendance: (attendanceId: string, updatedFields: Partial<Attendance>) => Promise<void>;
 };

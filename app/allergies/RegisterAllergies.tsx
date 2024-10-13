@@ -1,16 +1,23 @@
-import Checkbox from 'expo-checkbox';
 import { useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Para ícones personalizados
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  SafeAreaView,
+  Switch,
+} from 'react-native';
 
-import { useAllergy } from '../context/AllergiesContext';
+import styles from './styles/AllergiesStyles'; // Substituir este arquivo pelo novo estilo atualizado
+import { useAllergies } from '../context/AllergiesContext';
+import { useDoctor } from '../context/DoctorContext';
 import { usePatient } from '../context/PatientContext';
-import styles from './styles/RegisterAllergiesStyles';
 
-// Nomes em português
+// Nomes das alergias em português
 const allergyNames = {
-  allergy_milk: 'Leite',
+  allergy_milk: 'Leite e derivados',
   allergy_eggs: 'Ovos',
   allergy_beef: 'Carne de boi',
   allergy_fish: 'Peixe',
@@ -22,11 +29,11 @@ const allergyNames = {
   allergy_venomous_animals: 'Animais venenosos',
   allergy_insects: 'Insetos',
   allergy_dipyrone: 'Dipirona',
-  allergy_aspirin: 'AAS',
+  allergy_aspirin: 'Aspirina',
   allergy_diclofenac: 'Diclofenaco',
   allergy_paracetamol: 'Paracetamol',
   allergy_penicillin: 'Penicilina',
-  allergy_magnesium_bisulphate: 'Magnésio Bisurado',
+  allergy_magnesium_bisulphate: 'Magnésio bisulfato',
   allergy_rivaroxaban: 'Rivaroxabana',
   allergy_losartan_potassium: 'Losartana',
   allergy_metformin: 'Metformina',
@@ -34,173 +41,145 @@ const allergyNames = {
 };
 
 const RegisterAllergies = () => {
-  const { updateAllergy, fetchAllergiesByPatient } = useAllergy();
-  const { selectedPatient } = usePatient();
   const router = useRouter();
+  const { selectedPatient } = usePatient();
+  const { selectedDoctor } = useDoctor();
+  const { addOrUpdateAllergy, fetchAllergiesByPatient } = useAllergies();
 
-  // Definindo o estado de alergias com strings '1' ou '0'
-  const [allergies, setAllergies] = useState<Record<keyof typeof allergyNames, string>>({
-    allergy_milk: '0',
-    allergy_eggs: '0',
-    allergy_beef: '0',
-    allergy_fish: '0',
-    allergy_shellfish: '0',
-    allergy_cat: '0',
-    allergy_dog: '0',
-    allergy_bee: '0',
-    allergy_ant: '0',
-    allergy_venomous_animals: '0',
-    allergy_insects: '0',
-    allergy_dipyrone: '0',
-    allergy_aspirin: '0',
-    allergy_diclofenac: '0',
-    allergy_paracetamol: '0',
-    allergy_penicillin: '0',
-    allergy_magnesium_bisulphate: '0',
-    allergy_rivaroxaban: '0',
-    allergy_losartan_potassium: '0',
-    allergy_metformin: '0',
-    allergy_butylscopolamine: '0',
+  // Estados para alergias com valores "yes" ou "no"
+  const [allergyStates, setAllergyStates] = useState<Record<string, string>>({
+    allergy_milk: 'no',
+    allergy_eggs: 'no',
+    allergy_beef: 'no',
+    allergy_fish: 'no',
+    allergy_shellfish: 'no',
+    allergy_cat: 'no',
+    allergy_dog: 'no',
+    allergy_bee: 'no',
+    allergy_ant: 'no',
+    allergy_venomous_animals: 'no',
+    allergy_insects: 'no',
+    allergy_dipyrone: 'no',
+    allergy_aspirin: 'no',
+    allergy_diclofenac: 'no',
+    allergy_paracetamol: 'no',
+    allergy_penicillin: 'no',
+    allergy_magnesium_bisulphate: 'no',
+    allergy_rivaroxaban: 'no',
+    allergy_losartan_potassium: 'no',
+    allergy_metformin: 'no',
+    allergy_butylscopolamine: 'no',
   });
 
-  useEffect(() => {
-    if (selectedPatient) {
-      initializeAllergies(selectedPatient.id);
-    }
-  }, [selectedPatient]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const initializeAllergies = async (patientId: string) => {
-    try {
-      const fetchedAllergies = await fetchAllergiesByPatient(patientId);
-      if (fetchedAllergies) {
-        // Inicializa os valores de alergias com base nos dados do banco
-        const newState = Object.keys(allergies).reduce(
-          (acc, key) => {
-            // Forçando a tipagem de key como keyof typeof allergies
-            const typedKey = key as keyof typeof allergies;
-            acc[typedKey] = String(
-              fetchedAllergies[typedKey as keyof typeof fetchedAllergies] || '0'
-            ); // Se não houver valor, define como '0'
-            return acc;
-          },
-          {} as Record<keyof typeof allergies, string>
-        );
-        setAllergies(newState);
-      }
-    } catch (error) {
-      console.error('Erro ao inicializar alergias:', error);
-      Alert.alert('Erro', 'Não foi possível carregar as alergias.');
-    }
-  };
-
-  const toggleAllergy = async (key: keyof typeof allergyNames, value: boolean) => {
+  // Função para buscar alergias e configurar os switches com os valores existentes
+  const loadAllergies = async () => {
     if (!selectedPatient) {
       Alert.alert('Erro', 'Paciente não encontrado.');
       return;
     }
 
-    const updatedValue = value ? '1' : '0'; // Converte o valor booleano para string '1' ou '0'
-
-    const updatedFields: Partial<any> = {};
-    updatedFields[key] = updatedValue; // Atualiza valor no formato correto
+    setLoading(true);
 
     try {
-      await updateAllergy(selectedPatient.id, updatedFields); // Atualiza no banco de dados
-      setAllergies((prev) => ({ ...prev, [key]: updatedValue })); // Atualiza o estado local
+      const patientAllergies = await fetchAllergiesByPatient(selectedPatient.id);
+
+      if (patientAllergies && patientAllergies.length > 0) {
+        const allergyData = patientAllergies[0]; // Pegamos o primeiro registro de alergias do paciente
+        console.log('Alergias carregadas:', allergyData);
+
+        // Atualiza o estado com as alergias carregadas
+        setAllergyStates({
+          allergy_milk: allergyData.allergy_milk || 'no',
+          allergy_eggs: allergyData.allergy_eggs || 'no',
+          allergy_beef: allergyData.allergy_beef || 'no',
+          allergy_fish: allergyData.allergy_fish || 'no',
+          allergy_shellfish: allergyData.allergy_shellfish || 'no',
+          allergy_cat: allergyData.allergy_cat || 'no',
+          allergy_dog: allergyData.allergy_dog || 'no',
+          allergy_bee: allergyData.allergy_bee || 'no',
+          allergy_ant: allergyData.allergy_ant || 'no',
+          allergy_venomous_animals: allergyData.allergy_venomous_animals || 'no',
+          allergy_insects: allergyData.allergy_insects || 'no',
+          allergy_dipyrone: allergyData.allergy_dipyrone || 'no',
+          allergy_aspirin: allergyData.allergy_aspirin || 'no',
+          allergy_diclofenac: allergyData.allergy_diclofenac || 'no',
+          allergy_paracetamol: allergyData.allergy_paracetamol || 'no',
+          allergy_penicillin: allergyData.allergy_penicillin || 'no',
+          allergy_magnesium_bisulphate: allergyData.allergy_magnesium_bisulphate || 'no',
+          allergy_rivaroxaban: allergyData.allergy_rivaroxaban || 'no',
+          allergy_losartan_potassium: allergyData.allergy_losartan_potassium || 'no',
+          allergy_metformin: allergyData.allergy_metformin || 'no',
+          allergy_butylscopolamine: allergyData.allergy_butylscopolamine || 'no',
+        });
+      } else {
+        console.log('Nenhuma alergia cadastrada para este paciente.');
+      }
     } catch (error) {
-      console.error('Erro ao atualizar alergia:', error);
-      Alert.alert('Erro', 'Ocorreu um erro ao atualizar as alergias.');
+      console.error('Erro ao carregar alergias:', error);
+      Alert.alert('Erro', 'Não foi possível carregar as alergias.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    loadAllergies();
+  }, [selectedPatient]);
+
+  const handleToggleSwitch = (key: string) => {
+    setAllergyStates((prevState) => ({
+      ...prevState,
+      [key]: prevState[key] === 'yes' ? 'no' : 'yes',
+    }));
+  };
+
+  const handleRegisterAllergy = async () => {
+    if (!selectedPatient) {
+      Alert.alert('Erro', 'Paciente não encontrado.');
+      return;
+    }
+
+    if (!selectedDoctor) {
+      Alert.alert('Erro', 'Médico não encontrado.');
+      return;
+    }
+
+    try {
+      await addOrUpdateAllergy(allergyStates, selectedDoctor.id, selectedPatient.id);
+      Alert.alert('Sucesso', 'Alergias registradas com sucesso!');
+    } catch (error) {
+      Alert.alert('Erro', 'Erro ao registrar alergias.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Carregando dados...</Text>
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Adicionar Alergia</Text>
-        <Text style={styles.subtitle}>Selecione um grupo de alergias.</Text>
-
-        {/* Alimentares */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            <Icon name="apple" size={20} color="black" /> Alimentar
-          </Text>
-          {(
-            [
-              'allergy_milk',
-              'allergy_eggs',
-              'allergy_beef',
-              'allergy_fish',
-              'allergy_shellfish',
-            ] as const
-          ).map((key) => (
-            <View style={styles.checkboxContainer} key={key}>
-              <Text>{allergyNames[key]}</Text>
-              <Checkbox
-                value={allergies[key] === '1'}
-                onValueChange={(newValue) => toggleAllergy(key, newValue)}
-              />
-            </View>
-          ))}
-        </View>
-
-        {/* Animais */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            <Icon name="bug" size={20} color="black" /> Animais
-          </Text>
-          {(
-            [
-              'allergy_cat',
-              'allergy_dog',
-              'allergy_bee',
-              'allergy_ant',
-              'allergy_venomous_animals',
-              'allergy_insects',
-            ] as const
-          ).map((key) => (
-            <View style={styles.checkboxContainer} key={key}>
-              <Text>{allergyNames[key]}</Text>
-              <Checkbox
-                value={allergies[key] === '1'}
-                onValueChange={(newValue) => toggleAllergy(key, newValue)}
-              />
-            </View>
-          ))}
-        </View>
-
-        {/* Medicamentos */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            <Icon name="medkit" size={20} color="black" /> Medicamentos
-          </Text>
-          {(
-            [
-              'allergy_dipyrone',
-              'allergy_aspirin',
-              'allergy_diclofenac',
-              'allergy_paracetamol',
-              'allergy_penicillin',
-              'allergy_magnesium_bisulphate',
-              'allergy_rivaroxaban',
-              'allergy_losartan_potassium',
-              'allergy_metformin',
-              'allergy_butylscopolamine',
-            ] as const
-          ).map((key) => (
-            <View style={styles.checkboxContainer} key={key}>
-              <Text>{allergyNames[key]}</Text>
-              <Checkbox
-                value={allergies[key] === '1'}
-                onValueChange={(newValue) => toggleAllergy(key, newValue)}
-              />
-            </View>
-          ))}
-        </View>
-
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={() => router.push('/allergies/AllergiesDetails')}>
-          <Text style={styles.submitButtonText}>Voltar para Detalhes</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <Text style={styles.header}>Cadastrar Alergias</Text>
+        {Object.keys(allergyStates).map((allergy) => (
+          <View key={allergy} style={styles.switchContainer}>
+            <Text style={styles.label}>{allergyNames[allergy as keyof typeof allergyNames]}</Text>
+            <Switch
+              value={allergyStates[allergy] === 'yes'}
+              onValueChange={() => handleToggleSwitch(allergy)}
+            />
+          </View>
+        ))}
+        <TouchableOpacity style={styles.button} onPress={handleRegisterAllergy}>
+          <Text style={styles.buttonText}>Registrar Alergias</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>Sair</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

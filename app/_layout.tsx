@@ -5,7 +5,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { AllergyProvider } from './context/AllergiesContext';
+import { AllergiesProvider } from './context/AllergiesContext';
 import { AttendanceProvider } from './context/AttendanceContext';
 import { AttendanceNutritionDevelopmentProvider } from './context/AttendanceNutritionDevelopmentContext';
 import { AttendanceSymptomProvider } from './context/AttendanceSymptomContext';
@@ -62,11 +62,11 @@ const Layout = () => {
             <AttendanceSymptomProvider>
               <AttendanceNutritionDevelopmentProvider>
                 <VaccinationProvider>
-                  <AllergyProvider>
+                  <AllergiesProvider>
                     <MedicationsProvider>
                       <Slot />
                     </MedicationsProvider>
-                  </AllergyProvider>
+                  </AllergiesProvider>
                 </VaccinationProvider>
               </AttendanceNutritionDevelopmentProvider>
             </AttendanceSymptomProvider>

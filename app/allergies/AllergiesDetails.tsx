@@ -1,15 +1,16 @@
+import { format } from 'date-fns'; // Para formatar datas
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 
-import { useAllergy } from '../context/AllergiesContext';
+import { useAllergies } from '../context/AllergiesContext';
 import { usePatient } from '../context/PatientContext';
 import styles from './styles/AllergiesDetailsStyles';
 
 const AllergiesDetails = () => {
   const router = useRouter();
   const { selectedPatient } = usePatient();
-  const { fetchAllergiesByPatient } = useAllergy();
+  const { fetchAllergiesByPatient } = useAllergies();
 
   const [allergies, setAllergies] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -27,8 +28,8 @@ const AllergiesDetails = () => {
     setLoading(true);
     try {
       const patientAllergies = await fetchAllergiesByPatient(patientId);
-      if (patientAllergies) {
-        setAllergies(patientAllergies);
+      if (patientAllergies && patientAllergies.length > 0) {
+        setAllergies(patientAllergies[0]); // Assume-se que existe apenas um registro de alergias por paciente
       } else {
         setAllergies(null); // Tratar a ausência de alergias
       }
@@ -38,6 +39,10 @@ const AllergiesDetails = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const renderAllergyItem = (label: string, value: string) => {
+    return value === 'yes' ? <Text style={styles.allergyItem}>{label}</Text> : null;
   };
 
   if (loading) {
@@ -55,52 +60,39 @@ const AllergiesDetails = () => {
       {/* Exibe o nome do paciente */}
       {selectedPatient && <Text style={styles.patientName}>Paciente: {selectedPatient.name}</Text>}
 
+      {/* Exibe a data da última atualização */}
+      {allergies?.updated_at && (
+        <Text style={styles.updateText}>
+          Última atualização: {format(new Date(allergies.updated_at), 'dd/MM/yyyy')}
+        </Text>
+      )}
+
       {/* Verifica se o paciente possui alergias cadastradas */}
       {allergies ? (
         <View style={styles.allergiesContainer}>
-          {/* Exibir alergias alimentares */}
-          <Text style={styles.sectionTitle}>Alimentar</Text>
-          {allergies.milk_allergy === 1 && (
-            <Text style={styles.allergyItem}>Leite e derivados</Text>
-          )}
-          {allergies.eggs_allergy === 1 && <Text style={styles.allergyItem}>Ovos</Text>}
-          {allergies.beef_allergy === 1 && <Text style={styles.allergyItem}>Carne bovina</Text>}
-          {allergies.fish_allergy === 1 && <Text style={styles.allergyItem}>Peixe</Text>}
-          {allergies.shellfish_allergy === 1 && <Text style={styles.allergyItem}>Crustáceos</Text>}
-
-          {/* Exibir alergias a animais */}
-          <Text style={styles.sectionTitle}>Animais</Text>
-          {allergies.cat_allergy === 1 && <Text style={styles.allergyItem}>Gato</Text>}
-          {allergies.dog_allergy === 1 && <Text style={styles.allergyItem}>Cachorro</Text>}
-          {allergies.bee_allergy === 1 && <Text style={styles.allergyItem}>Abelha</Text>}
-          {allergies.ant_allergy === 1 && <Text style={styles.allergyItem}>Formiga</Text>}
-          {allergies.venomous_animal_allergy === 1 && (
-            <Text style={styles.allergyItem}>Animais peçonhentos</Text>
-          )}
-          {allergies.insects_allergy === 1 && <Text style={styles.allergyItem}>Insetos</Text>}
-
-          {/* Exibir alergias a medicamentos */}
-          <Text style={styles.sectionTitle}>Medicamentos</Text>
-          {allergies.dipyrone_allergy === 1 && <Text style={styles.allergyItem}>Dipirona</Text>}
-          {allergies.aspirin_allergy === 1 && <Text style={styles.allergyItem}>Aspirina</Text>}
-          {allergies.diclofenac_allergy === 1 && (
-            <Text style={styles.allergyItem}>Diclofenaco</Text>
-          )}
-          {allergies.paracetamol_allergy === 1 && (
-            <Text style={styles.allergyItem}>Paracetamol</Text>
-          )}
-          {allergies.penicillin_allergy === 1 && <Text style={styles.allergyItem}>Penicilina</Text>}
-          {allergies.magnesium_bisulphate_allergy === 1 && (
-            <Text style={styles.allergyItem}>Magnésio bisulfato</Text>
-          )}
-          {allergies.rivaroxaban_allergy === 1 && (
-            <Text style={styles.allergyItem}>Rivaroxabana</Text>
-          )}
-          {allergies.losartan_allergy === 1 && <Text style={styles.allergyItem}>Losartana</Text>}
-          {allergies.metformin_allergy === 1 && <Text style={styles.allergyItem}>Metformina</Text>}
-          {allergies.butylscopolamine_allergy === 1 && (
-            <Text style={styles.allergyItem}>Butilbrometo de escopolamina</Text>
-          )}
+          <Text style={styles.sectionTitle}>Alergias</Text>
+          {/* Exibir apenas as alergias marcadas como 'yes' */}
+          {renderAllergyItem('Leite e derivados', allergies.allergy_milk)}
+          {renderAllergyItem('Ovos', allergies.allergy_eggs)}
+          {renderAllergyItem('Carne bovina', allergies.allergy_beef)}
+          {renderAllergyItem('Peixe', allergies.allergy_fish)}
+          {renderAllergyItem('Crustáceos', allergies.allergy_shellfish)}
+          {renderAllergyItem('Gato', allergies.allergy_cat)}
+          {renderAllergyItem('Cachorro', allergies.allergy_dog)}
+          {renderAllergyItem('Abelha', allergies.allergy_bee)}
+          {renderAllergyItem('Formiga', allergies.allergy_ant)}
+          {renderAllergyItem('Animais peçonhentos', allergies.allergy_venomous_animals)}
+          {renderAllergyItem('Insetos', allergies.allergy_insects)}
+          {renderAllergyItem('Dipirona', allergies.allergy_dipyrone)}
+          {renderAllergyItem('Aspirina', allergies.allergy_aspirin)}
+          {renderAllergyItem('Diclofenaco', allergies.allergy_diclofenac)}
+          {renderAllergyItem('Paracetamol', allergies.allergy_paracetamol)}
+          {renderAllergyItem('Penicilina', allergies.allergy_penicillin)}
+          {renderAllergyItem('Magnésio bisulfato', allergies.allergy_magnesium_bisulphate)}
+          {renderAllergyItem('Rivaroxabana', allergies.allergy_rivaroxaban)}
+          {renderAllergyItem('Losartana', allergies.allergy_losartan_potassium)}
+          {renderAllergyItem('Metformina', allergies.allergy_metformin)}
+          {renderAllergyItem('Butilbrometo de escopolamina', allergies.allergy_butylscopolamine)}
         </View>
       ) : (
         <Text style={styles.noAllergiesText}>Nenhuma alergia cadastrada para este paciente.</Text>
