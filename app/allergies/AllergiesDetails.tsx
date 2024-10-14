@@ -93,6 +93,10 @@ const AllergiesDetails = () => {
           {renderAllergyItem('Losartana', allergies.allergy_losartan_potassium)}
           {renderAllergyItem('Metformina', allergies.allergy_metformin)}
           {renderAllergyItem('Butilbrometo de escopolamina', allergies.allergy_butylscopolamine)}
+          {renderAllergyItem('Cefalosporina', allergies.allergy_cephalosporin)}
+          {renderAllergyItem('Salbutamol', allergies.allergy_salbutamol)}
+          {renderAllergyItem('Ácido fólico', allergies.allergy_acido_folico)}
+          {renderAllergyItem('Isotretinoína', allergies.allergy_isotretinoina)}
         </View>
       ) : (
         <Text style={styles.noAllergiesText}>Nenhuma alergia cadastrada para este paciente.</Text>

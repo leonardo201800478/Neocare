@@ -27,6 +27,10 @@ type Allergy = {
   allergy_losartan_potassium?: string;
   allergy_metformin?: string;
   allergy_butylscopolamine?: string;
+  allergy_cephalosporin?: string;
+  allergy_salbutamol?: string;
+  allergy_acido_folico?: string;
+  allergy_isotretinoina?: string;
 };
 
 type AllergiesContextType = {

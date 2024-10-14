@@ -1,8 +1,9 @@
 // app/attendences/VitalInfoForm.tsx
 
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 
+import styles from './styles/AttendanceStyles'; // Importando o arquivo de estilos separado
 import { VitalInfo } from './types';
 
 interface VitalInfoProps {
@@ -17,16 +18,15 @@ const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
       <Text style={styles.label}>Peso (kg):</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ex: 70.5"
-        value={data.peso_kg}
+        placeholder="Ex: 0.560 kg" // O valor exibido para o usuário será em kg
+        value={(Number(data.peso_kg) * 1000).toString()} // Exibe o valor convertido para gramas para inserção
         onChangeText={(text) => {
-          // Tratamento para converter vírgula em ponto decimal e validar se é um número
-          const formattedText = text.replace(',', '.');
-          if (!isNaN(Number(formattedText))) {
-            onChange('peso_kg', formattedText);
+          if (!isNaN(Number(text))) {
+            const pesoEmKg = (Number(text) / 1000).toFixed(3); // Converte gramas para quilogramas com 3 casas decimais
+            onChange('peso_kg', pesoEmKg); // Armazena o valor convertido para kg no banco
           }
         }}
-        keyboardType="decimal-pad"
+        keyboardType="numeric"
       />
 
       {/* Comprimento (cm) */}
@@ -36,7 +36,6 @@ const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
         placeholder="Ex: 150.5"
         value={data.comprimento_cm}
         onChangeText={(text) => {
-          // Tratamento para converter vírgula em ponto decimal e validar se é um número
           const formattedText = text.replace(',', '.');
           if (!isNaN(Number(formattedText))) {
             onChange('comprimento_cm', formattedText);
@@ -52,7 +51,6 @@ const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
         placeholder="Ex: 35.0"
         value={data.perimetro_cefalico_cm}
         onChangeText={(text) => {
-          // Tratamento para converter vírgula em ponto decimal e validar se é um número
           const formattedText = text.replace(',', '.');
           if (!isNaN(Number(formattedText))) {
             onChange('perimetro_cefalico_cm', formattedText);
@@ -68,7 +66,6 @@ const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
         placeholder="Ex: 18"
         value={data.numero_respiracoes_por_minuto}
         onChangeText={(text) => {
-          // Validar para permitir apenas números inteiros
           if (/^\d*$/.test(text)) {
             onChange('numero_respiracoes_por_minuto', text);
           }
@@ -78,25 +75,5 @@ const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-    paddingHorizontal: 15,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 20,
-    padding: 8,
-    fontSize: 16,
-  },
-});
 
 export default VitalInfoForm;

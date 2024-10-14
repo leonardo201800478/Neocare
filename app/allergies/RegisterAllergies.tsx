@@ -38,6 +38,10 @@ const allergyNames = {
   allergy_losartan_potassium: 'Losartana',
   allergy_metformin: 'Metformina',
   allergy_butylscopolamine: 'Butilescopolamina',
+  allergy_cephalosporin: 'Cefalosporina',
+  allergy_salbutamol: 'Salbutamol',
+  allergy_acido_folico: 'Ácido Fólico',
+  allergy_isotretinoina: 'Isotretinoína',
 };
 
 const RegisterAllergies = () => {
@@ -69,6 +73,10 @@ const RegisterAllergies = () => {
     allergy_losartan_potassium: 'no',
     allergy_metformin: 'no',
     allergy_butylscopolamine: 'no',
+    allergy_cephalosporin: 'no',
+    allergy_salbutamol: 'no',
+    allergy_acido_folico: 'no',
+    allergy_isotretinoina: 'no',
   });
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -112,6 +120,10 @@ const RegisterAllergies = () => {
           allergy_losartan_potassium: allergyData.allergy_losartan_potassium || 'no',
           allergy_metformin: allergyData.allergy_metformin || 'no',
           allergy_butylscopolamine: allergyData.allergy_butylscopolamine || 'no',
+          allergy_cephalosporin: allergyData.allergy_cephalosporin || 'no',
+          allergy_salbutamol: allergyData.allergy_salbutamol || 'no',
+          allergy_acido_folico: allergyData.allergy_acido_folico || 'no',
+          allergy_isotretinoina: allergyData.allergy_isotretinoina || 'no',
         });
       } else {
         console.log('Nenhuma alergia cadastrada para este paciente.');

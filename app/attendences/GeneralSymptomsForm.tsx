@@ -2,8 +2,9 @@
 
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
+import styles from './styles/AttendanceStyles';
 import { GeneralSymptoms } from './types';
 
 interface GeneralSymptomsProps {
@@ -19,10 +20,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Não Bebe ou Mama */}
       <Text style={styles.label}>Não Bebe ou Mama:</Text>
       <Picker
-        selectedValue={data.nao_bebe_ou_mama}
+        selectedValue={data.nao_bebe_ou_mama || 'no'}
         onValueChange={(value) => onChange('nao_bebe_ou_mama', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -30,10 +30,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Vomita Tudo */}
       <Text style={styles.label}>Vomita Tudo:</Text>
       <Picker
-        selectedValue={data.vomita_tudo}
+        selectedValue={data.vomita_tudo || 'no'}
         onValueChange={(value) => onChange('vomita_tudo', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -41,10 +40,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Convulsões */}
       <Text style={styles.label}>Convulsões:</Text>
       <Picker
-        selectedValue={data.convulsoes}
+        selectedValue={data.convulsoes || 'no'}
         onValueChange={(value) => onChange('convulsoes', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -52,10 +50,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Letárgica */}
       <Text style={styles.label}>Letárgica:</Text>
       <Picker
-        selectedValue={data.letargica}
+        selectedValue={data.letargica || 'no'}
         onValueChange={(value) => onChange('letargica', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -63,10 +60,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Enchimento Capilar */}
       <Text style={styles.label}>Enchimento Capilar:</Text>
       <Picker
-        selectedValue={data.enchimento_capilar}
+        selectedValue={data.enchimento_capilar || 'no'}
         onValueChange={(value) => onChange('enchimento_capilar', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -74,10 +70,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Batimento de Asa */}
       <Text style={styles.label}>Batimento de Asa:</Text>
       <Picker
-        selectedValue={data.batimento_asa}
+        selectedValue={data.batimento_asa || 'no'}
         onValueChange={(value) => onChange('batimento_asa', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -85,10 +80,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Tem Tosse */}
       <Text style={styles.label}>Tem Tosse:</Text>
       <Picker
-        selectedValue={data.tem_tosse}
+        selectedValue={data.tem_tosse || 'no'}
         onValueChange={(value) => onChange('tem_tosse', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -96,10 +90,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Sibilância */}
       <Text style={styles.label}>Sibilância:</Text>
       <Picker
-        selectedValue={data.sibilancia}
+        selectedValue={data.sibilancia || 'no'}
         onValueChange={(value) => onChange('sibilancia', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -107,10 +100,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Tem Diarreia */}
       <Text style={styles.label}>Tem Diarreia:</Text>
       <Picker
-        selectedValue={data.tem_diarreia}
+        selectedValue={data.tem_diarreia || 'no'}
         onValueChange={(value) => onChange('tem_diarreia', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -118,10 +110,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Tem Febre */}
       <Text style={styles.label}>Tem Febre:</Text>
       <Picker
-        selectedValue={data.tem_febre}
+        selectedValue={data.tem_febre || 'no'}
         onValueChange={(value) => onChange('tem_febre', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -129,10 +120,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Rigidez de Nuca */}
       <Text style={styles.label}>Rigidez de Nuca:</Text>
       <Picker
-        selectedValue={data.rigidez_nuca}
+        selectedValue={data.rigidez_nuca || 'no'}
         onValueChange={(value) => onChange('rigidez_nuca', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -140,10 +130,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Problema de Ouvido */}
       <Text style={styles.label}>Problema de Ouvido:</Text>
       <Picker
-        selectedValue={data.problema_ouvido}
+        selectedValue={data.problema_ouvido || 'no'}
         onValueChange={(value) => onChange('problema_ouvido', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -151,10 +140,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Dor de Garganta */}
       <Text style={styles.label}>Dor de Garganta:</Text>
       <Picker
-        selectedValue={data.dor_garganta}
+        selectedValue={data.dor_garganta || 'no'}
         onValueChange={(value) => onChange('dor_garganta', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -162,10 +150,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Gemido */}
       <Text style={styles.label}>Gemido:</Text>
       <Picker
-        selectedValue={data.gemido}
+        selectedValue={data.gemido || 'no'}
         onValueChange={(value) => onChange('gemido', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -173,10 +160,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Cianose Periférica */}
       <Text style={styles.label}>Cianose Periférica:</Text>
       <Picker
-        selectedValue={data.cianose_periferica}
+        selectedValue={data.cianose_periferica || 'no'}
         onValueChange={(value) => onChange('cianose_periferica', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -184,10 +170,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Icterícia */}
       <Text style={styles.label}>Icterícia:</Text>
       <Picker
-        selectedValue={data.ictericia}
+        selectedValue={data.ictericia || 'no'}
         onValueChange={(value) => onChange('ictericia', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -195,10 +180,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Distensão Abdominal */}
       <Text style={styles.label}>Distensão Abdominal:</Text>
       <Picker
-        selectedValue={data.distensao_abdominal}
+        selectedValue={data.distensao_abdominal || 'no'}
         onValueChange={(value) => onChange('distensao_abdominal', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -206,10 +190,9 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Emagrecimento */}
       <Text style={styles.label}>Emagrecimento:</Text>
       <Picker
-        selectedValue={data.emagrecimento}
+        selectedValue={data.emagrecimento || 'no'}
         onValueChange={(value) => onChange('emagrecimento', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -217,37 +200,14 @@ const GeneralSymptomsForm: React.FC<GeneralSymptomsProps> = ({ data, onChange })
       {/* Edema */}
       <Text style={styles.label}>Edema:</Text>
       <Picker
-        selectedValue={data.edema}
+        selectedValue={data.edema || 'no'}
         onValueChange={(value) => onChange('edema', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 20,
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-  },
-  picker: {
-    marginBottom: 20,
-    padding: 8,
-  },
-});
 
 export default GeneralSymptomsForm;

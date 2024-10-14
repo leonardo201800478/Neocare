@@ -2,123 +2,73 @@
 
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 
-import { BasicInfo } from './types';
+import styles from './styles/AttendanceStyles'; // Estilização separada
+import { BasicInfo } from './types'; // Importando o tipo BasicInfo
 
-interface BasicInfoProps {
-  data: BasicInfo;
-  onChange: (field: keyof BasicInfo, value: string) => void;
+interface BasicInfoFormProps {
+  data: BasicInfo; // Estrutura de dados que o formulário vai receber
+  onChange: (field: keyof BasicInfo, value: string) => void; // Função para alterar os valores
 }
 
-const BasicInfoForm: React.FC<BasicInfoProps> = ({ data, onChange }) => {
-  const [showDatePicker, setShowDatePicker] = React.useState(false);
-
+const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Informações Básicas do Paciente</Text>
+    <ScrollView style={styles.container}>
+      {/* Campo de Hipertensão */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Hipertensão</Text>
+        <Picker
+          selectedValue={data.hipertensao ?? 'no'} // Valor padrão "Não"
+          onValueChange={(value) => onChange('hipertensao', value)}
+          style={styles.picker}>
+          <Picker.Item label="Não" value="no" />
+          <Picker.Item label="Sim" value="yes" />
+        </Picker>
+      </View>
 
-      {/* Primeira Consulta (Sim/Não) */}
-      <Text style={styles.label}>Primeira Consulta:</Text>
-      <Picker
-        selectedValue={data.primeira_consulta}
-        onValueChange={(value) => onChange('primeira_consulta', value)}
-        style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
-        <Picker.Item label="Sim" value="yes" />
-        <Picker.Item label="Não" value="no" />
-      </Picker>
+      {/* Campo de Diabetes */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Diabetes</Text>
+        <Picker
+          selectedValue={data.diabetes ?? 'no'} // Valor padrão "Não"
+          onValueChange={(value) => onChange('diabetes', value)}
+          style={styles.picker}>
+          <Picker.Item label="Não" value="no" />
+          <Picker.Item label="Sim" value="yes" />
+        </Picker>
+      </View>
 
-      {/* Consulta de Retorno (Sim/Não) */}
-      <Text style={styles.label}>Consulta de Retorno:</Text>
-      <Picker
-        selectedValue={data.consulta_retorno}
-        onValueChange={(value) => onChange('consulta_retorno', value)}
-        style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
-        <Picker.Item label="Sim" value="yes" />
-        <Picker.Item label="Não" value="no" />
-      </Picker>
+      {/* Campo de Doença Hepática */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Doença Hepática</Text>
+        <Picker
+          selectedValue={data.doenca_hepatica ?? 'no'} // Valor padrão "Não"
+          onValueChange={(value) => onChange('doenca_hepatica', value)}
+          style={styles.picker}>
+          <Picker.Item label="Não" value="no" />
+          <Picker.Item label="Sim" value="yes" />
+        </Picker>
+      </View>
 
-      {/* Motivo da Consulta */}
-      <Text style={styles.label}>Motivo da Consulta:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descreva o motivo da consulta"
-        value={data.motivo_consulta}
-        onChangeText={(text) => onChange('motivo_consulta', text)}
-        multiline
-      />
+      {/* Campo de Deficiência de G6PD */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Deficiência de G6PD</Text>
+        <Picker
+          selectedValue={data.deficiencia_g6pd ?? 'no'} // Valor padrão "Não"
+          onValueChange={(value) => onChange('deficiencia_g6pd', value)}
+          style={styles.picker}>
+          <Picker.Item label="Não" value="no" />
+          <Picker.Item label="Sim" value="yes" />
+        </Picker>
+      </View>
 
-      {/* Hipertensão */}
-      <Text style={styles.label}>Hipertenso?:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descreva se o paciente é ou não hipertenso"
-        value={data.hipertensao}
-        onChangeText={(text) => onChange('hipertensao', text)}
-        multiline
-      />
-
-      {/* Diabetes */}
-      <Text style={styles.label}>Diabetes?:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descreva se o paciente é ou não diabético"
-        value={data.diabetes}
-        onChangeText={(text) => onChange('diabetes', text)}
-        multiline
-      />
-      {/* Doenca Hepática */}
-      <Text style={styles.label}>Doenca Hepática?:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descreva se o paciente tem doenca hepática"
-        value={data.doenca_hepatica}
-        onChangeText={(text) => onChange('doenca_hepatica', text)}
-        multiline
-      />
-
-      {/* Deficiencia G6PD */}
-      <Text style={styles.label}>Deficiencia G6PD?:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descreva se o paciente é ou não diabético"
-        value={data.deficiencia_g6pd}
-        onChangeText={(text) => onChange('deficiencia_g6pd', text)}
-        multiline
-      />
-    </View>
+      {/* Botão de Salvar */}
+      <TouchableOpacity style={styles.submitButton}>
+        <Text style={styles.submitButtonText}>Salvar</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-    paddingHorizontal: 15,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 20,
-    padding: 8,
-    fontSize: 16,
-  },
-  picker: {
-    marginBottom: 20,
-    padding: 8,
-  },
-});
 
 export default BasicInfoForm;

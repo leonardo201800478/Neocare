@@ -1,8 +1,7 @@
-// app/attendences/NutritionDevelopmentForm.tsx
-
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
+import styles from './styles/AttendanceStyles'; // Importando a estilização separada
 
 import { NutritionDevelopment } from './types';
 
@@ -19,10 +18,9 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Amamentando (Sim/Não) */}
       <Text style={styles.label}>Amamentando:</Text>
       <Picker
-        selectedValue={data.amamentando}
+        selectedValue={data.amamentando ?? 'no'} // Valor padrão "Não"
         onValueChange={(value) => onChange('amamentando', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -44,10 +42,9 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Amamenta à Noite (Sim/Não) */}
       <Text style={styles.label}>Amamenta à Noite:</Text>
       <Picker
-        selectedValue={data.amamenta_noite}
+        selectedValue={data.amamenta_noite ?? 'no'} // Valor padrão "Não"
         onValueChange={(value) => onChange('amamenta_noite', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -55,10 +52,9 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Recebe outros Líquidos/Alimentos? */}
       <Text style={styles.label}>Recebe Outros Líquidos/Alimentos:</Text>
       <Picker
-        selectedValue={data.alimentos_liquidos}
+        selectedValue={data.alimentos_liquidos ?? 'no'} // Valor padrão "Não"
         onValueChange={(value) => onChange('alimentos_liquidos', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -86,13 +82,12 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
         onChangeText={(text) => onChange('tipo_alimentacao', text)}
       />
 
-      {/* Mudou a Alimentação Recentemente? (Sim/Não) */}
+      {/* Mudou a Alimentação Recentemente? */}
       <Text style={styles.label}>Mudou a Alimentação Recentemente:</Text>
       <Picker
-        selectedValue={data.mudou_alimentacao}
+        selectedValue={data.mudou_alimentacao ?? 'no'} // Valor padrão "Não"
         onValueChange={(value) => onChange('mudou_alimentacao', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -107,13 +102,12 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
         multiline
       />
 
-      {/* Perda de Peso na Primeira Semana >10%? (Sim/Não) */}
+      {/* Perda de Peso na Primeira Semana >10% */}
       <Text style={styles.label}>Perda de Peso na Primeira Semana &gt;10%:</Text>
       <Picker
-        selectedValue={data.perda_peso_primeira_semana}
+        selectedValue={data.perda_peso_primeira_semana ?? 'no'} // Valor padrão "Não"
         onValueChange={(value) => onChange('perda_peso_primeira_semana', value)}
         style={styles.picker}>
-        <Picker.Item label="Selecione" value="" />
         <Picker.Item label="Sim" value="yes" />
         <Picker.Item label="Não" value="no" />
       </Picker>
@@ -201,34 +195,5 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 20,
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-  },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 20,
-    padding: 8,
-    fontSize: 16,
-  },
-  picker: {
-    marginBottom: 20,
-    padding: 8,
-  },
-});
 
 export default NutritionDevelopmentForm;

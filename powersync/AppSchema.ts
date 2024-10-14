@@ -155,6 +155,10 @@ const allergies = new Table({
   allergy_losartan_potassium: column.text,
   allergy_metformin: column.text,
   allergy_butylscopolamine: column.text,
+  allergy_cephalosporin: column.text, // Adicionado para Cefalexina
+  allergy_salbutamol: column.text, // Adicionado para Salbutamol
+  allergy_acido_folico: column.text, // Ajustado para Ácido Fólico
+  allergy_isotretinoina: column.text, // Adicionado para Isotretinoína
 });
 
 // Tabela de medicamentos
