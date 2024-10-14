@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
 import {
-  AbstractPowerSyncDatabase,
-  CrudEntry,
-  PowerSyncBackendConnector,
-  UpdateType,
+    AbstractPowerSyncDatabase,
+    CrudEntry,
+    PowerSyncBackendConnector,
+    UpdateType,
 } from '@powersync/react-native';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;

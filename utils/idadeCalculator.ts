@@ -12,12 +12,27 @@ export const calcularIdade = (dataNasc: Date, p0: string) => {
 
   let idade = anoAtual - anoNascimento;
   let meses = mesAtual - mesNascimento;
+  let dias = diaAtual - diaNascimento;
 
-  // Se o mês atual for anterior ao mês de nascimento ou se for o mesmo mês mas o dia for anterior, subtraímos 1 da idade
-  if (meses < 0 || (meses === 0 && diaAtual < diaNascimento)) {
+  // Ajusta o mês e ano se necessário
+  if (meses < 0 || (meses === 0 && dias < 0)) {
     idade--;
-    meses = (meses + 12) % 12;
+    meses += 12;
   }
 
-  return `${idade} anos e ${meses} meses`;
+  // Ajusta os dias e os meses se necessário
+  if (dias < 0) {
+    meses--;
+    // Calcula quantos dias havia no mês anterior
+    const diasNoMesAnterior = new Date(anoAtual, mesAtual, 0).getDate();
+    dias += diasNoMesAnterior;
+  }
+
+  // Corrige o cálculo dos meses caso tenhamos subtraído acima
+  if (meses < 0) {
+    meses += 12;
+    idade--;
+  }
+
+  return `${idade} anos, ${meses} meses e ${dias} dias`;
 };

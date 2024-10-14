@@ -1,167 +1,138 @@
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet, StatusBar, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    paddingBottom: 50,
-    backgroundColor: '#98FB98', // Fundo verde claro
-    alignItems: 'center',
-  },
   safeAreaView: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    paddingBottom: 20,
-    backgroundColor: '#98FB98', // Fundo verde claro
+    backgroundColor: '#E8F5E9',
+  },
+  scrollView: {
+    flexGrow: 1,
+    padding: 16,
   },
   detailsContainer: {
-    marginBottom: 20,
-    padding: 20,
-    backgroundColor: '#A5D6A7', // Verde suave
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#66BB6A', // Borda em tom verde
-    shadowColor: '#388E3C', // Sombra verde escuro
+    backgroundColor: '#C8E6C9',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 16,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 3,
+    elevation: 3,
   },
   detailItem: {
-    fontSize: 18,
-    color: '#1B5E20', // Verde escuro
+    fontSize: 16,
+    color: '#2E7D32',
     marginBottom: 10,
-    textAlign: 'left', // Texto alinhado à esquerda
   },
   header: {
-    fontSize: 26,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#388E3C',
     marginBottom: 20,
-    color: '#4B0082', // Roxo
-    textAlign: 'center',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 5,
-    color: '#4B0082',
-    textAlign: 'left',
-    alignSelf: 'flex-start',
+    color: '#388E3C',
+    marginBottom: 10,
   },
   updateText: {
+    fontSize: 14,
+    color: '#4CAF50',
+    marginBottom: 10,
+  },
+  card: {
+    backgroundColor: '#F1F8E9',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#AED581',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  allergiesContainer: {
+    backgroundColor: '#F1F8E9', // Fundo leve para o container de alergias
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#AED581', // Borda verde clara para o container
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  allergyItem: {
     fontSize: 16,
-    color: '#1B5E20',
-    textAlign: 'center',
-    marginTop: 10,
+    color: '#2E7D32',
+    marginBottom: 8,
+    padding: 8,
+    backgroundColor: '#A5D6A7',
+    borderRadius: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
+    justifyContent: 'space-around',
+    marginTop: 10,
+    marginBottom: 30, // Espaço adicional até a barra de navegação
   },
   button: {
-    flex: 1,
-    backgroundColor: '#4CAF50',
-    padding: 15,
-    borderRadius: 8,
+    width: width * 0.4,
+    padding: 10,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 5,
-    marginVertical: 5,
+    borderRadius: 5,
+    elevation: 3,
+    flexDirection: 'row',
+    margin: 5,
   },
   buttonText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: '#fff',
+    fontSize: 14,
+    marginLeft: 5,
   },
-  buttonConsulta: {
-    flex: 1,
-    backgroundColor: '#66BB6A', // Verde médio
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    marginVertical: 5,
+  buttonPrimary: {
+    backgroundColor: '#4CAF50',
   },
-  buttonVaccine: {
-    flex: 1,
-    backgroundColor: '#66BB6A', // Verde médio
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    marginVertical: 5,
+  buttonSecondary: {
+    backgroundColor: '#FF9800',
   },
-  buttonAllergy: {
-    flex: 1,
-    backgroundColor: '#66BB6A', // Verde médio
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    marginVertical: 5,
+  buttonTertiary: {
+    backgroundColor: '#2196F3',
   },
-  buttonMedicament: {
-    flex: 1,
-    backgroundColor: '#66BB6A', // Verde médio
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    marginVertical: 5,
-  },
-  buttonDelete: {
-    flex: 1,
-    backgroundColor: '#D32F2F', // Vermelho para deletar
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    marginVertical: 5,
-  },
-  buttonHome: {
-    backgroundColor: '#4CAF50', // Verde para o botão Home
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-    width: '100%',
-  },
-  allergiesContainer: {
-    marginTop: 20,
-    paddingHorizontal: 16,
-    padding: 20,
-    backgroundColor: '#A5D6A7', // Fundo verde para alergias
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#66BB6A',
-    shadowColor: '#388E3C',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+  buttonDanger: {
+    backgroundColor: '#F44336',
   },
   noAllergiesText: {
     fontSize: 16,
-    color: '#1B5E20',
+    color: '#2E7D32',
     textAlign: 'center',
     marginTop: 10,
-  },
-  allergyItem: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#555',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#98FB98', // Fundo verde
+    backgroundColor: '#E8F5E9',
   },
+  buttonHome: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+    width: '100%',
+  }
 });
 
 export default styles;

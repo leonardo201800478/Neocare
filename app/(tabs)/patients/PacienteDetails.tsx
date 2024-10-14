@@ -1,5 +1,4 @@
-// app/attendences/PacienteDetails.tsx
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -39,7 +38,6 @@ const PacienteDetails = () => {
   const fetchDetails = async (patientId: string) => {
     setLoading(true);
     try {
-      // Buscar a última consulta do paciente
       const { data: attendanceData, error: attendanceError } = await supabaseConnector.client
         .from('attendances')
         .select('*')
@@ -55,7 +53,6 @@ const PacienteDetails = () => {
         setLastAttendance(attendanceData);
       }
 
-      // Buscar a última vacinação do paciente
       const { data: vaccinationData, error: vaccinationError } = await supabaseConnector.client
         .from('vaccinations')
         .select('*')
@@ -78,15 +75,14 @@ const PacienteDetails = () => {
     }
   };
 
-  // Busca por alergias do paciente;
   const loadAllergies = async (patientId: string) => {
     setLoading(true);
     try {
       const patientAllergies = await fetchAllergiesByPatient(patientId);
       if (patientAllergies && patientAllergies.length > 0) {
-        setAllergies(patientAllergies); // Assume-se que existe ao menos um registro de alergias
+        setAllergies(patientAllergies[0]);
       } else {
-        setAllergies([]); // Tratar ausência de alergias
+        setAllergies([]);
       }
     } catch (error) {
       console.error('Erro ao buscar alergias:', error);
@@ -143,22 +139,38 @@ const PacienteDetails = () => {
     }
   };
 
-  const calculateAge = (birthDate: string) => {
+  // cálculo da idade em dd/mm/aaaa;
+  const calculateAge = (birthDateStr: string) => {
     const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
+    const birthDate = new Date(birthDateStr);
+
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    let days = today.getDate() - birthDate.getDate();
+
+    if (months < 0 || (months === 0 && days < 0)) {
+      years--;
+      months += 12;
     }
-    return age;
+    if (days < 0) {
+      const lastDayOfPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+      days += lastDayOfPrevMonth;
+      months--;
+    }
+    if (months < 0) {
+      months += 12;
+      years--;
+    }
+    const formattedAge = `${years} ano(s), ${months} mês(es) e ${days} dia(s)`;
+    return formattedAge;
   };
 
   const handleViewMedicamentsCard = () => {
     if (selectedPatient) {
-      router.push(
-        `/medications/MedicamentosPaciente/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
-      );
+      router.push({
+        pathname: '/medications/MedicamentosPaciente',
+        params: { patientId: selectedPatient.id },
+      });
     } else {
       Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
     }
@@ -166,7 +178,10 @@ const PacienteDetails = () => {
 
   const handleRegisterVaccination = () => {
     if (selectedPatient) {
-      router.push(`/vaccines/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`);
+      router.push({
+        pathname: '/vaccines/',
+        params: { patientId: selectedPatient.id },
+      });
     } else {
       Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
     }
@@ -174,9 +189,10 @@ const PacienteDetails = () => {
 
   const handleViewVaccinationCard = () => {
     if (selectedPatient) {
-      router.push(
-        `/vaccines/CardVaccination/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
-      );
+      router.push({
+        pathname: '/vaccines/CardVaccination',
+        params: { patientId: selectedPatient.id },
+      });
     } else {
       Alert.alert('Erro', 'Dados insuficientes para visualizar o cartão de vacinação.');
     }
@@ -184,9 +200,10 @@ const PacienteDetails = () => {
 
   const handleViewAllergiesCard = () => {
     if (selectedPatient) {
-      router.push(
-        `/allergies/AllergiesDetails/?patientId=${selectedPatient.id}` as unknown as `${string}:${string}`
-      );
+      router.push({
+        pathname: '/allergies/AllergiesDetails',
+        params: { patientId: selectedPatient.id },
+      });
     } else {
       Alert.alert('Erro', 'Dados insuficientes para visualizar o cadastro de Alergias.');
     }
@@ -201,7 +218,8 @@ const PacienteDetails = () => {
       <View style={styles.loadingContainer}>
         <Text>Paciente não encontrado.</Text>
         <TouchableOpacity style={styles.buttonHome} onPress={() => router.replace('/(tabs)/home/')}>
-          <Text style={styles.buttonText}>VOLTAR PARA HOME</Text>
+          <MaterialCommunityIcons name="home" size={24} color="#fff" />
+          <Text style={styles.buttonText}>HOME</Text>
         </TouchableOpacity>
       </View>
     );
@@ -290,7 +308,7 @@ const PacienteDetails = () => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <Text style={styles.header}>Detalhes do Paciente</Text>
         <View style={styles.detailsContainer}>
           <Text style={styles.detailItem}>Nome: {selectedPatient.name}</Text>
@@ -311,14 +329,18 @@ const PacienteDetails = () => {
           {/* Exibir dados da última consulta */}
           {lastAttendance && (
             <>
-              <Text style={styles.sectionTitle}>Última Consulta</Text>
-              <Text style={styles.detailItem}>
-                Data da última consulta:{' '}
-                {new Date(lastAttendance.created_at).toLocaleDateString() ?? 'Não disponível'}
-              </Text>
-              <Text style={styles.detailItem}>
-                Médico responsável: {selectedDoctor?.name ?? 'Não disponível'}
-              </Text>
+              <View style={styles.card}>
+                <Text style={styles.sectionTitle}>Última Consulta</Text>
+                <Text style={styles.detailItem}>
+                  Data da última consulta:{' '}
+                  {lastAttendance
+                    ? new Date(lastAttendance.created_at).toLocaleDateString()
+                    : 'Não disponível'}
+                </Text>
+                <Text style={styles.detailItem}>
+                  Médico responsável: {selectedDoctor?.name || 'Não disponível'}
+                </Text>
+              </View>
             </>
           )}
 
@@ -333,7 +355,6 @@ const PacienteDetails = () => {
           {allergies ? (
             <View style={styles.allergiesContainer}>
               <Text style={styles.sectionTitle}>Alergias</Text>
-              {/* Exibir apenas as alergias marcadas como 'yes' */}
               {renderAllergyItem('Leite e derivados', allergies.allergy_milk)}
               {renderAllergyItem('Ovos', allergies.allergy_eggs)}
               {renderAllergyItem('Carne bovina', allergies.allergy_beef)}
@@ -372,38 +393,61 @@ const PacienteDetails = () => {
           {/* Exibir dados da última vacinação */}
           {lastVaccination && (
             <>
-              <Text style={styles.sectionTitle}>Última Vacina</Text>
-              <Text style={styles.detailItem}>
-                Data da última vacinação:{' '}
-                {new Date(lastVaccination.administered_at).toLocaleDateString() ?? 'Não disponível'}
-              </Text>
+              <View style={styles.card}>
+                <Text style={styles.sectionTitle}>Última Vacina</Text>
+                <Text style={styles.detailItem}>
+                  Data da última vacinação:{' '}
+                  {lastVaccination
+                    ? new Date(lastVaccination.administered_at).toLocaleDateString()
+                    : 'Não disponível'}
+                </Text>
+              </View>
             </>
           )}
         </View>
 
         {/* Botões para Atendimentos e Vacinações */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonConsulta} onPress={handleCreateAttendance}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonPrimary]}
+            onPress={handleCreateAttendance}>
+            <MaterialCommunityIcons name="stethoscope" size={24} color="#fff" />
             <Text style={styles.buttonText}>PRIMEIRA CONSULTA</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonConsulta} onPress={handleUpdateAttendance}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonSecondary]}
+            onPress={handleUpdateAttendance}>
+            <MaterialCommunityIcons name="file-document-edit" size={24} color="#fff" />
             <Text style={styles.buttonText}>PRONTUÁRIO</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonVaccine} onPress={handleRegisterVaccination}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonTertiary]}
+            onPress={handleRegisterVaccination}>
+            <MaterialCommunityIcons name="needle" size={24} color="#fff" />
             <Text style={styles.buttonText}>REGISTRAR VACINA</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonVaccine} onPress={handleViewVaccinationCard}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonTertiary]}
+            onPress={handleViewVaccinationCard}>
+            <MaterialCommunityIcons name="card-account-details" size={24} color="#fff" />
             <Text style={styles.buttonText}>CARTÃO DE VACINAS</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonAllergy} onPress={handleViewAllergiesCard}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonTertiary]}
+            onPress={handleViewAllergiesCard}>
+            <MaterialCommunityIcons name="alert-circle" size={24} color="#fff" />
             <Text style={styles.buttonText}>ALERGIAS</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonMedicament} onPress={handleViewMedicamentsCard}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonSecondary]}
+            onPress={handleViewMedicamentsCard}>
+            <MaterialCommunityIcons name="pill" size={24} color="#fff" />
             <Text style={styles.buttonText}>MEDICAMENTOS</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDelete} onPress={handleDelete}>
+          <TouchableOpacity style={[styles.button, styles.buttonDanger]} onPress={handleDelete}>
+            <MaterialCommunityIcons name="delete-forever" size={24} color="#fff" />
             <Text style={styles.buttonText}>DELETAR PACIENTE</Text>
           </TouchableOpacity>
         </View>
