@@ -1,8 +1,8 @@
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
-import styles from './styles/AttendanceStyles'; // Importando a estilização separada
 
+import styles from './styles/AttendanceStyles'; // Importando a estilização separada
 import { NutritionDevelopment } from './types';
 
 interface NutritionDevelopmentProps {

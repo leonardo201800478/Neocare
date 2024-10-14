@@ -12,11 +12,11 @@ type AttendanceNutritionDevelopmentContextType = {
   createNutritionDevelopment: (
     nutrition: Partial<AttendanceNutritionDevelopment>,
     attendanceId: string
-  ) => Promise<void>;
+  ) => Promise<{ error: string | null }>;
   updateNutritionDevelopment: (
     nutritionId: string,
     updatedFields: Partial<AttendanceNutritionDevelopment>
-  ) => Promise<void>;
+  ) => Promise<{ error: string | null }>;
 };
 
 const AttendanceNutritionDevelopmentContext = createContext<
@@ -33,16 +33,14 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
   const createNutritionDevelopment = async (
     nutrition: Partial<AttendanceNutritionDevelopment>,
     attendanceId: string
-  ) => {
+  ): Promise<{ error: string | null }> => {
     if (!attendanceId) {
-      throw new Error('O ID do atendimento é obrigatório.');
+      return { error: 'O ID do atendimento é obrigatório.' };
     }
 
     try {
-      // Gerar um UUID para o novo registro de nutrição e desenvolvimento
       const nutritionId = uuid();
 
-      // Criar um novo registro de nutrição e desenvolvimento localmente
       const newNutritionDevelopment = {
         id: nutritionId,
         attendance_id: attendanceId,
@@ -69,49 +67,32 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
         .values(newNutritionDevelopment)
         .execute();
       setNutritionDevelopment(newNutritionDevelopment);
-      console.log('Nutrição e desenvolvimento criados localmente:', nutritionId);
 
-      // Tentar sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_nutrition_development')
         .insert([newNutritionDevelopment]);
 
       if (error) {
-        console.warn(
-          'Erro ao sincronizar nutrição e desenvolvimento com o Supabase:',
-          error.message
-        );
-        throw new Error(
-          'Nutrição e desenvolvimento adicionados localmente, mas a sincronização com o Supabase falhou.'
-        );
+        return {
+          error: 'Erro ao sincronizar nutrição e desenvolvimento com o Supabase: ' + error.message,
+        };
       }
 
-      console.log('Nutrição e desenvolvimento sincronizados com sucesso:', nutritionId);
+      return { error: null };
     } catch (error) {
-      console.error('Erro ao criar nutrição e desenvolvimento:', error);
-      throw new Error('Erro ao criar o registro de nutrição e desenvolvimento.');
+      return { error: 'Erro ao criar nutrição e desenvolvimento: ' + (error as Error).message };
     }
   };
 
   const updateNutritionDevelopment = async (
     nutritionId: string,
     updatedFields: Partial<AttendanceNutritionDevelopment>
-  ) => {
+  ): Promise<{ error: string | null }> => {
     if (!nutritionId) {
-      throw new Error(
-        'O ID do registro de nutrição e desenvolvimento é obrigatório para a atualização.'
-      );
+      return { error: 'O ID do registro de nutrição e desenvolvimento é obrigatório.' };
     }
 
     try {
-      console.log(
-        'Iniciando atualização do registro de nutrição e desenvolvimento. ID:',
-        nutritionId,
-        'Campos a serem atualizados:',
-        updatedFields
-      );
-
-      // Atualizar o registro de nutrição e desenvolvimento localmente
       const result = await db
         .updateTable('attendance_nutrition_development')
         .set(updatedFields)
@@ -120,32 +101,27 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
 
       const totalUpdatedRows = result.reduce((sum, res) => sum + res.numUpdatedRows, 0n);
       if (totalUpdatedRows === 0n) {
-        console.error('Nenhum registro foi atualizado. Verifique o ID e os campos enviados.');
-        throw new Error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
+        return { error: 'Nenhum registro foi atualizado. Verifique os dados.' };
       }
 
-      console.log('Nutrição e desenvolvimento atualizado localmente:', nutritionId);
-
-      // Tentar sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_nutrition_development')
         .update(updatedFields)
         .eq('id', nutritionId);
 
       if (error) {
-        console.warn(
-          'Erro ao sincronizar atualização do registro de nutrição e desenvolvimento com o Supabase:',
-          error.message
-        );
-        throw new Error(
-          'Registro atualizado localmente, mas a sincronização com o Supabase falhou.'
-        );
+        return {
+          error:
+            'Erro ao sincronizar atualização do registro de nutrição e desenvolvimento: ' +
+            error.message,
+        };
       }
 
-      console.log('Nutrição e desenvolvimento sincronizados com sucesso:', nutritionId);
-    } catch (error) {
-      console.error('Erro ao atualizar o registro de nutrição e desenvolvimento:', error);
-      throw new Error('Ocorreu um erro ao atualizar o registro de nutrição e desenvolvimento.');
+      return { error: null };
+    } catch (error: any) {
+      return {
+        error: 'Erro ao atualizar o registro de nutrição e desenvolvimento: ' + error.message,
+      };
     }
   };
 

@@ -1,7 +1,6 @@
 // app/context/AttendanceContext.tsx
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
 import { Attendance } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
@@ -12,10 +11,10 @@ type AttendanceContextType = {
   createAttendance: (
     attendance: Partial<Attendance>,
     doctorId: string,
-    patientId: string,
-  ) => Promise<void>;
+    patientId: string
+  ) => Promise<{ data: any, error: any }>; // Retorna dados e erro
   updateAttendance: (attendanceId: string, updatedFields: Partial<Attendance>) => Promise<void>;
-  fetchAttendanceByPatient: (patientId: string) => Promise<Attendance | null>; // Nova função
+  fetchAttendanceByPatient: (patientId: string) => Promise<Attendance | null>;
 };
 
 const AttendanceContext = createContext<AttendanceContextType | undefined>(undefined);
@@ -28,7 +27,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     attendance: Partial<Attendance>,
     doctorId: string,
     patientId: string
-  ) => {
+  ): Promise<{ data: any; error: any }> => {
     if (!doctorId || !patientId) {
       throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
     }
@@ -37,7 +36,6 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
       // Gerar um UUID para o novo atendimento
       const attendanceId = uuid();
 
-      // Criar um novo registro do atendimento localmente
       const newAttendance = {
         id: attendanceId,
         doctor_id: doctorId,
@@ -53,23 +51,26 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         updated_at: new Date().toISOString(),
       };
 
+      // Inserir o novo atendimento localmente
       await db.insertInto('attendances').values(newAttendance).execute();
       console.log('Atendimento criado localmente:', attendanceId);
 
       // Tentar sincronizar com o Supabase
-      const { error } = await supabaseConnector.client.from('attendances').insert([newAttendance]);
+      const { data, error } = await supabaseConnector.client
+        .from('attendances')
+        .insert([newAttendance]);
 
       if (error) {
         console.warn('Erro ao sincronizar atendimento com o Supabase:', error.message);
-        throw new Error(
-          'Atendimento adicionado localmente, mas a sincronização com o Supabase falhou.'
-        );
+        return { data: null, error };
       }
 
       console.log('Atendimento sincronizado com sucesso:', attendanceId);
+      return { data, error: null };
+
     } catch (error) {
       console.error('Erro ao criar atendimento:', error);
-      throw new Error('Erro ao criar o atendimento.');
+      return { data: null, error };
     }
   };
 
@@ -79,14 +80,9 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     }
 
     try {
-      console.log(
-        'Iniciando atualização do atendimento. ID:',
-        attendanceId,
-        'Campos a serem atualizados:',
-        updatedFields
-      );
+      console.log('Iniciando atualização do atendimento:', attendanceId);
 
-      // Atualizar o registro do atendimento localmente
+      // Atualizar o atendimento localmente
       const result = await db
         .updateTable('attendances')
         .set(updatedFields)
@@ -95,11 +91,8 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
 
       const totalUpdatedRows = result.reduce((sum, res) => sum + res.numUpdatedRows, 0n);
       if (totalUpdatedRows === 0n) {
-        console.error('Nenhum registro foi atualizado. Verifique o ID e os campos enviados.');
-        throw new Error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
+        throw new Error('Nenhum registro foi atualizado. Verifique os dados enviados.');
       }
-
-      console.log('Atendimento atualizado localmente:', attendanceId);
 
       // Tentar sincronizar com o Supabase
       const { error } = await supabaseConnector.client
@@ -108,23 +101,17 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         .eq('id', attendanceId);
 
       if (error) {
-        console.warn(
-          'Erro ao sincronizar atualização do atendimento com o Supabase:',
-          error.message
-        );
-        throw new Error(
-          'Atendimento atualizado localmente, mas a sincronização com o Supabase falhou.'
-        );
+        throw new Error('Erro ao sincronizar atualização do atendimento com o Supabase.');
       }
 
-      console.log('Atendimento sincronizado com sucesso:', attendanceId);
+      console.log('Atendimento atualizado e sincronizado com sucesso:', attendanceId);
+
     } catch (error) {
       console.error('Erro ao atualizar o atendimento:', error);
-      throw new Error('Ocorreu um erro ao atualizar o atendimento.');
+      throw new Error('Erro ao atualizar o atendimento.');
     }
   };
 
-  // Função para buscar um atendimento por ID de paciente
   const fetchAttendanceByPatient = async (patientId: string): Promise<Attendance | null> => {
     try {
       const { data, error } = await supabaseConnector.client
@@ -134,11 +121,12 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.error('Erro ao buscar atendimento por ID do paciente:', error.message);
+        console.error('Erro ao buscar atendimento:', error.message);
         return null;
       }
 
       return data;
+
     } catch (error) {
       console.error('Erro ao buscar atendimento:', error);
       return null;
@@ -152,7 +140,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         setSelectedAttendance,
         createAttendance,
         updateAttendance,
-        fetchAttendanceByPatient, // Adicionando a nova função ao provider
+        fetchAttendanceByPatient,
       }}>
       {children}
     </AttendanceContext.Provider>

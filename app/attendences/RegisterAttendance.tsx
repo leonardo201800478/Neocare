@@ -1,7 +1,7 @@
 // app/attendences/RegisterAttendance.tsx
 
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View, Button, Alert, Text } from 'react-native';
 
 import BasicInfoForm from './BasicInfoForm';
@@ -14,6 +14,7 @@ import { useAttendance } from '../context/AttendanceContext';
 import { useAttendanceNutritionDevelopment } from '../context/AttendanceNutritionDevelopmentContext';
 import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
 import { useAttendanceVital } from '../context/AttendanceVitalContext';
+import { useDoctor } from '../context/DoctorContext';
 import styles from '../styles/Styles';
 
 const RegisterAttendance: React.FC = () => {
@@ -24,8 +25,10 @@ const RegisterAttendance: React.FC = () => {
   const { createVitalSigns } = useAttendanceVital();
   const { createSymptom } = useAttendanceSymptom();
   const { createNutritionDevelopment } = useAttendanceNutritionDevelopment();
+  const { selectedDoctor } = useDoctor();
 
-  // Definindo os estados com valores iniciais corretos
+  const doctorId = selectedDoctor?.id;
+
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     motivo_consulta: '',
     consulta_retorno: '',
@@ -84,7 +87,7 @@ const RegisterAttendance: React.FC = () => {
     outros_problemas: '',
   });
 
-  // As funções onChange que atualizam os estados
+  // Funções onChange para atualizar os estados
   const handleBasicInfoChange = (field: keyof BasicInfo, value: string) => {
     setBasicInfo((prev) => ({ ...prev, [field]: value }));
   };
@@ -107,22 +110,36 @@ const RegisterAttendance: React.FC = () => {
       return;
     }
 
+    if (!doctorId) {
+      Alert.alert('Erro', 'ID do médico não encontrado.');
+      return;
+    }
+
     try {
       // Criar o registro de atendimento (prontuário)
       const attendanceId = uuid();
-      await createAttendance({ ...basicInfo, id: attendanceId }, 'doctorId', patientId);
+      await createAttendance({ ...basicInfo, id: attendanceId }, doctorId, patientId);
 
       // Criar os sinais vitais associados ao atendimento
-      await createVitalSigns({ ...vitalInfo, id: uuid() }, attendanceId);
+      await createVitalSigns({ ...vitalInfo, attendance_id: attendanceId, id: uuid() }, doctorId);
 
       // Criar os sintomas gerais associados ao atendimento
-      await createSymptom({ ...generalSymptoms, id: uuid() }, attendanceId);
+      await createSymptom(
+        { ...generalSymptoms, attendance_id: attendanceId, id: uuid() },
+        doctorId
+      );
 
       // Criar o registro de nutrição e desenvolvimento associado ao atendimento
-      await createNutritionDevelopment({ ...nutritionDevelopment, id: uuid() }, attendanceId);
+      await createNutritionDevelopment(
+        {
+          ...nutritionDevelopment,
+          attendance_id: attendanceId,
+          id: uuid(),
+        },
+        doctorId
+      );
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
-      // Redirecionar para a tela de detalhes do paciente após salvar
       router.replace(
         `/patients/PacienteDetails:${encodeURIComponent(JSON.stringify({ id: patientId }))}`
       );
@@ -138,12 +155,11 @@ const RegisterAttendance: React.FC = () => {
         <>
           <BasicInfoForm data={basicInfo} onChange={handleBasicInfoChange} />
           <VitalInfoForm data={vitalInfo} onChange={handleVitalInfoChange} />
-          <GeneralSymptomsForm data={generalSymptoms} onChange={handleGeneralSymptomsChange} />
           <NutritionDevelopmentForm
             data={nutritionDevelopment}
             onChange={handleNutritionDevelopmentChange}
           />
-
+          <GeneralSymptomsForm data={generalSymptoms} onChange={handleGeneralSymptomsChange} />
           <View style={styles.buttonContainer}>
             <Button title="Salvar Prontuário" onPress={handleSaveAttendance} />
           </View>

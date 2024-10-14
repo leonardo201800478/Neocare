@@ -9,8 +9,14 @@ import { uuid } from '../../utils/uuid';
 type AttendanceSymptomContextType = {
   symptoms: AttendanceSymptom | null;
   setSymptoms: (symptoms: AttendanceSymptom | null) => void;
-  createSymptom: (symptoms: Partial<AttendanceSymptom>, attendanceId: string) => Promise<void>;
-  updateSymptom: (symptomId: string, updatedFields: Partial<AttendanceSymptom>) => Promise<void>;
+  createSymptom: (
+    symptoms: Partial<AttendanceSymptom>,
+    attendanceId: string
+  ) => Promise<{ error: string | null }>;
+  updateSymptom: (
+    symptomId: string,
+    updatedFields: Partial<AttendanceSymptom>
+  ) => Promise<{ error: string | null }>;
 };
 
 const AttendanceSymptomContext = createContext<AttendanceSymptomContextType | undefined>(undefined);
@@ -19,16 +25,17 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
   const [symptoms, setSymptoms] = useState<AttendanceSymptom | null>(null);
   const { db, supabaseConnector } = useSystem();
 
-  const createSymptom = async (symptoms: Partial<AttendanceSymptom>, attendanceId: string) => {
+  const createSymptom = async (
+    symptoms: Partial<AttendanceSymptom>,
+    attendanceId: string
+  ): Promise<{ error: string | null }> => {
     if (!attendanceId) {
-      throw new Error('O ID do atendimento é obrigatório.');
+      return { error: 'O ID do atendimento é obrigatório.' };
     }
 
     try {
-      // Gerar um UUID para os novos sintomas
       const symptomId = uuid();
 
-      // Criar um novo registro dos sintomas localmente
       const newSymptom = {
         id: symptomId,
         attendance_id: attendanceId,
@@ -55,41 +62,30 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
 
       await db.insertInto('attendance_symptoms').values(newSymptom).execute();
       setSymptoms(newSymptom);
-      console.log('Sintomas criados localmente:', symptomId);
 
-      // Tentar sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_symptoms')
         .insert([newSymptom]);
 
       if (error) {
-        console.warn('Erro ao sincronizar sintomas com o Supabase:', error.message);
-        throw new Error(
-          'Sintomas adicionados localmente, mas a sincronização com o Supabase falhou.'
-        );
+        return { error: 'Erro ao sincronizar sintomas com o Supabase: ' + error.message };
       }
 
-      console.log('Sintomas sincronizados com sucesso:', symptomId);
+      return { error: null };
     } catch (error) {
-      console.error('Erro ao criar sintomas:', error);
-      throw new Error('Erro ao criar os sintomas.');
+      return { error: 'Erro ao criar sintomas: ' + (error as Error).message };
     }
   };
 
-  const updateSymptom = async (symptomId: string, updatedFields: Partial<AttendanceSymptom>) => {
+  const updateSymptom = async (
+    symptomId: string,
+    updatedFields: Partial<AttendanceSymptom>
+  ): Promise<{ error: string | null }> => {
     if (!symptomId) {
-      throw new Error('O ID dos sintomas é obrigatório para a atualização.');
+      return { error: 'O ID dos sintomas é obrigatório para a atualização.' };
     }
 
     try {
-      console.log(
-        'Iniciando atualização dos sintomas. ID:',
-        symptomId,
-        'Campos a serem atualizados:',
-        updatedFields
-      );
-
-      // Atualizar o registro dos sintomas localmente
       const result = await db
         .updateTable('attendance_symptoms')
         .set(updatedFields)
@@ -98,29 +94,21 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
 
       const totalUpdatedRows = result.reduce((sum, res) => sum + res.numUpdatedRows, 0n);
       if (totalUpdatedRows === 0n) {
-        console.error('Nenhum registro foi atualizado. Verifique o ID e os campos enviados.');
-        throw new Error('Nenhum registro foi atualizado. Verifique os dados e tente novamente.');
+        return { error: 'Nenhum registro foi atualizado. Verifique os dados.' };
       }
 
-      console.log('Sintomas atualizados localmente:', symptomId);
-
-      // Tentar sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_symptoms')
         .update(updatedFields)
         .eq('id', symptomId);
 
       if (error) {
-        console.warn('Erro ao sincronizar atualização dos sintomas com o Supabase:', error.message);
-        throw new Error(
-          'Sintomas atualizados localmente, mas a sincronização com o Supabase falhou.'
-        );
+        return { error: 'Erro ao sincronizar atualização dos sintomas: ' + error.message };
       }
 
-      console.log('Sintomas sincronizados com sucesso:', symptomId);
+      return { error: null };
     } catch (error) {
-      console.error('Erro ao atualizar os sintomas:', error);
-      throw new Error('Ocorreu um erro ao atualizar os sintomas.');
+      return { error: 'Erro ao atualizar os sintomas: ' + (error as Error).message };
     }
   };
 

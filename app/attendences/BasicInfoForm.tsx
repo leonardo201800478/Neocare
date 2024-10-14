@@ -2,7 +2,7 @@
 
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 
 import styles from './styles/AttendanceStyles'; // Estilização separada
 import { BasicInfo } from './types'; // Importando o tipo BasicInfo
@@ -62,11 +62,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {
           <Picker.Item label="Sim" value="yes" />
         </Picker>
       </View>
-
-      {/* Botão de Salvar */}
-      <TouchableOpacity style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Salvar</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
