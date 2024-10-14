@@ -58,6 +58,8 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         distensao_abdominal: symptoms.distensao_abdominal ?? null,
         emagrecimento: symptoms.emagrecimento ?? null,
         edema: symptoms.edema ?? null,
+        doctor_id: symptoms.doctor_id ?? null,
+        patient_id: symptoms.patient_id ?? null,
       };
 
       await db.insertInto('attendance_symptoms').values(newSymptom).execute();

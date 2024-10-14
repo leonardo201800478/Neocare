@@ -44,6 +44,8 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
         comprimento_cm: vitals.comprimento_cm ?? null,
         perimetro_cefalico_cm: vitals.perimetro_cefalico_cm ?? null,
         numero_respiracoes_por_minuto: vitals.numero_respiracoes_por_minuto ?? null,
+        doctor_id: vitals.doctor_id ?? null,
+        patient_id: vitals.patient_id ?? null,
       };
 
       await db.insertInto('attendance_vitals').values(newVitalSigns).execute();

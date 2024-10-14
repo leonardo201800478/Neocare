@@ -59,6 +59,8 @@ const attendance_vitals = new Table({
   comprimento_cm: column.text,
   perimetro_cefalico_cm: column.text,
   numero_respiracoes_por_minuto: column.text,
+  doctor_id: column.text,
+  patient_id: column.text,
 });
 
 // Tabela de sintomas
@@ -86,6 +88,8 @@ const attendance_symptoms = new Table({
   distensao_abdominal: column.text,
   emagrecimento: column.text,
   edema: column.text,
+  doctor_id: column.text,
+  patient_id: column.text,
 });
 
 // Tabela de nutrição e desenvolvimento
@@ -110,6 +114,8 @@ const attendance_nutrition_development = new Table({
   tempo_sedentario: column.text,
   avaliacao_violencia: column.text,
   outros_problemas: column.text,
+  doctor_id: column.text,
+  patient_id: column.text,
 });
 
 // Tabela de vacinações

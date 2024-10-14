@@ -1,5 +1,4 @@
 // app/attendences/RegisterAttendance.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, View, Button, Alert, Text } from 'react-native';
@@ -29,62 +28,63 @@ const RegisterAttendance: React.FC = () => {
 
   const doctorId = selectedDoctor?.id;
 
+  // Definir valores padrão para os campos
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     motivo_consulta: '',
-    consulta_retorno: '',
-    primeira_consulta: '',
-    hipertensao: '',
-    diabetes: '',
-    doenca_hepatica: '',
-    deficiencia_g6pd: '',
+    consulta_retorno: 'no', // Valor default
+    primeira_consulta: 'no', // Valor default
+    hipertensao: 'no', // Valor default
+    diabetes: 'no', // Valor default
+    doenca_hepatica: 'no', // Valor default
+    deficiencia_g6pd: 'no', // Valor default
   });
 
   const [vitalInfo, setVitalInfo] = useState<VitalInfo>({
-    peso_kg: '',
-    comprimento_cm: '',
-    perimetro_cefalico_cm: '',
-    numero_respiracoes_por_minuto: '',
+    peso_kg: '0', // Valor default
+    comprimento_cm: '0', // Valor default
+    perimetro_cefalico_cm: '0', // Valor default
+    numero_respiracoes_por_minuto: '0', // Valor default
   });
 
   const [generalSymptoms, setGeneralSymptoms] = useState<GeneralSymptoms>({
-    nao_bebe_ou_mama: '',
-    vomita_tudo: '',
-    convulsoes: '',
-    letargica: '',
-    enchimento_capilar: '',
-    batimento_asa: '',
-    tem_tosse: '',
-    sibilancia: '',
-    tem_diarreia: '',
-    tem_febre: '',
-    rigidez_nuca: '',
-    problema_ouvido: '',
-    dor_garganta: '',
-    gemido: '',
-    cianose_periferica: '',
-    ictericia: '',
-    distensao_abdominal: '',
-    emagrecimento: '',
-    edema: '',
+    nao_bebe_ou_mama: 'no', // Valor default
+    vomita_tudo: 'no', // Valor default
+    convulsoes: 'no', // Valor default
+    letargica: 'no', // Valor default
+    enchimento_capilar: 'no', // Valor default
+    batimento_asa: 'no', // Valor default
+    tem_tosse: 'no', // Valor default
+    sibilancia: 'no', // Valor default
+    tem_diarreia: 'no', // Valor default
+    tem_febre: 'no', // Valor default
+    rigidez_nuca: 'no', // Valor default
+    problema_ouvido: 'no', // Valor default
+    dor_garganta: 'no', // Valor default
+    gemido: 'no', // Valor default
+    cianose_periferica: 'no', // Valor default
+    ictericia: 'no', // Valor default
+    distensao_abdominal: 'no', // Valor default
+    emagrecimento: 'no', // Valor default
+    edema: 'no', // Valor default
   });
 
   const [nutritionDevelopment, setNutritionDevelopment] = useState<NutritionDevelopment>({
-    amamentando: '',
-    quantas_vezes_amamenta: '',
-    amamenta_noite: '',
-    alimentos_liquidos: '',
-    quantidade_refeicoes: '',
-    tipo_alimentacao: '',
-    mudou_alimentacao: '',
-    como_mudou_alimentacao: '',
-    perda_peso_primeira_semana: '',
-    tendencia_crescimento: '',
-    habilidades_desenvolvimento: '',
-    atividade_fisica_vezes_semana: '',
-    tempo_atividade_fisica: '',
-    tempo_sedentario: '',
-    avaliacao_violencia: '',
-    outros_problemas: '',
+    amamentando: 'no', // Valor default
+    quantas_vezes_amamenta: '0', // Valor default
+    amamenta_noite: 'no', // Valor default
+    alimentos_liquidos: 'no', // Valor default
+    quantidade_refeicoes: '0', // Valor default
+    tipo_alimentacao: '', // Valor default
+    mudou_alimentacao: 'no', // Valor default
+    como_mudou_alimentacao: '', // Valor default
+    perda_peso_primeira_semana: 'no', // Valor default
+    tendencia_crescimento: '', // Valor default
+    habilidades_desenvolvimento: '', // Valor default
+    atividade_fisica_vezes_semana: '0', // Valor default
+    tempo_atividade_fisica: '0', // Valor default
+    tempo_sedentario: '0', // Valor default
+    avaliacao_violencia: '', // Valor default
+    outros_problemas: '', // Valor default
   });
 
   // Funções onChange para atualizar os estados
@@ -121,12 +121,27 @@ const RegisterAttendance: React.FC = () => {
       await createAttendance({ ...basicInfo, id: attendanceId }, doctorId, patientId);
 
       // Criar os sinais vitais associados ao atendimento
-      await createVitalSigns({ ...vitalInfo, attendance_id: attendanceId, id: uuid() }, doctorId);
+      await createVitalSigns(
+        {
+          ...vitalInfo,
+          attendance_id: attendanceId,
+          doctor_id: doctorId,
+          patient_id: patientId,
+          id: uuid(),
+        },
+        attendanceId
+      );
 
       // Criar os sintomas gerais associados ao atendimento
       await createSymptom(
-        { ...generalSymptoms, attendance_id: attendanceId, id: uuid() },
-        doctorId
+        {
+          ...generalSymptoms,
+          attendance_id: attendanceId,
+          doctor_id: doctorId,
+          patient_id: patientId,
+          id: uuid(),
+        },
+        attendanceId
       );
 
       // Criar o registro de nutrição e desenvolvimento associado ao atendimento
@@ -134,14 +149,16 @@ const RegisterAttendance: React.FC = () => {
         {
           ...nutritionDevelopment,
           attendance_id: attendanceId,
+          doctor_id: doctorId,
+          patient_id: patientId,
           id: uuid(),
         },
-        doctorId
+        attendanceId
       );
 
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
-      router.replace(
-        `/patients/PacienteDetails:${encodeURIComponent(JSON.stringify({ id: patientId }))}`
+      router.push(
+        `/(tabs)/patients/PacienteDetails:${encodeURIComponent(JSON.stringify({ id: patientId }))}`
       );
     } catch (error) {
       console.error('Erro ao salvar prontuário:', error);

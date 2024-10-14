@@ -60,6 +60,8 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
         tempo_sedentario: nutrition.tempo_sedentario ?? null,
         avaliacao_violencia: nutrition.avaliacao_violencia ?? null,
         outros_problemas: nutrition.outros_problemas ?? null,
+        doctor_id: nutrition.doctor_id ?? null,
+        patient_id: nutrition.patient_id ?? null,
       };
 
       await db

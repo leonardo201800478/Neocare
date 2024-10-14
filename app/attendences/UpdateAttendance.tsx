@@ -1,5 +1,3 @@
-// app/attendences/UpdateAttendance.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Button, Alert, Text, ActivityIndicator, StyleSheet } from 'react-native';
@@ -10,12 +8,16 @@ import NutritionDevelopmentForm from './NutritionDevelopmentForm';
 import VitalInfoForm from './VitalInfoForm';
 import { BasicInfo, VitalInfo, GeneralSymptoms, NutritionDevelopment } from './types';
 import { useSystem } from '../../powersync/PowerSync';
-import { uuid } from '../../utils/uuid'; // Importe a função uuid() para gerar IDs
+import { uuid } from '../../utils/uuid';
+import { useDoctor } from '../context/DoctorContext';
 
 const UpdateAttendance: React.FC = () => {
   const { db } = useSystem();
   const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const router = useRouter();
+  const { selectedDoctor } = useDoctor();
+
+  const doctorId = selectedDoctor?.id;
 
   const [attendanceId, setAttendanceId] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
@@ -195,6 +197,11 @@ const UpdateAttendance: React.FC = () => {
       return;
     }
 
+    if (!doctorId) {
+      Alert.alert('Erro', 'ID do médico não encontrado.');
+      return;
+    }
+
     setLoading(true);
     try {
       if (attendanceId) {
@@ -214,6 +221,7 @@ const UpdateAttendance: React.FC = () => {
           .values({
             id: uuid(),
             patient_id: patientId,
+            doctor_id: doctorId,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             motivo_consulta: basicInfo.motivo_consulta,
@@ -243,7 +251,7 @@ const UpdateAttendance: React.FC = () => {
   const updateOtherTables = async (attendanceId: string) => {
     await db
       .insertInto('attendance_vitals')
-      .values({ id: uuid(), ...vitalInfo, attendance_id: attendanceId })
+      .values({ id: uuid(), ...vitalInfo, attendance_id: attendanceId, doctor_id: doctorId })
       .onConflict((oc) =>
         oc.column('attendance_id').doUpdateSet({
           peso_kg: vitalInfo.peso_kg,
@@ -256,13 +264,18 @@ const UpdateAttendance: React.FC = () => {
 
     await db
       .insertInto('attendance_symptoms')
-      .values({ id: uuid(), ...generalSymptoms, attendance_id: attendanceId })
+      .values({ id: uuid(), ...generalSymptoms, attendance_id: attendanceId, doctor_id: doctorId })
       .onConflict((oc) => oc.column('attendance_id').doUpdateSet(generalSymptoms))
       .execute();
 
     await db
       .insertInto('attendance_nutrition_development')
-      .values({ id: uuid(), ...nutritionDevelopment, attendance_id: attendanceId })
+      .values({
+        id: uuid(),
+        ...nutritionDevelopment,
+        attendance_id: attendanceId,
+        doctor_id: doctorId,
+      })
       .onConflict((oc) => oc.column('attendance_id').doUpdateSet(nutritionDevelopment))
       .execute();
   };
@@ -278,45 +291,61 @@ const UpdateAttendance: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <BasicInfoForm
-        data={basicInfo}
-        onChange={(field, value) => setBasicInfo((prev) => ({ ...prev, [field]: value }))}
-      />
-      <VitalInfoForm
-        data={vitalInfo}
-        onChange={(field, value) => setVitalInfo((prev) => ({ ...prev, [field]: value }))}
-      />
-      <GeneralSymptomsForm
-        data={generalSymptoms}
-        onChange={(field, value) => setGeneralSymptoms((prev) => ({ ...prev, [field]: value }))}
-      />
-      <NutritionDevelopmentForm
-        data={nutritionDevelopment}
-        onChange={(field, value) =>
-          setNutritionDevelopment((prev) => ({ ...prev, [field]: value }))
-        }
-      />
+      {/* Verificação de carregamento */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#005F9E" />
+          <Text>Carregando...</Text>
+        </View>
+      ) : (
+        <>
+          {/* Formulário de informações básicas */}
+          <BasicInfoForm
+            data={basicInfo}
+            onChange={(field, value) => setBasicInfo((prev) => ({ ...prev, [field]: value }))}
+          />
 
-      <View style={styles.buttonContainer}>
-        <Button title="Salvar Prontuário" onPress={handleSaveAttendance} />
-      </View>
+          {/* Formulário de sinais vitais */}
+          <VitalInfoForm
+            data={vitalInfo}
+            onChange={(field, value) => setVitalInfo((prev) => ({ ...prev, [field]: value }))}
+          />
+
+          {/* Formulário de sintomas gerais */}
+          <GeneralSymptomsForm
+            data={generalSymptoms}
+            onChange={(field, value) => setGeneralSymptoms((prev) => ({ ...prev, [field]: value }))}
+          />
+
+          {/* Formulário de nutrição e desenvolvimento */}
+          <NutritionDevelopmentForm
+            data={nutritionDevelopment}
+            onChange={(field, value) =>
+              setNutritionDevelopment((prev) => ({ ...prev, [field]: value }))
+            }
+          />
+
+          {/* Botão para salvar o prontuário */}
+          <View style={styles.buttonContainer}>
+            <Button title="Salvar Prontuário" onPress={handleSaveAttendance} />
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
-    backgroundColor: '#ffffff',
-  },
-  buttonContainer: {
-    marginVertical: 20,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    marginTop: 16,
   },
 });
 
