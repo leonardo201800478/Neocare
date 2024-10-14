@@ -178,6 +178,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
   detailItem: {
     fontSize: 18,
     color: '#2E7D32', // Verde escuro para itens de detalhe

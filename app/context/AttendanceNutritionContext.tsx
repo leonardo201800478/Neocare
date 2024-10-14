@@ -1,36 +1,33 @@
-// app/context/AttendanceNutritionDevelopmentContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { AttendanceNutritionDevelopment } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
 
-type AttendanceNutritionDevelopmentContextType = {
-  nutritionDevelopment: AttendanceNutritionDevelopment | null;
-  setNutritionDevelopment: (nutrition: AttendanceNutritionDevelopment | null) => void;
-  createNutritionDevelopment: (
+type NutritionContextType = {
+  nutrition: AttendanceNutritionDevelopment[] | null; // Array de registros de nutrição
+  setNutrition: (nutrition: AttendanceNutritionDevelopment[] | null) => void;
+  createNutrition: (
     nutrition: Partial<AttendanceNutritionDevelopment>,
     attendanceId: string
   ) => Promise<{ error: string | null }>;
-  updateNutritionDevelopment: (
+  updateNutrition: (
     nutritionId: string,
     updatedFields: Partial<AttendanceNutritionDevelopment>
   ) => Promise<{ error: string | null }>;
+  fetchNutritionByAttendance: (
+    attendanceId: string
+  ) => Promise<AttendanceNutritionDevelopment[] | null>;
+  fetchNutritionById: (nutritionId: string) => Promise<AttendanceNutritionDevelopment | null>; // Nova função
 };
 
-const AttendanceNutritionDevelopmentContext = createContext<
-  AttendanceNutritionDevelopmentContextType | undefined
->(undefined);
+const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
 
-export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [nutritionDevelopment, setNutritionDevelopment] =
-    useState<AttendanceNutritionDevelopment | null>(null);
+export const NutritionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [nutrition, setNutrition] = useState<AttendanceNutritionDevelopment[] | null>(null);
   const { db, supabaseConnector } = useSystem();
 
-  const createNutritionDevelopment = async (
+  const createNutrition = async (
     nutrition: Partial<AttendanceNutritionDevelopment>,
     attendanceId: string
   ): Promise<{ error: string | null }> => {
@@ -41,8 +38,10 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
     try {
       const nutritionId = uuid();
 
-      const newNutritionDevelopment = {
+      const newNutrition: AttendanceNutritionDevelopment = {
         id: nutritionId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         attendance_id: attendanceId,
         amamentando: nutrition.amamentando ?? null,
         quantas_vezes_amamenta: nutrition.quantas_vezes_amamenta ?? null,
@@ -64,15 +63,13 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
         patient_id: nutrition.patient_id ?? null,
       };
 
-      await db
-        .insertInto('attendance_nutrition_development')
-        .values(newNutritionDevelopment)
-        .execute();
-      setNutritionDevelopment(newNutritionDevelopment);
+      await db.insertInto('attendance_nutrition_development').values(newNutrition).execute();
+
+      setNutrition((prev) => (prev ? [...prev, newNutrition] : [newNutrition]));
 
       const { error } = await supabaseConnector.client
         .from('attendance_nutrition_development')
-        .insert([newNutritionDevelopment]);
+        .insert([newNutrition]);
 
       if (error) {
         return {
@@ -86,7 +83,46 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
     }
   };
 
-  const updateNutritionDevelopment = async (
+  const fetchNutritionByAttendance = async (attendanceId: string) => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendance_nutrition_development')
+        .select('*')
+        .eq('attendance_id', attendanceId);
+
+      if (error) {
+        console.error('Erro ao buscar dados de nutrição e desenvolvimento:', error.message);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar dados de nutrição e desenvolvimento:', error);
+      return null;
+    }
+  };
+
+  const fetchNutritionById = async (nutritionId: string) => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendance_nutrition_development')
+        .select('*')
+        .eq('id', nutritionId)
+        .single(); // Retorna um único registro
+
+      if (error) {
+        console.error('Erro ao buscar dados de nutrição e desenvolvimento pelo ID:', error.message);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar dados de nutrição e desenvolvimento:', error);
+      return null;
+    }
+  };
+
+  const updateNutrition = async (
     nutritionId: string,
     updatedFields: Partial<AttendanceNutritionDevelopment>
   ): Promise<{ error: string | null }> => {
@@ -128,24 +164,24 @@ export const AttendanceNutritionDevelopmentProvider: React.FC<{ children: ReactN
   };
 
   return (
-    <AttendanceNutritionDevelopmentContext.Provider
+    <NutritionContext.Provider
       value={{
-        nutritionDevelopment,
-        setNutritionDevelopment,
-        createNutritionDevelopment,
-        updateNutritionDevelopment,
+        nutrition,
+        setNutrition,
+        createNutrition,
+        updateNutrition,
+        fetchNutritionByAttendance,
+        fetchNutritionById, // Nova função adicionada ao contexto
       }}>
       {children}
-    </AttendanceNutritionDevelopmentContext.Provider>
+    </NutritionContext.Provider>
   );
 };
 
-export const useAttendanceNutritionDevelopment = (): AttendanceNutritionDevelopmentContextType => {
-  const context = useContext(AttendanceNutritionDevelopmentContext);
+export const useNutrition = (): NutritionContextType => {
+  const context = useContext(NutritionContext);
   if (!context) {
-    throw new Error(
-      'useAttendanceNutritionDevelopment deve ser usado dentro de um AttendanceNutritionDevelopmentProvider'
-    );
+    throw new Error('useNutrition deve ser usado dentro de um NutritionProvider');
   }
   return context;
 };

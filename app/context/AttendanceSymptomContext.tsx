@@ -1,5 +1,3 @@
-// app/context/AttendanceSymptomContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { AttendanceSymptom } from '../../powersync/AppSchema';
@@ -17,6 +15,8 @@ type AttendanceSymptomContextType = {
     symptomId: string,
     updatedFields: Partial<AttendanceSymptom>
   ) => Promise<{ error: string | null }>;
+  fetchSymptomsByAttendanceId: (attendanceId: string) => Promise<AttendanceSymptom | null>;
+  fetchSymptomById: (symptomId: string) => Promise<AttendanceSymptom | null>; // Nova função adicionada
 };
 
 const AttendanceSymptomContext = createContext<AttendanceSymptomContextType | undefined>(undefined);
@@ -36,8 +36,10 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
     try {
       const symptomId = uuid();
 
-      const newSymptom = {
+      const newSymptom: AttendanceSymptom = {
         id: symptomId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         attendance_id: attendanceId,
         nao_bebe_ou_mama: symptoms.nao_bebe_ou_mama ?? null,
         vomita_tudo: symptoms.vomita_tudo ?? null,
@@ -62,9 +64,11 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         patient_id: symptoms.patient_id ?? null,
       };
 
+      // Salvar localmente
       await db.insertInto('attendance_symptoms').values(newSymptom).execute();
       setSymptoms(newSymptom);
 
+      // Sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_symptoms')
         .insert([newSymptom]);
@@ -88,6 +92,7 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
     }
 
     try {
+      // Atualizar localmente
       const result = await db
         .updateTable('attendance_symptoms')
         .set(updatedFields)
@@ -99,6 +104,7 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         return { error: 'Nenhum registro foi atualizado. Verifique os dados.' };
       }
 
+      // Sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_symptoms')
         .update(updatedFields)
@@ -114,14 +120,62 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
     }
   };
 
+  const fetchSymptomsByAttendanceId = async (attendanceId: string) => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendance_symptoms')
+        .select('*')
+        .eq('attendance_id', attendanceId)
+        .single(); // Espera-se que haja um único registro por atendimento
+  
+      if (error) {
+        console.error('Erro ao buscar sintomas:', error.message);
+        return null;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar sintomas:', error);
+      return null;
+    }
+  };
+
+  const fetchSymptomById = async (symptomId: string) => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendance_symptoms')
+        .select('*')
+        .eq('id', symptomId)
+        .single();
+  
+      if (error) {
+        console.error('Erro ao buscar sintomas pelo ID:', error.message);
+        return null;
+      }
+  
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar sintomas:', error);
+      return null;
+    }
+  };
+
   return (
     <AttendanceSymptomContext.Provider
-      value={{ symptoms, setSymptoms, createSymptom, updateSymptom }}>
+      value={{
+        symptoms,
+        setSymptoms,
+        createSymptom,
+        updateSymptom,
+        fetchSymptomsByAttendanceId,
+        fetchSymptomById,
+      }}>
       {children}
     </AttendanceSymptomContext.Provider>
   );
 };
 
+// Hook personalizado para acessar o contexto
 export const useAttendanceSymptom = (): AttendanceSymptomContextType => {
   const context = useContext(AttendanceSymptomContext);
   if (!context) {

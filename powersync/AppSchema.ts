@@ -43,10 +43,10 @@ const attendances = new Table({
   consulta_retorno: column.text,
   motivo_consulta: column.text,
   doctor_id: column.text,
-  hipertensao: column.text, // Novo campo para hipertensão (true/false)
-  diabetes: column.text, // Novo campo para diabetes (true/false)
-  doenca_hepatica: column.text, // Novo campo para doença hepática (true/false)
-  deficiencia_g6pd: column.text, // Novo campo para deficiência de G6PD (true/false)
+  hipertensao: column.text, // Campo para hipertensão
+  diabetes: column.text, // Campo para diabetes
+  doenca_hepatica: column.text, // Campo para doença hepática
+  deficiencia_g6pd: column.text, // Campo para deficiência de G6PD
 });
 
 // Tabela de sinais vitais
@@ -54,7 +54,9 @@ export const ATTENDANCE_VITALS_TABLE = 'attendance_vitals';
 
 const attendance_vitals = new Table({
   id: column.text,
-  attendance_id: column.text,
+  created_at: column.text,
+  updated_at: column.text,
+  attendance_id: column.text, // Relaciona com a tabela de atendimentos
   peso_kg: column.text,
   comprimento_cm: column.text,
   perimetro_cefalico_cm: column.text,
@@ -68,7 +70,9 @@ export const ATTENDANCE_SYMPTOMS_TABLE = 'attendance_symptoms';
 
 const attendance_symptoms = new Table({
   id: column.text,
-  attendance_id: column.text,
+  created_at: column.text,
+  updated_at: column.text,
+  attendance_id: column.text, // Relaciona com a tabela de atendimentos
   nao_bebe_ou_mama: column.text,
   vomita_tudo: column.text,
   convulsoes: column.text,
@@ -97,7 +101,9 @@ export const ATTENDANCE_NUTRITION_DEVELOPMENT_TABLE = 'attendance_nutrition_deve
 
 const attendance_nutrition_development = new Table({
   id: column.text,
-  attendance_id: column.text,
+  created_at: column.text,
+  updated_at: column.text,
+  attendance_id: column.text, // Relaciona com a tabela de atendimentos
   amamentando: column.text,
   quantas_vezes_amamenta: column.text,
   amamenta_noite: column.text,
@@ -161,27 +167,27 @@ const allergies = new Table({
   allergy_losartan_potassium: column.text,
   allergy_metformin: column.text,
   allergy_butylscopolamine: column.text,
-  allergy_cephalosporin: column.text, // Adicionado para Cefalexina
-  allergy_salbutamol: column.text, // Adicionado para Salbutamol
-  allergy_acido_folico: column.text, // Ajustado para Ácido Fólico
-  allergy_isotretinoina: column.text, // Adicionado para Isotretinoína
+  allergy_cephalosporin: column.text, // Campo para Cefalexina
+  allergy_salbutamol: column.text, // Campo para Salbutamol
+  allergy_acido_folico: column.text, // Campo para Ácido Fólico
+  allergy_isotretinoina: column.text, // Campo para Isotretinoína
 });
 
 // Tabela de medicamentos
 export const MEDICATIONS_TABLE = 'medications';
 
 const medications = new Table({
-  id: column.text, // ID único do medicamento
-  name: column.text, // Nome do medicamento
-  patient_id: column.text, // ID do paciente (referência da tabela patients)
-  doctor_id: column.text, // ID do médico (referência da tabela doctors)
-  dosage_info: column.text, // Informações sobre dosagem
-  max_dosage_info: column.text, // Dosagem máxima permitida
-  indication: column.text, // Indicações para uso do medicamento
-  contraindications: column.text, // Contraindicações
-  instructions: column.text, // Instruções especiais, se houver
-  created_at: column.text, // Data de criação
-  updated_at: column.text, // Data de atualização
+  id: column.text,
+  name: column.text,
+  patient_id: column.text,
+  doctor_id: column.text,
+  dosage_info: column.text,
+  max_dosage_info: column.text,
+  indication: column.text,
+  contraindications: column.text,
+  instructions: column.text,
+  created_at: column.text,
+  updated_at: column.text,
 });
 
 // Criando o esquema

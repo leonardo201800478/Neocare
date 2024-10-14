@@ -38,6 +38,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
   input: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',

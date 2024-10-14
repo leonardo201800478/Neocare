@@ -1,5 +1,3 @@
-// app/context/AttendanceVitalContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { AttendanceVital } from '../../powersync/AppSchema';
@@ -18,6 +16,7 @@ type AttendanceVitalContextType = {
     updatedFields: Partial<AttendanceVital>
   ) => Promise<{ error: string | null }>;
   fetchVitalsByAttendance: (attendanceId: string) => Promise<AttendanceVital | null>;
+  fetchVitalById: (vitalId: string) => Promise<AttendanceVital | null>; // Nova função
 };
 
 const AttendanceVitalContext = createContext<AttendanceVitalContextType | undefined>(undefined);
@@ -37,8 +36,10 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
     try {
       const vitalId = uuid();
 
-      const newVitalSigns = {
+      const newVitalSigns: AttendanceVital = {
         id: vitalId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         attendance_id: attendanceId,
         peso_kg: vitals.peso_kg ?? null,
         comprimento_cm: vitals.comprimento_cm ?? null,
@@ -48,9 +49,11 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
         patient_id: vitals.patient_id ?? null,
       };
 
+      // Salvar localmente
       await db.insertInto('attendance_vitals').values(newVitalSigns).execute();
       setVitalSigns(newVitalSigns);
 
+      // Sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_vitals')
         .insert([newVitalSigns]);
@@ -74,6 +77,7 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
     }
 
     try {
+      // Atualizar localmente
       const result = await db
         .updateTable('attendance_vitals')
         .set(updatedFields)
@@ -85,6 +89,7 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
         return { error: 'Nenhum registro foi atualizado. Verifique os dados.' };
       }
 
+      // Sincronizar com o Supabase
       const { error } = await supabaseConnector.client
         .from('attendance_vitals')
         .update(updatedFields)
@@ -100,19 +105,19 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
     }
   };
 
-  const fetchVitalsByAttendance = async (attendanceId: string): Promise<AttendanceVital | null> => {
+  const fetchVitalsByAttendance = async (attendanceId: string) => {
     try {
       const { data, error } = await supabaseConnector.client
         .from('attendance_vitals')
         .select('*')
         .eq('attendance_id', attendanceId)
-        .single();
-
+        .single(); // Espera-se que haja um único registro por atendimento
+  
       if (error) {
-        console.error('Erro ao buscar sinais vitais por ID do atendimento:', error.message);
+        console.error('Erro ao buscar sinais vitais:', error.message);
         return null;
       }
-
+      
       return data;
     } catch (error) {
       console.error('Erro ao buscar sinais vitais:', error);
@@ -120,6 +125,26 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
     }
   };
 
+  const fetchVitalById = async (vitalId: string) => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('attendance_vitals')
+        .select('*')
+        .eq('id', vitalId)
+        .single(); // Garantir que apenas um registro seja retornado
+  
+      if (error) {
+        console.error('Erro ao buscar sinais vitais pelo ID:', error.message);
+        return null;
+      }
+  
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar sinais vitais pelo ID:', error);
+      return null;
+    }
+  };
+  
   return (
     <AttendanceVitalContext.Provider
       value={{
@@ -128,12 +153,14 @@ export const AttendanceVitalProvider: React.FC<{ children: ReactNode }> = ({ chi
         createVitalSigns,
         updateVitalSigns,
         fetchVitalsByAttendance,
+        fetchVitalById, // Nova função para buscar sinais vitais pelo UUID
       }}>
       {children}
     </AttendanceVitalContext.Provider>
   );
 };
 
+// Hook personalizado para acessar o contexto
 export const useAttendanceVital = (): AttendanceVitalContextType => {
   const context = useContext(AttendanceVitalContext);
   if (!context) {

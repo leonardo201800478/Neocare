@@ -128,10 +128,10 @@ const PacienteDetails = () => {
     }
   };
 
-  const handleUpdateAttendance = () => {
+  const handleViewAttendance = () => {
     if (selectedPatient) {
       router.push({
-        pathname: '/attendences/UpdateAttendance',
+        pathname: '/attendences/',
         params: { patientId: selectedPatient.id },
       });
     } else {
@@ -412,12 +412,12 @@ const PacienteDetails = () => {
             style={[styles.button, styles.buttonPrimary]}
             onPress={handleCreateAttendance}>
             <MaterialCommunityIcons name="stethoscope" size={24} color="#fff" />
-            <Text style={styles.buttonText}>PRIMEIRA CONSULTA</Text>
+            <Text style={styles.buttonText}>CADASTRAR PRONTUÁRIO</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, styles.buttonSecondary]}
-            onPress={handleUpdateAttendance}>
-            <MaterialCommunityIcons name="file-document-edit" size={24} color="#fff" />
+            onPress={handleViewAttendance}>
+            <MaterialCommunityIcons name="stethoscope" size={24} color="#fff" />
             <Text style={styles.buttonText}>PRONTUÁRIO</Text>
           </TouchableOpacity>
           <TouchableOpacity
