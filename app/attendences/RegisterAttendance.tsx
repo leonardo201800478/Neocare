@@ -30,9 +30,6 @@ const RegisterAttendance: React.FC = () => {
 
   // Estados para os dados dos formulários
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
-    motivo_consulta: '',
-    consulta_retorno: 'no',
-    primeira_consulta: 'no',
     hipertensao: 'no',
     diabetes: 'no',
     doenca_hepatica: 'no',
@@ -96,9 +93,6 @@ const RegisterAttendance: React.FC = () => {
         if (existingAttendance) {
           setAttendanceId(existingAttendance.id);
           setBasicInfo({
-            motivo_consulta: existingAttendance.motivo_consulta ?? '',
-            consulta_retorno: existingAttendance.consulta_retorno ?? '',
-            primeira_consulta: existingAttendance.primeira_consulta ?? '',
             hipertensao: existingAttendance.hipertensao ?? '',
             diabetes: existingAttendance.diabetes ?? '',
             doenca_hepatica: existingAttendance.doenca_hepatica ?? '',
@@ -206,49 +200,87 @@ const RegisterAttendance: React.FC = () => {
         Alert.alert('Erro', 'ID do paciente ou do médico não encontrado.');
         return;
       }
-
+  
       const newAttendanceId = uuid();
-      console.log('Criando novo atendimento com ID:', newAttendanceId);
-
-      await createAttendance({ ...basicInfo, id: newAttendanceId }, doctorId, patientId);
-      await createVitalSigns(
-        {
-          ...vitalInfo,
-          attendance_id: newAttendanceId,
-          doctor_id: doctorId,
-          patient_id: patientId,
-          id: uuid(),
-        },
-        newAttendanceId
-      );
-      await createSymptom(
-        {
-          ...generalSymptoms,
-          attendance_id: newAttendanceId,
-          doctor_id: doctorId,
-          patient_id: patientId,
-          id: uuid(),
-        },
-        newAttendanceId
-      );
-      await createNutrition(
-        {
-          ...nutritionDevelopment,
-          attendance_id: newAttendanceId,
-          doctor_id: doctorId,
-          patient_id: patientId,
-          id: uuid(),
-        },
-        newAttendanceId
-      );
-
+      const attendanceData = {
+        ...basicInfo,
+        id: newAttendanceId,
+        doctor_id: doctorId,
+        patient_id: patientId,
+      };
+  
+      // 1. Criar o prontuário no Supabase e localmente
+      const { data: attendanceResponse, error: attendanceError } = await createAttendance(attendanceData, doctorId, patientId);
+      if (attendanceError) {
+        throw new Error('Erro ao criar o prontuário.');
+      }
+  
+      // Aguarda a sincronização do prontuário antes de continuar
+      if (!attendanceResponse || attendanceError) {
+        console.log('Esperando a sincronização do prontuário no Supabase...');
+        return;
+      }
+  
+      console.log('Prontuário criado com sucesso:', newAttendanceId);
+  
+      // 2. Criar sinais vitais
+      const vitalData = {
+        ...vitalInfo,
+        attendance_id: newAttendanceId,
+        doctor_id: doctorId,
+        patient_id: patientId,
+        id: uuid(),
+      };
+  
+      const { error: vitalError } = await createVitalSigns(vitalData, newAttendanceId);
+      if (vitalError) {
+        console.error('Erro ao sincronizar sinais vitais:', vitalError);
+        throw new Error('Erro ao criar sinais vitais.');
+      }
+  
+      console.log('Sinais vitais criados com sucesso:', vitalData);
+  
+      // 3. Criar sintomas
+      const symptomData = {
+        ...generalSymptoms,
+        attendance_id: newAttendanceId,
+        doctor_id: doctorId,
+        patient_id: patientId,
+        id: uuid(),
+      };
+  
+      const { error: symptomError } = await createSymptom(symptomData, newAttendanceId);
+      if (symptomError) {
+        console.error('Erro ao sincronizar sintomas:', symptomError);
+        throw new Error('Erro ao criar sintomas.');
+      }
+  
+      console.log('Sintomas criados com sucesso:', symptomData);
+  
+      // 4. Criar nutrição e desenvolvimento
+      const nutritionData = {
+        ...nutritionDevelopment,
+        attendance_id: newAttendanceId,
+        doctor_id: doctorId,
+        patient_id: patientId,
+        id: uuid(),
+      };
+  
+      const { error: nutritionError } = await createNutrition(nutritionData, newAttendanceId);
+      if (nutritionError) {
+        console.error('Erro ao sincronizar nutrição:', nutritionError);
+        throw new Error('Erro ao criar dados de nutrição e desenvolvimento.');
+      }
+  
+      console.log('Nutrição e desenvolvimento criado com sucesso:', nutritionData);
+  
       Alert.alert('Sucesso', 'Prontuário criado com sucesso!');
     } catch (error) {
-      console.error('Erro ao criar prontuário:', error);
-      Alert.alert('Erro', 'Erro ao criar prontuário. Verifique os dados e tente novamente.');
+      console.error('Erro ao criar prontuário:', (error as Error).message);
+      Alert.alert('Erro', `Erro ao criar prontuário. Detalhes: ${(error as Error).message}`);
     }
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {patientId ? (

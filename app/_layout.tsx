@@ -7,7 +7,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { AllergiesProvider } from './context/AllergiesContext';
 import { AttendanceProvider } from './context/AttendanceContext';
-import { AttendanceNutritionDevelopmentProvider } from './context/AttendanceNutritionDevelopmentContext';
+import { NutritionProvider } from './context/AttendanceNutritionContext';
 import { AttendanceSymptomProvider } from './context/AttendanceSymptomContext';
 import { AttendanceVitalProvider } from './context/AttendanceVitalContext';
 import { DoctorProvider } from './context/DoctorContext';
@@ -60,7 +60,7 @@ const Layout = () => {
         <AttendanceProvider>
           <AttendanceVitalProvider>
             <AttendanceSymptomProvider>
-              <AttendanceNutritionDevelopmentProvider>
+              <NutritionProvider>
                 <VaccinationProvider>
                   <AllergiesProvider>
                     <MedicamentsProvider>
@@ -68,7 +68,7 @@ const Layout = () => {
                     </MedicamentsProvider>
                   </AllergiesProvider>
                 </VaccinationProvider>
-              </AttendanceNutritionDevelopmentProvider>
+              </NutritionProvider>
             </AttendanceSymptomProvider>
           </AttendanceVitalProvider>
         </AttendanceProvider>

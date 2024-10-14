@@ -4,7 +4,7 @@ import { AttendanceNutritionDevelopment } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
 
-type NutritionContextType = {
+type AttendanceNutritionContextType = {
   nutrition: AttendanceNutritionDevelopment[] | null; // Array de registros de nutrição
   setNutrition: (nutrition: AttendanceNutritionDevelopment[] | null) => void;
   createNutrition: (
@@ -21,7 +21,7 @@ type NutritionContextType = {
   fetchNutritionById: (nutritionId: string) => Promise<AttendanceNutritionDevelopment | null>; // Nova função
 };
 
-const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
+const NutritionContext = createContext<AttendanceNutritionContextType | undefined>(undefined);
 
 export const NutritionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [nutrition, setNutrition] = useState<AttendanceNutritionDevelopment[] | null>(null);
@@ -178,7 +178,7 @@ export const NutritionProvider: React.FC<{ children: ReactNode }> = ({ children 
   );
 };
 
-export const useNutrition = (): NutritionContextType => {
+export const useNutrition = (): AttendanceNutritionContextType => {
   const context = useContext(NutritionContext);
   if (!context) {
     throw new Error('useNutrition deve ser usado dentro de um NutritionProvider');
