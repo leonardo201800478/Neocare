@@ -8,7 +8,7 @@ import DoctorsStyles from './styles/DoctorsStyles';
 import { useDoctor } from '../../context/DoctorContext';
 
 const UpdateDoctorProfile: React.FC = () => {
-  const { selectedDoctor, createOrUpdateDoctor } = useDoctor(); // Usar createOrUpdateDoctor em vez de updateDoctor
+  const { selectedDoctor, createOrUpdateDoctor } = useDoctor();
   const router = useRouter();
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,11 +30,10 @@ const UpdateDoctorProfile: React.FC = () => {
 
     setLoading(true);
     try {
-      // Atualizar os dados do médico usando createOrUpdateDoctor
       await createOrUpdateDoctor({ auth_user_id: selectedDoctor!.auth_user_id, name });
       Alert.alert('Sucesso', 'Dados do médico atualizados com sucesso!');
       router.replace('/(tabs)/doctors');
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Erro ao atualizar os dados. Tente novamente.');
     } finally {
       setLoading(false);

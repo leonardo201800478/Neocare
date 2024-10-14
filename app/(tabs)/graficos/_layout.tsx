@@ -1,4 +1,4 @@
-// screens/aidpi_neonatal/alimentacao/_layout.tsx
+// app/(tabs)/graficos/_layout.tsx
 import { Stack } from 'expo-router';
 import React from 'react';
 
@@ -6,7 +6,7 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // Exibir o cabeçalho para navegação
+        headerShown: false,
         headerTitle: 'Tratar Criança',
         headerStyle: {
           backgroundColor: '#e9ecef', // Cor do cabeçalho

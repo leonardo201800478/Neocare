@@ -1,5 +1,3 @@
-// app/tabs/patients/styles/PacienteStyles.ts
-
 import { StyleSheet, StatusBar } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -13,26 +11,26 @@ const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
-    paddingBottom: 20, // Adiciona 30 pixels de espaçamento na parte inferior
+    paddingBottom: 20,
     backgroundColor: '#98FB98', // Fundo verde claro
   },
   detailsContainer: {
     marginBottom: 20,
     padding: 20,
-    backgroundColor: '#A5D6A7', // Verde suave para o fundo do container de detalhes
+    backgroundColor: '#A5D6A7', // Verde suave
     borderRadius: 12,
-    paddingBottom: 40,
     borderWidth: 1,
-    borderColor: '#66BB6A', // Borda em tom um pouco mais escuro de verde
-    shadowColor: '#388E3C', // Sombra em verde escuro
+    borderColor: '#66BB6A', // Borda em tom verde
+    shadowColor: '#388E3C', // Sombra verde escuro
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
   detailItem: {
     fontSize: 18,
-    color: '#1B5E20', // Texto em verde mais escuro
+    color: '#1B5E20', // Verde escuro
     marginBottom: 10,
+    textAlign: 'left', // Texto alinhado à esquerda
   },
   header: {
     fontSize: 26,
@@ -40,12 +38,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#4B0082', // Roxo
     textAlign: 'center',
-  },
-  subHeader: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#2E7D32', // Verde escuro para o subcabeçalho
-    marginBottom: 15,
   },
   sectionTitle: {
     fontSize: 18,
@@ -56,43 +48,11 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     alignSelf: 'flex-start',
   },
-  input: {
-    width: '100%',
-    padding: 12,
-    marginBottom: 15,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#DDDDDD',
+  updateText: {
     fontSize: 16,
-  },
-  inputSmall: {
-    width: '48%',
-    padding: 10,
-    marginBottom: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#4B0082',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 10,
-  },
-  pickerContainer: {
-    width: '45%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#4B0082',
-    marginBottom: 15,
-  },
-  picker: {
-    height: 50,
-    color: '#000000',
+    color: '#1B5E20',
+    textAlign: 'center',
+    marginTop: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -108,24 +68,34 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginHorizontal: 5,
+    marginVertical: 5,
   },
   buttonText: {
     fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '600',
   },
-  buttonVaccine: {
+  buttonConsulta: {
     flex: 1,
-    backgroundColor: '#FFA500', // Laranja suave para o botão de vacinas
+    backgroundColor: '#66BB6A', // Verde médio
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginHorizontal: 5,
     marginVertical: 5,
   },
-  buttonConsulta: {
+  buttonVaccine: {
     flex: 1,
-    backgroundColor: '#66BB6A', // Tom médio de verde para botão de consulta
+    backgroundColor: '#66BB6A', // Verde médio
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    marginVertical: 5,
+  },
+  buttonAllergy: {
+    flex: 1,
+    backgroundColor: '#66BB6A', // Verde médio
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -134,7 +104,7 @@ const styles = StyleSheet.create({
   },
   buttonMedicament: {
     flex: 1,
-    backgroundColor: '#66BB6A', // Tom médio de verde para botão de consulta
+    backgroundColor: '#66BB6A', // Verde médio
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -143,7 +113,7 @@ const styles = StyleSheet.create({
   },
   buttonDelete: {
     flex: 1,
-    backgroundColor: '#D32F2F', // Vermelho suave para destacar a exclusão
+    backgroundColor: '#D32F2F', // Vermelho para deletar
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -151,62 +121,46 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   buttonHome: {
-    backgroundColor: '#4CAF50', // Verde para o botão de voltar para Home
+    backgroundColor: '#4CAF50', // Verde para o botão Home
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
     width: '100%',
   },
-  buttonAllergy: {
-    backgroundColor: '#4CAF50', // Verde para o botão de voltar para Home
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
+  allergiesContainer: {
     marginTop: 20,
-    width: '100%',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  vaccinesContainer: {
-    marginTop: 20,
+    paddingHorizontal: 16,
     padding: 20,
-    backgroundColor: '#A5D6A7', // Verde suave para o fundo do container de vacinas
+    backgroundColor: '#A5D6A7', // Fundo verde para alergias
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#66BB6A', // Borda em verde um pouco mais escuro
-    shadowColor: '#388E3C', // Sombra em verde escuro
+    borderColor: '#66BB6A',
+    shadowColor: '#388E3C',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(46, 125, 50, 0.5)', // Transparência verde para o overlay de carregamento
-    justifyContent: 'center',
-    alignItems: 'center',
+  noAllergiesText: {
+    fontSize: 16,
+    color: '#1B5E20',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  allergyItem: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#555',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#98FB98', // Fundo verde claro para manter a consistência
-  },
-  loadingText: {
-    color: '#FFFFFF',
-    marginTop: 10,
+    backgroundColor: '#98FB98', // Fundo verde
   },
 });
 

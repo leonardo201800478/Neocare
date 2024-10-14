@@ -1,5 +1,6 @@
 // app/attendences/PacienteDetails.tsx
 
+import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
@@ -7,6 +8,7 @@ import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'r
 import styles from './styles/PacienteStyles';
 import LoadingOverlay from '../../../components/LoadingOverlay';
 import { useSystem } from '../../../powersync/PowerSync';
+import { useAllergies } from '../../context/AllergiesContext';
 import { useDoctor } from '../../context/DoctorContext';
 import { usePatient } from '../../context/PatientContext';
 
@@ -15,15 +17,18 @@ const PacienteDetails = () => {
   const { supabaseConnector } = useSystem();
   const { selectedPatient } = usePatient();
   const { selectedDoctor, setSelectedDoctor } = useDoctor();
+  const { fetchAllergiesByPatient } = useAllergies();
 
   const [loading, setLoading] = useState(true);
   const [lastAttendance, setLastAttendance] = useState<any>(null);
   const [lastVaccination, setLastVaccination] = useState<any>(null);
+  const [allergies, setAllergies] = useState<any>(null);
 
   useEffect(() => {
     if (selectedPatient) {
       fetchDetails(selectedPatient.id);
       fetchDoctorIfNeeded();
+      loadAllergies(selectedPatient.id);
     } else {
       Alert.alert('Erro', 'Paciente não encontrado.');
       router.replace('/(tabs)/home/');
@@ -73,6 +78,28 @@ const PacienteDetails = () => {
     }
   };
 
+  // Busca por alergias do paciente;
+  const loadAllergies = async (patientId: string) => {
+    setLoading(true);
+    try {
+      const patientAllergies = await fetchAllergiesByPatient(patientId);
+      if (patientAllergies && patientAllergies.length > 0) {
+        setAllergies(patientAllergies); // Assume-se que existe ao menos um registro de alergias
+      } else {
+        setAllergies([]); // Tratar ausência de alergias
+      }
+    } catch (error) {
+      console.error('Erro ao buscar alergias:', error);
+      Alert.alert('Erro', 'Erro ao carregar alergias do paciente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderAllergyItem = (label: string, value: string) => {
+    return value === 'yes' ? <Text style={styles.allergyItem}>{label}</Text> : null;
+  };
+
   const fetchDoctorIfNeeded = async () => {
     if (!selectedDoctor) {
       try {
@@ -103,6 +130,28 @@ const PacienteDetails = () => {
     } else {
       Alert.alert('Erro', 'Paciente não encontrado.');
     }
+  };
+
+  const handleUpdateAttendance = () => {
+    if (selectedPatient) {
+      router.push({
+        pathname: '/attendences/UpdateAttendance',
+        params: { patientId: selectedPatient.id },
+      });
+    } else {
+      Alert.alert('Erro', 'Paciente não encontrado.');
+    }
+  };
+
+  const calculateAge = (birthDate: string) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
   };
 
   const handleViewMedicamentsCard = () => {
@@ -247,10 +296,10 @@ const PacienteDetails = () => {
           <Text style={styles.detailItem}>Nome: {selectedPatient.name}</Text>
           <Text style={styles.detailItem}>CPF: {selectedPatient.cpf}</Text>
           <Text style={styles.detailItem}>
-            Data de Nascimento:{' '}
+            Idade:{' '}
             {selectedPatient.birth_date
-              ? new Date(selectedPatient.birth_date).toLocaleDateString()
-              : 'Data não disponível'}
+              ? calculateAge(selectedPatient.birth_date)
+              : 'Não disponível'}
           </Text>
           <Text style={styles.detailItem}>Sexo: {selectedPatient.gender}</Text>
           <Text style={styles.detailItem}>Telefone: {selectedPatient.phone_number}</Text>
@@ -268,12 +317,56 @@ const PacienteDetails = () => {
                 {new Date(lastAttendance.created_at).toLocaleDateString() ?? 'Não disponível'}
               </Text>
               <Text style={styles.detailItem}>
-                Médico responsável: {lastAttendance.doctor_id ?? 'Não disponível'}
-              </Text>
-              <Text style={styles.detailItem}>
-                Alergias: {lastAttendance.allergies ?? 'Não registrado'}
+                Médico responsável: {selectedDoctor?.name ?? 'Não disponível'}
               </Text>
             </>
+          )}
+
+          {/* Exibe a data da última atualização */}
+          {allergies?.updated_at && (
+            <Text style={styles.updateText}>
+              Última atualização: {format(new Date(allergies.updated_at), 'dd/MM/yyyy')}
+            </Text>
+          )}
+
+          {/* Verifica se o paciente possui alergias cadastradas */}
+          {allergies ? (
+            <View style={styles.allergiesContainer}>
+              <Text style={styles.sectionTitle}>Alergias</Text>
+              {/* Exibir apenas as alergias marcadas como 'yes' */}
+              {renderAllergyItem('Leite e derivados', allergies.allergy_milk)}
+              {renderAllergyItem('Ovos', allergies.allergy_eggs)}
+              {renderAllergyItem('Carne bovina', allergies.allergy_beef)}
+              {renderAllergyItem('Peixe', allergies.allergy_fish)}
+              {renderAllergyItem('Crustáceos', allergies.allergy_shellfish)}
+              {renderAllergyItem('Gato', allergies.allergy_cat)}
+              {renderAllergyItem('Cachorro', allergies.allergy_dog)}
+              {renderAllergyItem('Abelha', allergies.allergy_bee)}
+              {renderAllergyItem('Formiga', allergies.allergy_ant)}
+              {renderAllergyItem('Animais peçonhentos', allergies.allergy_venomous_animals)}
+              {renderAllergyItem('Insetos', allergies.allergy_insects)}
+              {renderAllergyItem('Dipirona', allergies.allergy_dipyrone)}
+              {renderAllergyItem('Aspirina', allergies.allergy_aspirin)}
+              {renderAllergyItem('Diclofenaco', allergies.allergy_diclofenac)}
+              {renderAllergyItem('Paracetamol', allergies.allergy_paracetamol)}
+              {renderAllergyItem('Penicilina', allergies.allergy_penicillin)}
+              {renderAllergyItem('Magnésio bisulfato', allergies.allergy_magnesium_bisulphate)}
+              {renderAllergyItem('Rivaroxabana', allergies.allergy_rivaroxaban)}
+              {renderAllergyItem('Losartana', allergies.allergy_losartan_potassium)}
+              {renderAllergyItem('Metformina', allergies.allergy_metformin)}
+              {renderAllergyItem(
+                'Butilbrometo de escopolamina',
+                allergies.allergy_butylscopolamine
+              )}
+              {renderAllergyItem('Cefalosporina', allergies.allergy_cephalosporin)}
+              {renderAllergyItem('Salbutamol', allergies.allergy_salbutamol)}
+              {renderAllergyItem('Ácido fólico', allergies.allergy_acido_folico)}
+              {renderAllergyItem('Isotretinoína', allergies.allergy_isotretinoina)}
+            </View>
+          ) : (
+            <Text style={styles.noAllergiesText}>
+              Nenhuma alergia cadastrada para este paciente.
+            </Text>
           )}
 
           {/* Exibir dados da última vacinação */}
@@ -291,24 +384,27 @@ const PacienteDetails = () => {
         {/* Botões para Atendimentos e Vacinações */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonConsulta} onPress={handleCreateAttendance}>
-            <Text style={styles.buttonText}>CRIAR ATENDIMENTO</Text>
+            <Text style={styles.buttonText}>PRIMEIRA CONSULTA</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonConsulta} onPress={handleUpdateAttendance}>
+            <Text style={styles.buttonText}>PRONTUÁRIO</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonVaccine} onPress={handleRegisterVaccination}>
-            <Text style={styles.buttonText}>REGISTRAR VACINAÇÃO</Text>
+            <Text style={styles.buttonText}>REGISTRAR VACINA</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonVaccine} onPress={handleViewVaccinationCard}>
-            <Text style={styles.buttonText}>VER CARTÃO DE VACINAS</Text>
+            <Text style={styles.buttonText}>CARTÃO DE VACINAS</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonAllergy} onPress={handleViewAllergiesCard}>
-            <Text style={styles.buttonText}>Alergias</Text>
+            <Text style={styles.buttonText}>ALERGIAS</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonMedicament} onPress={handleViewMedicamentsCard}>
-            <Text style={styles.buttonText}>Medicamentos</Text>
+            <Text style={styles.buttonText}>MEDICAMENTOS</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonDelete} onPress={handleDelete}>
-            <Text style={styles.buttonText}>Deletar Paciente</Text>
+            <Text style={styles.buttonText}>DELETAR PACIENTE</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

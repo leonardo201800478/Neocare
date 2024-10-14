@@ -1,3 +1,5 @@
+// app/allergies/AllergiesDetails.tsx
+
 import { format } from 'date-fns'; // Para formatar datas
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';

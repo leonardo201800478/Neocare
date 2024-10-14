@@ -5,13 +5,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 
 import DoctorsStyles from './styles/DoctorsStyles';
-import { useSystem } from '../../../powersync/PowerSync'; // Acessar o Supabase
+import { useSystem } from '../../../powersync/PowerSync';
 import { useDoctor } from '../../context/DoctorContext';
 
 const DoctorProfile: React.FC = () => {
   const router = useRouter();
   const { selectedDoctor } = useDoctor();
-  const { supabaseConnector } = useSystem(); // Acessar Supabase via Powersync
+  const { supabaseConnector } = useSystem();
   const [patientsCount, setPatientsCount] = useState<number>(0);
   const [recordsCount, setRecordsCount] = useState<number>(0);
   const [vaccinesCount, setVaccinesCount] = useState<number>(0);
@@ -29,9 +29,8 @@ const DoctorProfile: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { client } = await supabaseConnector.fetchCredentials(); // Obter o cliente Supabase
+      const { client } = await supabaseConnector.fetchCredentials();
 
-      // Fetch number of patients associated with the doctor
       const { data: patients, error: patientsError } = await client
         .from('patients')
         .select('id', { count: 'exact' })
@@ -40,7 +39,6 @@ const DoctorProfile: React.FC = () => {
       if (patientsError) throw patientsError;
       setPatientsCount(patients?.length || 0);
 
-      // Fetch number of attendances (medical records) made by the doctor
       const { data: attendances, error: attendancesError } = await client
         .from('attendances')
         .select('id', { count: 'exact' })
@@ -49,7 +47,6 @@ const DoctorProfile: React.FC = () => {
       if (attendancesError) throw attendancesError;
       setRecordsCount(attendances?.length || 0);
 
-      // Fetch number of vaccinations applied by the doctor
       const { data: vaccinations, error: vaccinationsError } = await client
         .from('vaccinations')
         .select('id', { count: 'exact' })
@@ -57,7 +54,7 @@ const DoctorProfile: React.FC = () => {
 
       if (vaccinationsError) throw vaccinationsError;
       setVaccinesCount(vaccinations?.length || 0);
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Erro ao carregar dados. Tente novamente mais tarde.');
     } finally {
       setLoading(false);

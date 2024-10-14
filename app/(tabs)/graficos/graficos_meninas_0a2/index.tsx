@@ -55,9 +55,9 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   image: {
-    width: 1000, // Largura ajustada para permitir a rolagem horizontal
+    width: 1000,
     height: 650,
     margin: 10,
-    resizeMode: 'contain', // Para garantir que a imagem não seja cortada
+    resizeMode: 'contain',
   },
 });

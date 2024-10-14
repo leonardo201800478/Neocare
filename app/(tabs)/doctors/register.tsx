@@ -5,15 +5,15 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 
 import DoctorsStyles from './styles/DoctorsStyles';
-import { useSystem } from '../../../powersync/PowerSync'; // Hook para acessar Supabase
-import { useDoctor } from '../../context/DoctorContext'; // Hook para acessar o contexto de médicos
+import { useSystem } from '../../../powersync/PowerSync';
+import { useDoctor } from '../../context/DoctorContext';
 
 const RegisterDoctor: React.FC = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { supabaseConnector } = useSystem(); // Acessa o Supabase para atualizar o nome do médico
-  const { createOrUpdateDoctor } = useDoctor(); // Usar o contexto para criar/atualizar o médico
+  const { supabaseConnector } = useSystem();
+  const { createOrUpdateDoctor } = useDoctor();
 
   const handleRegisterDoctor = async () => {
     if (!name.trim()) {
@@ -24,7 +24,6 @@ const RegisterDoctor: React.FC = () => {
     setLoading(true);
 
     try {
-      // Buscar o ID do usuário autenticado
       const { client } = await supabaseConnector.fetchCredentials();
       const { data, error } = await client.auth.getUser();
 
@@ -35,11 +34,10 @@ const RegisterDoctor: React.FC = () => {
       const userId = data.user.id;
       const email = data.user.email;
 
-      // Usar o contexto de médicos para criar ou atualizar o nome
       await createOrUpdateDoctor({ auth_user_id: userId, email, name });
 
       Alert.alert('Sucesso', 'Nome do médico registrado com sucesso!');
-      router.replace('/terms/'); // Redirecionar para a tela de termos de aceite
+      router.replace('/terms/');
     } catch (error) {
       console.error('Erro ao registrar o médico:', error);
       Alert.alert('Erro', 'Erro ao registrar o médico. Tente novamente.');
