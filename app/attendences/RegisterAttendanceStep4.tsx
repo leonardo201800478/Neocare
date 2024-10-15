@@ -1,19 +1,25 @@
 // app/attendences/RegisterAttendanceStep4.tsx
 
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Button, Alert, ScrollView } from 'react-native';
 
 import NutritionDevelopmentForm from './NutritionDevelopmentForm';
 import { NutritionDevelopment } from './types';
 import { uuid } from '../../utils/uuid';
 import { useNutrition } from '../context/AttendanceNutritionContext';
+import { useDoctor } from '../context/DoctorContext'; // Pega o médico autenticado
+import { useMedicalRecords } from '../context/MedicalRecordsContext'; // Importa o contexto de MedicalRecords
+import { usePatient } from '../context/PatientContext'; // Pega o paciente selecionado
 import styles from '../styles/Styles';
 
 const RegisterAttendanceStep4: React.FC = () => {
   const router = useRouter();
-  const { attendanceId } = useLocalSearchParams<{ attendanceId: string }>();
+  const { medicalRecordId } = useLocalSearchParams<{ medicalRecordId: string }>(); // Pega o ID do prontuário (medical_record_id)
   const { createNutrition } = useNutrition();
+  const { selectedDoctor } = useDoctor();
+  const { selectedPatient } = usePatient();
+  const { updateMedicalRecord } = useMedicalRecords(); // Importa a função updateMedicalRecord
 
   // Estado para armazenar os dados de nutrição e desenvolvimento
   const [nutritionDevelopment, setNutritionDevelopment] = useState<NutritionDevelopment>({
@@ -35,6 +41,14 @@ const RegisterAttendanceStep4: React.FC = () => {
     outros_problemas: '',
   });
 
+  // Verifica se o paciente e o médico estão definidos
+  useEffect(() => {
+    if (!selectedPatient?.id || !selectedDoctor?.id) {
+      Alert.alert('Erro', 'Paciente ou médico não encontrado.');
+      router.back(); // Retorna à tela anterior se não houver paciente ou médico
+    }
+  }, [selectedPatient, selectedDoctor]);
+
   // Função para lidar com a mudança de valores no formulário de nutrição e desenvolvimento
   const handleNutritionChange = (field: keyof NutritionDevelopment, value: string) => {
     setNutritionDevelopment((prev) => ({
@@ -45,30 +59,48 @@ const RegisterAttendanceStep4: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      if (!attendanceId) {
-        Alert.alert('Erro', 'ID do prontuário não encontrado.');
+      if (!medicalRecordId) {
+        Alert.alert('Erro', 'ID do prontuário (medicalRecordId) não encontrado.');
         return;
       }
 
-      const doctorId = 'sample-doctor-id'; // Substitua pelo ID real do médico autenticado
-      const patientId = 'sample-patient-id'; // Substitua pelo ID real do paciente
+      const doctorId = selectedDoctor?.id; // ID do médico autenticado
+      const patientId = selectedPatient?.id; // ID do paciente selecionado
 
-      // Criar registro de nutrição e desenvolvimento
-      await createNutrition(
+      if (!doctorId || !patientId) {
+        Alert.alert('Erro', 'Médico ou paciente não encontrado.');
+        return;
+      }
+
+      // Criar registro de nutrição e desenvolvimento vinculado ao prontuário
+      const { nutritionId, error } = await createNutrition(
         {
           ...nutritionDevelopment,
-          attendance_id: attendanceId,
           doctor_id: doctorId,
           patient_id: patientId,
-          id: uuid(),
+          id: uuid(), // Gera um ID único para nutrição
         },
-        attendanceId
+        doctorId,
+        patientId
       );
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      // Atualiza o medicalRecord com o UUID da nutrição na tabela medical_records
+      const { error: updateError } = await updateMedicalRecord(medicalRecordId, {
+        nutrition_id: nutritionId ?? undefined, // Inserir o ID da tabela de nutrição no prontuário
+      });
+
+      if (updateError) {
+        throw new Error(updateError);
+      }
 
       Alert.alert('Sucesso', 'Nutrição e desenvolvimento registrado com sucesso!');
 
-      // Finaliza o registro ou redireciona para uma nova tela
-      router.push('/attendences/AttendanceSummary' as unknown as `${string}:${string}`); // Substitua por onde o fluxo deve ir
+      // Finaliza o registro ou redireciona para uma nova tela (resumo ou outra)
+      router.push('/attendences/AttendanceSummary' as unknown as `${string}:${string}`);
     } catch (error) {
       console.error('Erro ao registrar nutrição e desenvolvimento:', error);
       Alert.alert(

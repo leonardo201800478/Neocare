@@ -1,25 +1,34 @@
-// app/attendences/BasicInfoForm.tsx
+// app/attendances/BasicInfoForm.tsx
 
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TextInput } from 'react-native';
 
-import styles from './styles/AttendanceStyles'; // Estilização separada
-import { BasicInfo } from './types'; // Importando o tipo BasicInfo
+import styles from './styles/AttendanceStyles'; // Estilização
+import { BasicInfo } from './types'; // Tipo para o formulário
 
 interface BasicInfoFormProps {
-  data: BasicInfo; // Estrutura de dados que o formulário vai receber
-  onChange: (field: keyof BasicInfo, value: string) => void; // Função para alterar os valores
+  data: BasicInfo;
+  onChange: (field: keyof BasicInfo, value: string) => void; // Função de alteração de estado
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {
   return (
     <ScrollView style={styles.container}>
+      {/* Motivo da Consulta */}
+      <Text style={styles.label}>Motivo da Consulta:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Descreva o motivo da consulta"
+        value={data.motivo_consulta}
+        onChangeText={(text) => onChange('motivo_consulta', text)}
+        multiline
+      />
       {/* Campo de Hipertensão */}
       <View style={styles.section}>
         <Text style={styles.label}>Hipertensão</Text>
         <Picker
-          selectedValue={data.hipertensao ?? 'no'} // Valor padrão "Não"
+          selectedValue={data.hipertensao ?? 'no'}
           onValueChange={(value) => onChange('hipertensao', value)}
           style={styles.picker}>
           <Picker.Item label="Não" value="no" />
@@ -31,7 +40,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {
       <View style={styles.section}>
         <Text style={styles.label}>Diabetes</Text>
         <Picker
-          selectedValue={data.diabetes ?? 'no'} // Valor padrão "Não"
+          selectedValue={data.diabetes ?? 'no'}
           onValueChange={(value) => onChange('diabetes', value)}
           style={styles.picker}>
           <Picker.Item label="Não" value="no" />
@@ -43,7 +52,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {
       <View style={styles.section}>
         <Text style={styles.label}>Doença Hepática</Text>
         <Picker
-          selectedValue={data.doenca_hepatica ?? 'no'} // Valor padrão "Não"
+          selectedValue={data.doenca_hepatica ?? 'no'}
           onValueChange={(value) => onChange('doenca_hepatica', value)}
           style={styles.picker}>
           <Picker.Item label="Não" value="no" />
@@ -55,7 +64,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {
       <View style={styles.section}>
         <Text style={styles.label}>Deficiência de G6PD</Text>
         <Picker
-          selectedValue={data.deficiencia_g6pd ?? 'no'} // Valor padrão "Não"
+          selectedValue={data.deficiencia_g6pd ?? 'no'}
           onValueChange={(value) => onChange('deficiencia_g6pd', value)}
           style={styles.picker}>
           <Picker.Item label="Não" value="no" />

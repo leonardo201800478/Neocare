@@ -120,7 +120,7 @@ const PacienteDetails = () => {
   const handleCreateAttendance = () => {
     if (selectedPatient) {
       router.push({
-        pathname: '/attendences/RegisterAttendance',
+        pathname: '/attendences/RegisterAttendanceStep1',
         params: { patientId: selectedPatient.id },
       });
     } else {

@@ -39,14 +39,12 @@ const attendances = new Table({
   created_at: column.text,
   updated_at: column.text,
   patient_id: column.text,
-  primeira_consulta: column.text,
-  consulta_retorno: column.text,
   motivo_consulta: column.text,
   doctor_id: column.text,
-  hipertensao: column.text, // Campo para hipertensão
-  diabetes: column.text, // Campo para diabetes
-  doenca_hepatica: column.text, // Campo para doença hepática
-  deficiencia_g6pd: column.text, // Campo para deficiência de G6PD
+  hipertensao: column.text,
+  diabetes: column.text,
+  doenca_hepatica: column.text,
+  deficiencia_g6pd: column.text,
 });
 
 // Tabela de sinais vitais
@@ -56,7 +54,6 @@ const attendance_vitals = new Table({
   id: column.text,
   created_at: column.text,
   updated_at: column.text,
-  attendance_id: column.text, // Relaciona com a tabela de atendimentos
   peso_kg: column.text,
   comprimento_cm: column.text,
   perimetro_cefalico_cm: column.text,
@@ -72,7 +69,6 @@ const attendance_symptoms = new Table({
   id: column.text,
   created_at: column.text,
   updated_at: column.text,
-  attendance_id: column.text, // Relaciona com a tabela de atendimentos
   nao_bebe_ou_mama: column.text,
   vomita_tudo: column.text,
   convulsoes: column.text,
@@ -103,7 +99,6 @@ const attendance_nutrition_development = new Table({
   id: column.text,
   created_at: column.text,
   updated_at: column.text,
-  attendance_id: column.text, // Relaciona com a tabela de atendimentos
   amamentando: column.text,
   quantas_vezes_amamenta: column.text,
   amamenta_noite: column.text,
@@ -167,10 +162,10 @@ const allergies = new Table({
   allergy_losartan_potassium: column.text,
   allergy_metformin: column.text,
   allergy_butylscopolamine: column.text,
-  allergy_cephalosporin: column.text, // Campo para Cefalexina
-  allergy_salbutamol: column.text, // Campo para Salbutamol
-  allergy_acido_folico: column.text, // Campo para Ácido Fólico
-  allergy_isotretinoina: column.text, // Campo para Isotretinoína
+  allergy_cephalosporin: column.text,
+  allergy_salbutamol: column.text,
+  allergy_acido_folico: column.text,
+  allergy_isotretinoina: column.text,
 });
 
 // Tabela de medicamentos
@@ -190,6 +185,21 @@ const medications = new Table({
   updated_at: column.text,
 });
 
+// Tabela de controle de prontuários
+export const MEDICAL_RECORDS_TABLE = 'medical_records';
+
+const medical_records = new Table({
+  id: column.text,
+  attendance_id: column.text,
+  vital_id: column.text,
+  symptom_id: column.text,
+  nutrition_id: column.text,
+  doctor_id: column.text,
+  patient_id: column.text,
+  created_at: column.text,
+  updated_at: column.text,
+});
+
 // Criando o esquema
 export const AppSchema = new Schema({
   doctors,
@@ -201,6 +211,7 @@ export const AppSchema = new Schema({
   vaccinations,
   allergies,
   medications,
+  medical_records, // Adicionando a tabela aqui
 });
 
 // Definindo o tipo Database
@@ -214,3 +225,4 @@ export type AttendanceNutritionDevelopment = Database['attendance_nutrition_deve
 export type Vaccination = Database['vaccinations'];
 export type Allergy = Database['allergies'];
 export type Medication = Database['medications'];
+export type MedicalRecord = Database['medical_records']; // Novo tipo adicionado

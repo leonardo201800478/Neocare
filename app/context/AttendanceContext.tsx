@@ -1,4 +1,7 @@
+// app/attendences/AttendanceContext.tsx
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+
 import { Attendance } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
@@ -10,8 +13,14 @@ type AttendanceContextType = {
     attendance: Partial<Attendance>,
     doctorId: string,
     patientId: string
-  ) => Promise<{ data: any; error: any }>;
-  updateAttendance: (attendanceId: string, updatedFields: Partial<Attendance>) => Promise<void>;
+  ) => Promise<{ attendanceId: string | null; error: any }>;
+  createMedicalRecord: (
+    vitalId: string,
+    symptomId: string,
+    nutritionId: string,
+    doctorId: string,
+    patientId: string
+  ) => Promise<{ error: any }>;
   fetchAttendanceByPatient: (patientId: string) => Promise<Attendance | null>;
   fetchAttendanceById: (attendanceId: string) => Promise<Attendance | null>;
 };
@@ -27,7 +36,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     attendance: Partial<Attendance>,
     doctorId: string,
     patientId: string
-  ): Promise<{ data: any; error: any }> => {
+  ): Promise<{ attendanceId: string | null; error: any }> => {
     if (!doctorId || !patientId) {
       throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
     }
@@ -39,8 +48,6 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         doctor_id: doctorId,
         patient_id: patientId,
         motivo_consulta: attendance.motivo_consulta ?? 'false',
-        primeira_consulta: attendance.primeira_consulta ?? 'false',
-        consulta_retorno: attendance.consulta_retorno ?? 'false',
         hipertensao: attendance.hipertensao ?? 'false',
         diabetes: attendance.diabetes ?? 'false',
         doenca_hepatica: attendance.doenca_hepatica ?? 'false',
@@ -50,47 +57,55 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
       };
 
       await db.insertInto('attendances').values(newAttendance).execute();
-      const { data, error } = await supabaseConnector.client
-        .from('attendances')
-        .insert([newAttendance]);
+      const { error } = await supabaseConnector.client.from('attendances').insert([newAttendance]);
 
       if (error) {
-        return { data: null, error };
+        return { attendanceId: null, error };
       }
 
-      return { data, error: null };
+      return { attendanceId, error: null };
     } catch (error) {
-      return { data: null, error };
+      return { attendanceId: null, error };
     }
   };
 
-  // Função para atualizar um atendimento existente
-  const updateAttendance = async (attendanceId: string, updatedFields: Partial<Attendance>) => {
-    if (!attendanceId) {
-      throw new Error('O ID do atendimento é obrigatório para a atualização.');
-    }
+  // Função para criar um novo registro na tabela medical_records após a última etapa
+  const createMedicalRecord = async (
+    vitalId: string,
+    symptomId: string,
+    nutritionId: string,
+    doctorId: string,
+    patientId: string
+  ): Promise<{ error: any }> => {
+    const medicalRecordId = uuid();
+    const newMedicalRecord = {
+      id: medicalRecordId,
+      vital_id: vitalId,
+      symptom_id: symptomId,
+      nutrition_id: nutritionId,
+      doctor_id: doctorId,
+      patient_id: patientId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
 
     try {
-      const result = await db
-        .updateTable('attendances')
-        .set(updatedFields)
-        .where('id', '=', attendanceId)
-        .execute();
-
+      await db.insertInto('medical_records').values(newMedicalRecord).execute();
       const { error } = await supabaseConnector.client
-        .from('attendances')
-        .update(updatedFields)
-        .eq('id', attendanceId);
+        .from('medical_records')
+        .insert([newMedicalRecord]);
 
       if (error) {
-        throw new Error('Erro ao sincronizar atualização do atendimento com o Supabase.');
+        return { error };
       }
+
+      return { error: null };
     } catch (error) {
-      throw new Error('Erro ao atualizar o atendimento.');
+      return { error };
     }
   };
 
-  // Função para buscar atendimento por ID de paciente
+  // Função para buscar atendimento por ID de paciente (último atendimento)
   const fetchAttendanceByPatient = async (patientId: string): Promise<Attendance | null> => {
     try {
       const { data, error } = await supabaseConnector.client
@@ -98,14 +113,14 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         .select('*')
         .eq('patient_id', patientId)
         .order('created_at', { ascending: false })
-        .limit(1);
+        .limit(1); // Busca o último atendimento
 
-      if (error) {
+      if (error || !data || data.length === 0) {
         return null;
       }
 
-      return data && data.length > 0 ? data[0] : null;
-    } catch (error) {
+      return data[0];
+    } catch {
       return null;
     }
   };
@@ -124,7 +139,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
       }
 
       return data;
-    } catch (error) {
+    } catch {
       return null;
     }
   };
@@ -135,11 +150,10 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         selectedAttendance,
         setSelectedAttendance,
         createAttendance,
-        updateAttendance,
+        createMedicalRecord,
         fetchAttendanceByPatient,
         fetchAttendanceById,
-      }}
-    >
+      }}>
       {children}
     </AttendanceContext.Provider>
   );

@@ -1,28 +1,42 @@
-// app/attendences/RegisterAttendanceStep1.tsx
+//app/attendences/RegisterAttendanceStep1.tsx
+
+//app/attendences/RegisterAttendanceStep1.tsx
 
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Button, Alert, ScrollView } from 'react-native';
 
-import BasicInfoForm from './BasicInfoForm'; // Importando o formulário
-import { BasicInfo } from './types'; // Importando o tipo BasicInfo
-import { uuid } from '../../utils/uuid';
-import { useAttendance } from '../context/AttendanceContext';
-import styles from '../styles/Styles'; // Estilização global
+import BasicInfoForm from './BasicInfoForm';
+import { BasicInfo } from './types';
+import { uuid } from '../../utils/uuid'; // Para gerar o UUID
+import { useAttendance } from '../context/AttendanceContext'; // Importando o contexto de Atendimentos
+import { useDoctor } from '../context/DoctorContext'; // Importando o contexto de Doutores
+import { useMedicalRecords } from '../context/MedicalRecordsContext'; // Importando o contexto de Prontuários
+import { usePatient } from '../context/PatientContext'; // Importando o contexto de Pacientes
+import styles from '../styles/Styles';
 
 const RegisterAttendanceStep1: React.FC = () => {
   const router = useRouter();
-  const { createAttendance } = useAttendance();
+  const { createAttendance } = useAttendance(); // Função para criar atendimento no banco de dados
+  const { selectedDoctor } = useDoctor(); // Pegando o médico selecionado
+  const { selectedPatient } = usePatient(); // Pegando o paciente selecionado
+  const { createMedicalRecord } = useMedicalRecords(); // Função para criar prontuário
 
-  // Estado para os dados do formulário de informações básicas
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
+    motivo_consulta: '',
     hipertensao: 'no',
     diabetes: 'no',
     doenca_hepatica: 'no',
     deficiencia_g6pd: 'no',
   });
 
-  // Função para alterar os valores dos campos do formulário
+  // Verificar se o paciente e o médico foram selecionados corretamente
+  useEffect(() => {
+    if (!selectedPatient || !selectedDoctor) {
+      Alert.alert('Erro', 'Paciente ou médico não selecionado.');
+    }
+  }, [selectedPatient, selectedDoctor]);
+
   const handleBasicInfoChange = (field: keyof BasicInfo, value: string) => {
     setBasicInfo((prev) => ({
       ...prev,
@@ -32,21 +46,56 @@ const RegisterAttendanceStep1: React.FC = () => {
 
   const handleNextStep = async () => {
     try {
-      const newAttendanceId = uuid();
-      const doctorId = 'sample-doctor-id'; // Você pode pegar o ID do médico autenticado
+      const doctorId = selectedDoctor?.id;
+      const patientId = selectedPatient?.id;
 
-      // Aqui você pode obter o ID do paciente de um contexto ou parâmetro de URL
-      const patientId = 'sample-patient-id';
+      if (!doctorId || !patientId) {
+        Alert.alert('Erro', 'Médico ou paciente não encontrado.');
+        return;
+      }
 
-      // Criar o prontuário com as informações básicas
-      await createAttendance({ ...basicInfo, id: newAttendanceId }, doctorId, patientId);
+      // Gerar o UUID para o atendimento
+      const attendanceId = uuid();
 
+      // Salvar os dados do atendimento no banco de dados
+      const response = await createAttendance(
+        {
+          id: attendanceId,
+          motivo_consulta: basicInfo.motivo_consulta,
+          hipertensao: basicInfo.hipertensao,
+          diabetes: basicInfo.diabetes,
+          doenca_hepatica: basicInfo.doenca_hepatica,
+          deficiencia_g6pd: basicInfo.deficiencia_g6pd,
+        },
+        doctorId,
+        patientId
+      );
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Criar o registro médico associado ao atendimento
+      const medicalRecordResponse = await createMedicalRecord(
+        attendanceId,
+        '', // vitalId será preenchido nos steps seguintes
+        '', // symptomId será preenchido nos steps seguintes
+        '', // nutritionId será preenchido nos steps seguintes
+        doctorId,
+        patientId
+      );
+
+      if (medicalRecordResponse.error) {
+        throw new Error(medicalRecordResponse.error);
+      }
+
+      // Exibir mensagem de sucesso e navegar para o próximo passo
       Alert.alert('Sucesso', 'Prontuário criado com sucesso!');
 
-      // Navega para a próxima etapa (por exemplo, tela de sinais vitais)
+      // Navega para o Step 2, passando o attendanceId e medicalRecordId
       router.push({
         pathname: '/attendences/RegisterAttendanceStep2',
-        params: { attendanceId: newAttendanceId },
+        params: { attendanceId, medicalRecordId: medicalRecordResponse.medicalRecordId ?? '' },
       });
     } catch (error) {
       console.error('Erro ao criar prontuário:', error);

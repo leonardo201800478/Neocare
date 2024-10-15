@@ -43,6 +43,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
   },
+  buttonContainer: {
+    marginTop: 20,
+  },
   input: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',

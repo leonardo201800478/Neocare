@@ -1,11 +1,14 @@
+// app/attendances/AttendanceSummary.tsx
+
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Button } from 'react-native';
 
 import { useAttendance } from '../context/AttendanceContext';
 import { useNutrition } from '../context/AttendanceNutritionContext';
 import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
 import { useAttendanceVital } from '../context/AttendanceVitalContext';
 import { useDoctor } from '../context/DoctorContext';
+import { useMedicalRecords } from '../context/MedicalRecordsContext'; // Para registrar os UUIDs na tabela medical_records
 import { usePatient } from '../context/PatientContext';
 
 interface AttendanceSummaryProps {
@@ -16,9 +19,10 @@ const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) =
   const { fetchAttendanceById } = useAttendance();
   const { fetchVitalsByAttendance } = useAttendanceVital();
   const { fetchSymptomsByAttendanceId } = useAttendanceSymptom();
-  const { fetchNutritionByAttendance } = useNutrition();
+  const { fetchNutritionByAttendanceId } = useNutrition();
   const { fetchDoctorById } = useDoctor();
   const { fetchPatientById } = usePatient();
+  const { createMedicalRecord } = useMedicalRecords(); // Função para salvar na tabela medical_records
 
   const [attendance, setAttendance] = useState<any>(null);
   const [vitals, setVitals] = useState<any>(null);
@@ -59,7 +63,7 @@ const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) =
         setSymptoms(symptoms);
 
         // 5. Buscar nutrição e desenvolvimento na tabela 'attendance_nutrition_development'
-        const nutrition = await fetchNutritionByAttendance(attendanceId);
+        const nutrition = await fetchNutritionByAttendanceId(attendanceId);
         setNutrition(nutrition?.[0] ?? null);
       } catch (error) {
         console.error('Erro ao carregar detalhes do atendimento:', error);
@@ -71,6 +75,33 @@ const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) =
 
     loadAttendanceDetails();
   }, [attendanceId]);
+
+  const handleSaveMedicalRecord = async () => {
+    try {
+      if (!attendance || !vitals || !symptoms || !nutrition) {
+        Alert.alert('Erro', 'Todos os dados devem ser carregados para salvar o prontuário.');
+        return;
+      }
+
+      const response = await createMedicalRecord(
+        attendance.id,
+        vitals.id,
+        symptoms.id,
+        nutrition.id,
+        attendance.doctor_id,
+        attendance.patient_id
+      );
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
+    } catch (error) {
+      console.error('Erro ao salvar o prontuário:', error);
+      Alert.alert('Erro', 'Erro ao salvar o prontuário. Tente novamente.');
+    }
+  };
 
   if (loading) {
     return (
@@ -142,6 +173,11 @@ const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) =
       <Text style={styles.label}>
         Atividade Física (Vezes por Semana): {nutrition?.atividade_fisica_vezes_semana}
       </Text>
+
+      {/* Botão para salvar o prontuário completo */}
+      <View style={styles.buttonContainer}>
+        <Button title="Salvar Prontuário" onPress={handleSaveMedicalRecord} />
+      </View>
     </ScrollView>
   );
 };
@@ -171,6 +207,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
+  },
+  buttonContainer: {
+    marginTop: 30,
   },
 });
 

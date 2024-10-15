@@ -1,3 +1,5 @@
+// app/attendences/AttendanceSymptomContext.tsx
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { AttendanceSymptom } from '../../powersync/AppSchema';
@@ -9,14 +11,11 @@ type AttendanceSymptomContextType = {
   setSymptoms: (symptoms: AttendanceSymptom | null) => void;
   createSymptom: (
     symptoms: Partial<AttendanceSymptom>,
-    attendanceId: string
-  ) => Promise<{ error: string | null }>;
-  updateSymptom: (
-    symptomId: string,
-    updatedFields: Partial<AttendanceSymptom>
-  ) => Promise<{ error: string | null }>;
-  fetchSymptomsByAttendanceId: (attendanceId: string) => Promise<AttendanceSymptom | null>;
-  fetchSymptomById: (symptomId: string) => Promise<AttendanceSymptom | null>; // Nova função adicionada
+    doctorId: string,
+    patientId: string
+  ) => Promise<{ symptomId: string | null; error: string | null }>;
+  fetchSymptomById: (symptomId: string) => Promise<AttendanceSymptom | null>;
+  fetchSymptomsByAttendanceId: (attendanceId: string) => Promise<AttendanceSymptom[] | null>; // Nova função para buscar sintomas pelo ID do atendimento
 };
 
 const AttendanceSymptomContext = createContext<AttendanceSymptomContextType | undefined>(undefined);
@@ -25,12 +24,14 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
   const [symptoms, setSymptoms] = useState<AttendanceSymptom | null>(null);
   const { db, supabaseConnector } = useSystem();
 
+  // Função para criar novos sintomas e salvar na tabela 'attendance_symptoms'
   const createSymptom = async (
     symptoms: Partial<AttendanceSymptom>,
-    attendanceId: string
-  ): Promise<{ error: string | null }> => {
-    if (!attendanceId) {
-      return { error: 'O ID do atendimento é obrigatório.' };
+    doctorId: string,
+    patientId: string
+  ): Promise<{ symptomId: string | null; error: string | null }> => {
+    if (!doctorId || !patientId) {
+      return { symptomId: null, error: 'ID do médico e do paciente são obrigatórios.' };
     }
 
     try {
@@ -40,7 +41,6 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         id: symptomId,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        attendance_id: attendanceId,
         nao_bebe_ou_mama: symptoms.nao_bebe_ou_mama ?? null,
         vomita_tudo: symptoms.vomita_tudo ?? null,
         convulsoes: symptoms.convulsoes ?? null,
@@ -60,8 +60,8 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         distensao_abdominal: symptoms.distensao_abdominal ?? null,
         emagrecimento: symptoms.emagrecimento ?? null,
         edema: symptoms.edema ?? null,
-        doctor_id: symptoms.doctor_id ?? null,
-        patient_id: symptoms.patient_id ?? null,
+        doctor_id: doctorId,
+        patient_id: patientId,
       };
 
       // Salvar localmente
@@ -74,65 +74,32 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         .insert([newSymptom]);
 
       if (error) {
-        return { error: 'Erro ao sincronizar sintomas com o Supabase: ' + error.message };
+        return {
+          symptomId: null,
+          error: 'Erro ao sincronizar sintomas com o Supabase: ' + error.message,
+        };
       }
 
-      return { error: null };
+      return { symptomId, error: null };
     } catch (error) {
-      return { error: 'Erro ao criar sintomas: ' + (error as Error).message };
+      return { symptomId: null, error: 'Erro ao criar sintomas: ' + (error as Error).message };
     }
   };
 
-  const updateSymptom = async (
-    symptomId: string,
-    updatedFields: Partial<AttendanceSymptom>
-  ): Promise<{ error: string | null }> => {
-    if (!symptomId) {
-      return { error: 'O ID dos sintomas é obrigatório para a atualização.' };
-    }
-
-    try {
-      // Atualizar localmente
-      const result = await db
-        .updateTable('attendance_symptoms')
-        .set(updatedFields)
-        .where('id', '=', symptomId)
-        .execute();
-
-      const totalUpdatedRows = result.reduce((sum, res) => sum + res.numUpdatedRows, 0n);
-      if (totalUpdatedRows === 0n) {
-        return { error: 'Nenhum registro foi atualizado. Verifique os dados.' };
-      }
-
-      // Sincronizar com o Supabase
-      const { error } = await supabaseConnector.client
-        .from('attendance_symptoms')
-        .update(updatedFields)
-        .eq('id', symptomId);
-
-      if (error) {
-        return { error: 'Erro ao sincronizar atualização dos sintomas: ' + error.message };
-      }
-
-      return { error: null };
-    } catch (error) {
-      return { error: 'Erro ao atualizar os sintomas: ' + (error as Error).message };
-    }
-  };
-
-  const fetchSymptomsByAttendanceId = async (attendanceId: string) => {
+  // Função para buscar sintomas por ID específico
+  const fetchSymptomById = async (symptomId: string): Promise<AttendanceSymptom | null> => {
     try {
       const { data, error } = await supabaseConnector.client
         .from('attendance_symptoms')
         .select('*')
-        .eq('attendance_id', attendanceId)
-        .single(); // Espera-se que haja um único registro por atendimento
-  
+        .eq('id', symptomId)
+        .single();
+
       if (error) {
-        console.error('Erro ao buscar sintomas:', error.message);
+        console.error('Erro ao buscar sintomas pelo ID:', error.message);
         return null;
       }
-      
+
       return data;
     } catch (error) {
       console.error('Erro ao buscar sintomas:', error);
@@ -140,19 +107,21 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
     }
   };
 
-  const fetchSymptomById = async (symptomId: string) => {
+  // Função para buscar sintomas por ID do atendimento
+  const fetchSymptomsByAttendanceId = async (
+    attendanceId: string
+  ): Promise<AttendanceSymptom[] | null> => {
     try {
       const { data, error } = await supabaseConnector.client
         .from('attendance_symptoms')
         .select('*')
-        .eq('id', symptomId)
-        .single();
-  
+        .eq('attendance_id', attendanceId);
+
       if (error) {
-        console.error('Erro ao buscar sintomas pelo ID:', error.message);
+        console.error('Erro ao buscar sintomas pelo ID de atendimento:', error.message);
         return null;
       }
-  
+
       return data;
     } catch (error) {
       console.error('Erro ao buscar sintomas:', error);
@@ -166,9 +135,8 @@ export const AttendanceSymptomProvider: React.FC<{ children: ReactNode }> = ({ c
         symptoms,
         setSymptoms,
         createSymptom,
-        updateSymptom,
-        fetchSymptomsByAttendanceId,
         fetchSymptomById,
+        fetchSymptomsByAttendanceId, // Nova função adicionada ao contexto
       }}>
       {children}
     </AttendanceSymptomContext.Provider>

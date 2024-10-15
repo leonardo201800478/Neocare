@@ -1,8 +1,7 @@
 // app/attendences/types.ts
 
-// app/attendences/types.ts
-
 export interface BasicInfo {
+  motivo_consulta: string;
   hipertensao: string;
   diabetes: string;
   doenca_hepatica: string;
