@@ -1,81 +1,82 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  // Estilos gerais
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#f0f4f8',
   },
   header: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#2c3e50',
     marginBottom: 20,
     textAlign: 'center',
   },
-  label: {
-    fontSize: 18,
-    marginBottom: 10,
-    color: '#555',
-  },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+    fontWeight: '600',
+    color: '#34495e',
+    marginVertical: 15,
   },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
+  label: {
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-  // Estilos específicos para MedicamentosPaciente
-  medicationItem: {
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-
-  // Estilos específicos para CalculadoraMedicamentos
-  calculationContainer: {
-    marginTop: 30,
-  },
-  dosageResult: {
-    fontSize: 18,
-    color: '#444',
+    color: '#7f8c8d',
     marginBottom: 10,
   },
   picker: {
-    height: 50,
-    width: '100%',
-    marginBottom: 20,
+    backgroundColor: '#ecf0f1',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    marginBottom: 20,
+    padding: 10,
+    fontSize: 16,
   },
   medicationDetails: {
-    marginTop: 20,
+    backgroundColor: '#ecf0f1',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
     marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#3498db',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    shadowColor: '#3498db',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  resultsContainer: {
+    backgroundColor: '#dfe6e9',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  resultItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 10,
+    shadowColor: '#2d3436',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+  },
+  resultText: {
+    fontSize: 16,
+    color: '#2d3436',
   },
 });
 

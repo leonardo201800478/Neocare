@@ -1,17 +1,13 @@
 // app/medications/CalculadoraMedicamentos.tsx
 
-import { Picker } from '@react-native-picker/picker'; // Biblioteca para o dropdown
+import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Alert, TouchableOpacity } from 'react-native';
 
-import { calcularIdade } from '../../utils/idadeCalculator';
-import { useAllergies } from '../context/AllergiesContext'; // Coleta de dados de alergias
-import { useAttendance } from '../context/AttendanceContext';
-import { useAttendanceVital } from '../context/AttendanceVitalContext';
-import { useDoctor } from '../context/DoctorContext';
-import { useMedicaments } from '../context/MedicamentsContext';
-import { usePatient } from '../context/PatientContext';
+import { calculateDosage } from './LogicaMedicamentos';
 import styles from './styles/MedicamentosStyles';
+import { calcularIdade } from '../../utils/idadeCalculator';
+import { useMedicaments } from '../context/MedicamentsContext';
 
 // Lista dos medicamentos organizados por categorias
 const medicationsList = {
@@ -229,156 +225,141 @@ const medicationsList = {
   ],
 };
 
-const CalculadoraMedicamentos = ({ patientId }: { patientId: string }) => {
-  const { calculateDosage } = useMedicaments();
-  const { selectedPatient, setSelectedPatient, fetchPatientById } = usePatient();
-  const { selectedDoctor, setSelectedDoctor, fetchDoctorById } = useDoctor();
-  const { selectedAttendance, setSelectedAttendance, fetchAttendanceByPatient } = useAttendance();
-  const { vitalSigns, setVitalSigns, fetchVitalsByAttendance } = useAttendanceVital();
-  const { fetchAllergiesByPatient } = useAllergies();
+interface DosageResult {
+  medicamento: string;
+  dosage: string;
+  frequency: string;
+  contraindications?: string;
+}
 
-  const [patientAge, setPatientAge] = useState<string | null>(null);
-  const [doctorName, setDoctorName] = useState<string | null>(null);
-  const [allergies, setAllergies] = useState<any>(null); // Armazenar as alergias
-  const [errors, setErrors] = useState<string[]>([]);
-  const [selectedMedication, setSelectedMedication] = useState<any>(null);
+type PatientData = {
+  patient: any;
+  doctor: any;
+  attendance: any;
+  vitals: any;
+  allergies: any;
+  medication?: string; // Add this line to include the medication property
+};
+
+const CalculadoraMedicamentos: React.FC<{ patientId: string }> = ({ patientId }) => {
+  const { fetchDataForMedicationCalculator } = useMedicaments();
+  const [patientData, setPatientData] = useState<PatientData | null>(null);
+  const [selectedMedication, setSelectedMedication] = useState<string | null>(null);
+  const [dosageResults, setDosageResults] = useState<DosageResult[]>([]);
 
   useEffect(() => {
     if (patientId) {
-      initializeData(patientId);
+      loadPatientData(patientId);
     }
   }, [patientId]);
 
-  const initializeData = async (patientId: string): Promise<void> => {
+  const loadPatientData = async (patientId: string) => {
     try {
-      // Buscar dados do paciente
-      const patient = await fetchPatientById(patientId);
-      if (!patient) throw new Error('Paciente não encontrado');
-
-      if (!patient.birth_date) throw new Error('Data de nascimento do paciente não encontrada');
-      const age = calcularIdade(new Date(patient.birth_date), 'years');
-      setPatientAge(age);
-      setSelectedPatient(patient);
-
-      // Buscar nome do médico
-      const doctor = patient.doctor_id ? await fetchDoctorById(patient.doctor_id) : null;
-      if (doctor) {
-        setDoctorName(doctor.name);
-        setSelectedDoctor(doctor);
+      const data = await fetchDataForMedicationCalculator(patientId);
+      if (data) {
+        setPatientData(data);
       } else {
-        setErrors((prev) => [...prev, 'Médico não encontrado']);
+        throw new Error('Dados do paciente não encontrados.');
       }
-
-      // Buscar dados de consulta (attendance)
-      const attendance = await fetchAttendanceByPatient(patientId);
-      if (!attendance) setErrors((prev) => [...prev, 'Informações de consulta faltando']);
-      setSelectedAttendance(attendance);
-
-      // Buscar dados dos sinais vitais (attendance_vitals)
-      const vitals = attendance?.id ? await fetchVitalsByAttendance(attendance.id) : null;
-      if (!vitals) setErrors((prev) => [...prev, 'Informações de sinais vitais faltando']);
-      setVitalSigns(vitals);
-
-      // Buscar alergias
-      const allergiesData = await fetchAllergiesByPatient(patientId);
-      if (!allergiesData) {
-        setErrors((prev) => [...prev, 'Informações de alergias faltando']);
-      } else {
-        setAllergies(allergiesData);
-      }
-    } catch (error: any) {
-      Alert.alert('Erro', error.message);
+    } catch (error) {
+      Alert.alert('Erro', 'Erro ao carregar dados do paciente: ' + (error as Error).message);
     }
   };
 
   const handleCalculate = () => {
-    if (errors.length > 0) {
-      Alert.alert('Erro', 'Por favor, complete os cadastros: ' + errors.join(', '));
+    if (!patientData || !selectedMedication) {
+      Alert.alert(
+        'Erro',
+        'Por favor, complete os cadastros ou selecione um medicamento para calcular a dosagem.'
+      );
       return;
     }
 
-    const dosageResults = calculateDosage({
-      patient: selectedPatient,
-      doctor: selectedDoctor,
-      attendance: selectedAttendance,
-      vitals: vitalSigns,
+    const results = calculateDosage({
+      patient: patientData.patient,
+      doctor: patientData.doctor,
+      attendance: patientData.attendance,
+      vitals: patientData.vitals,
+      allergies: patientData.allergies,
     });
 
-    console.log(dosageResults);
-  };
+    const formattedResults = results.map((result) => ({
+      medicamento: result.medicamento || '',
+      dosage: result.dosage || '',
+      frequency: result.frequency || '',
+      contraindications: result.contraindications || '',
+    }));
 
-  if (!selectedPatient || !selectedDoctor) {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando dados do paciente e médico...</Text>
-      </View>
-    );
-  }
+    setDosageResults(formattedResults);
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Cálculo de Medicamentos</Text>
 
-      <Text style={styles.label}>Nome do Paciente: {selectedPatient?.name}</Text>
-      <Text style={styles.label}>Idade: {patientAge}</Text>
-      <Text style={styles.label}>Nome do Médico: {doctorName}</Text>
-
-      {selectedAttendance && (
+      {patientData ? (
         <>
-          <Text style={styles.sectionTitle}>Condições Clínicas</Text>
-          <Text>Hipertensão: {selectedAttendance.hipertensao}</Text>
-          <Text>Diabetes: {selectedAttendance.diabetes}</Text>
-          <Text>Doença Hepática: {selectedAttendance.doenca_hepatica}</Text>
-          <Text>Deficiência de G6PD: {selectedAttendance.deficiencia_g6pd}</Text>
-        </>
-      )}
+          <Text style={styles.label}>Nome do Paciente: {patientData.patient.name}</Text>
+          <Text style={styles.label}>
+            Idade: {calcularIdade(new Date(patientData.patient.birth_date), 'years')}
+          </Text>
+          <Text style={styles.label}>Nome do Médico: {patientData.doctor?.name}</Text>
 
-      {vitalSigns && (
-        <>
-          <Text style={styles.sectionTitle}>Sinais Vitais</Text>
-          <Text>Peso: {vitalSigns.peso_kg} kg</Text>
-          <Text>Altura: {vitalSigns.comprimento_cm} cm</Text>
-        </>
-      )}
-
-      {allergies && (
-        <>
-          <Text style={styles.sectionTitle}>Alergias</Text>
-          {Object.entries(allergies).map(([key, value]) => (
-            <Text key={key}>
-              {key}: {String(value)}
-            </Text>
-          ))}
-        </>
-      )}
-
-      {/* Dropdown para selecionar medicamentos */}
-      <Text style={styles.sectionTitle}>Selecione o Medicamento</Text>
-      <Picker
-        selectedValue={selectedMedication}
-        onValueChange={(itemValue) => setSelectedMedication(itemValue)}
-        style={styles.picker}>
-        {Object.entries(medicationsList).map(([category, medications]) => (
-          <React.Fragment key={category}>
-            <Picker.Item label={`-- ${category} --`} value={null} enabled={false} />
-            {medications.map((med) => (
-              <Picker.Item label={med.name} value={med} key={med.id} />
+          <Text style={styles.sectionTitle}>Selecione o Medicamento</Text>
+          <Picker
+            selectedValue={selectedMedication}
+            onValueChange={(itemValue) => setSelectedMedication(itemValue)}
+            style={styles.picker}
+          >
+            {Object.entries(medicationsList).map(([category, medications]) => (
+              <React.Fragment key={category}>
+                <Picker.Item label={`-- ${category} --`} value={null} enabled={false} />
+                {medications.map((med) => (
+                  <Picker.Item label={med.name} value={med.name} key={med.id} />
+                ))}
+              </React.Fragment>
             ))}
-          </React.Fragment>
-        ))}
-      </Picker>
+          </Picker>
 
-      {selectedMedication && (
-        <View style={styles.medicationDetails}>
-          <Text style={styles.label}>Dosagem: {selectedMedication.dosage}</Text>
-          <Text style={styles.label}>Indicações: {selectedMedication.indications}</Text>
-          <Text style={styles.label}>Contraindicações: {selectedMedication.contraindications}</Text>
-        </View>
+          {selectedMedication && (
+            <View style={styles.medicationDetails}>
+              {Object.entries(medicationsList).map(([category, medications]) =>
+                medications.map((med) =>
+                  med.name === selectedMedication ? (
+                    <React.Fragment key={med.id}>
+                      <Text style={styles.label}>Dosagem: {med.dosage}</Text>
+                      <Text style={styles.label}>Indicações: {med.indications}</Text>
+                      <Text style={styles.label}>Contraindicações: {med.contraindications}</Text>
+                    </React.Fragment>
+                  ) : null
+                )
+              )}
+            </View>
+          )}
+        </>
+      ) : (
+        <Text style={styles.label}>Carregando dados do paciente...</Text>
       )}
 
       <TouchableOpacity style={styles.button} onPress={handleCalculate}>
         <Text style={styles.buttonText}>Calcular Dosagem</Text>
       </TouchableOpacity>
+
+      {dosageResults.length > 0 && (
+        <View style={styles.resultsContainer}>
+          <Text style={styles.sectionTitle}>Resultados da Dosagem</Text>
+          {dosageResults.map((result, index) => (
+            <View key={index} style={styles.resultItem}>
+              <Text>Medicamento: {result.medicamento}</Text>
+              <Text>Dosagem: {result.dosage}</Text>
+              <Text>Frequência: {result.frequency}</Text>
+              {result.contraindications && (
+                <Text>Contraindicações: {result.contraindications}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
     </ScrollView>
   );
 };

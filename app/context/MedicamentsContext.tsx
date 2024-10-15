@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { useSystem } from '../../powersync/PowerSync';
+import { uuid } from '../../utils/uuid';
 
 // Definição do tipo Medication
 type Medication = {
@@ -18,25 +19,41 @@ type Medication = {
   updated_at?: string;
 };
 
-// Definição do tipo Prontuário Médico (Medical Record)
-type MedicalRecord = {
+// Definição do tipo Paciente e Médico
+type Patient = {
   id: string;
-  attendance: any; // Registro completo da tabela 'attendances'
-  vitals: any; // Registro completo da tabela 'attendance_vitals'
-  symptoms: any; // Registro completo da tabela 'attendance_symptoms'
-  nutrition: any; // Registro completo da tabela 'attendance_nutrition_development'
-  doctor: any; // Informação do médico
-  patient: any; // Informação do paciente
-  created_at: string;
+  name: string;
+  birth_date: string;
+  cpf: string;
 };
+
+type Doctor = {
+  id: string;
+  name: string;
+};
+
+type Attendance = {
+  hipertensao?: string;
+  doenca_hepatica?: string;
+  deficiencia_g6pd?: string;
+  doctor_id?: string;
+};
+
+type Vitals = {
+  peso_kg: number;
+  comprimento_cm: number;
+};
+
+type Allergies = Record<string, boolean | string>;
 
 // Definição do contexto
 type MedicamentsContextType = {
   medications: Medication[];
-  fetchMedicationsByPatient: (patientId: string) => Promise<void>;
-  addMedication: (medication: Omit<Medication, 'id' | 'created_at'>) => Promise<void>; // Função de cadastro
-  calculateDosage: (data: any) => any[]; // Função de cálculo de dosagem
-  fetchCompleteMedicalRecord: (medicalRecordId: string) => Promise<MedicalRecord | null>; // Nova função para buscar prontuário completo
+  fetchDataForMedicationCalculator: (patientId: string) => Promise<any>;
+  addMedication: (medication: Omit<Medication, 'id' | 'created_at'>) => Promise<void>;
+  fetchMedicationsByPatient: (patientId: string) => Promise<Medication[]>;
+  fetchMedicationsByDoctor: (doctorId: string) => Promise<Medication[]>;
+  generatePrescription: (medicationId: string) => Promise<any>;
 };
 
 const MedicamentsContext = createContext<MedicamentsContextType | undefined>(undefined);
@@ -45,24 +62,72 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
   const { db, supabaseConnector } = useSystem();
   const [medications, setMedications] = useState<Medication[]>([]);
 
-  // Função para buscar medicamentos por paciente
-  const fetchMedicationsByPatient = async (patientId: string) => {
+  // Função para buscar os dados necessários para a calculadora de medicamentos
+  const fetchDataForMedicationCalculator = async (patientId: string) => {
     try {
-      const { data, error } = await supabaseConnector.client
-        .from('medications')
-        .select('*')
-        .eq('patient_id', patientId);
-
-      if (error) {
-        console.error('Erro ao buscar medicamentos:', error.message);
-        return;
+      // Busca os dados do paciente
+      const patientQuery = await db
+        .selectFrom('patients')
+        .selectAll()
+        .where('id', '=', patientId)
+        .execute();
+      if (!patientQuery.length) {
+        throw new Error('Paciente não encontrado');
       }
 
-      if (data) {
-        setMedications(data as Medication[]);
+      // Busca os atendimentos do paciente
+      const attendancesQuery = await db
+        .selectFrom('attendances')
+        .selectAll()
+        .where('patient_id', '=', patientId)
+        .execute();
+      const attendance = attendancesQuery[0] as Attendance;
+
+      // Busca os sinais vitais do paciente
+      const vitalsQuery = await db
+        .selectFrom('attendance_vitals')
+        .selectAll()
+        .where('patient_id', '=', patientId)
+        .execute();
+      const vitals =
+        vitalsQuery.length > 0
+          ? {
+              peso_kg: vitalsQuery[0].peso_kg ? parseFloat(vitalsQuery[0].peso_kg) : 0,
+              comprimento_cm: vitalsQuery[0].comprimento_cm
+                ? parseFloat(vitalsQuery[0].comprimento_cm)
+                : 0,
+            }
+          : null;
+
+      // Busca as alergias do paciente
+      const allergiesQuery = await db
+        .selectFrom('allergies')
+        .selectAll()
+        .where('patient_id', '=', patientId)
+        .execute();
+      const allergies = allergiesQuery.length > 0 ? (allergiesQuery[0] as Allergies) : {};
+
+      // Se houver um atendimento, busca o médico relacionado
+      let doctor = null;
+      if (attendance?.doctor_id) {
+        const doctorQuery = await db
+          .selectFrom('doctors')
+          .selectAll()
+          .where('id', '=', attendance.doctor_id)
+          .execute();
+        doctor = doctorQuery.length > 0 ? doctorQuery[0] : null;
       }
+
+      return {
+        patient: patientQuery[0],
+        attendance,
+        vitals,
+        allergies,
+        doctor,
+      };
     } catch (error) {
-      console.error('Erro ao buscar medicamentos:', error);
+      console.error('Erro ao buscar dados para a calculadora de medicamentos:', error);
+      throw new Error('Erro ao buscar dados para a calculadora.');
     }
   };
 
@@ -72,92 +137,99 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
       const { data, error } = await supabaseConnector.client.from('medications').insert([
         {
           ...medication,
+          id: uuid(),
           created_at: new Date().toISOString(),
         },
       ]);
 
       if (error) {
-        console.error('Erro ao adicionar medicamento:', error.message);
         throw new Error('Erro ao cadastrar o medicamento.');
       }
 
-      if (data) {
+      if (data && data[0]) {
         setMedications((prev) => [...prev, data[0]]);
       }
     } catch (error) {
       console.error('Erro ao cadastrar medicamento:', error);
+      throw error;
     }
   };
 
-  // Função de cálculo de dosagem para medicamentos
-  const calculateDosage = (data: any): any[] => {
-    const { patient, attendance, vitals } = data;
-    const dosages = [];
-
-    // Exemplo de cálculo para Amoxicilina
-    if (attendance?.hipertensao === 'no' && !attendance?.doenca_hepatica) {
-      const dosageAmoxicilina = (20 * vitals.peso_kg).toFixed(2); // Cálculo por kg
-      dosages.push({
-        medicamento: 'Amoxicilina',
-        dosage: `${dosageAmoxicilina} mg`,
-        frequency: 'Dividido em 2-3 doses',
-      });
-    }
-
-    // Adicionar lógica para outros medicamentos conforme as condições clínicas
-    return dosages;
-  };
-
-  // Função para buscar o prontuário médico completo
-  const fetchCompleteMedicalRecord = async (
-    medicalRecordId: string
-  ): Promise<MedicalRecord | null> => {
+  // Função para buscar medicamentos por paciente
+  const fetchMedicationsByPatient = async (patientId: string): Promise<Medication[]> => {
     try {
-      const medicalRecord = await db
-        .selectFrom('medical_records')
-        .selectAll()
-        .where('id', '=', medicalRecordId)
-        .execute();
+      const { data, error } = await supabaseConnector.client
+        .from('medications')
+        .select('*')
+        .eq('patient_id', patientId);
 
-      if (medicalRecord.length === 0) {
-        console.error('Prontuário não encontrado');
-        return null;
+      if (error) {
+        throw new Error('Erro ao buscar medicamentos do paciente.');
       }
 
-      const record = medicalRecord[0];
+      return data as Medication[];
+    } catch (error) {
+      console.error('Erro ao buscar medicamentos do paciente:', error);
+      throw error;
+    }
+  };
 
-      // Buscar informações de atendimento, sinais vitais, sintomas, nutrição, médico e paciente
-      const [attendance, vitals, symptoms, nutrition, doctor, patient] = await Promise.all([
-        db.selectFrom('attendances').selectAll().where('id', '=', record.attendance_id).execute(),
-        db.selectFrom('attendance_vitals').selectAll().where('id', '=', record.vital_id).execute(),
-        db
-          .selectFrom('attendance_symptoms')
-          .selectAll()
-          .where('id', '=', record.symptom_id)
-          .execute(),
-        db
-          .selectFrom('attendance_nutrition_development')
-          .selectAll()
-          .where('id', '=', record.nutrition_id)
-          .execute(),
-        db.selectFrom('doctors').selectAll().where('id', '=', record.doctor_id).execute(),
-        db.selectFrom('patients').selectAll().where('id', '=', record.patient_id).execute(),
+  // Função para buscar medicamentos gerados por um determinado médico
+  const fetchMedicationsByDoctor = async (doctorId: string): Promise<Medication[]> => {
+    try {
+      const { data, error } = await supabaseConnector.client
+        .from('medications')
+        .select('*')
+        .eq('doctor_id', doctorId);
+
+      if (error) {
+        throw new Error('Erro ao buscar medicamentos por médico.');
+      }
+
+      return data as Medication[];
+    } catch (error) {
+      console.error('Erro ao buscar medicamentos por médico:', error);
+      throw error;
+    }
+  };
+
+  // Função para gerar uma receita com os dados do paciente e do médico
+  const generatePrescription = async (medicationId: string) => {
+    try {
+      const medicationQuery = await supabaseConnector.client
+        .from('medications')
+        .select('*')
+        .eq('id', medicationId)
+        .single();
+
+      if (medicationQuery.error || !medicationQuery.data) {
+        throw new Error('Medicamento não encontrado');
+      }
+      const medication = medicationQuery.data;
+
+      const [patientQuery, doctorQuery] = await Promise.all([
+        db.selectFrom('patients').selectAll().where('id', '=', medication.patient_id).execute(),
+        db.selectFrom('doctors').selectAll().where('id', '=', medication.doctor_id).execute(),
       ]);
 
-      // Utilizando os dados do paciente
+      const patient = patientQuery[0];
+      const doctor = doctorQuery[0];
+
+      if (!patient || !doctor) {
+        throw new Error('Informações do paciente ou médico não encontradas');
+      }
+
       return {
-        id: record.id,
-        attendance: attendance[0],
-        vitals: vitals[0],
-        symptoms: symptoms[0],
-        nutrition: nutrition[0],
-        doctor: doctor[0],
-        patient: patient[0], // Agora o paciente é retornado corretamente
-        created_at: record.created_at ?? '',
+        medicationName: medication.name,
+        dosage: medication.dosage_info,
+        patientName: patient.name,
+        birthDate: patient.birth_date,
+        cpf: patient.cpf,
+        doctorName: doctor.name,
       };
     } catch (error) {
-      console.error('Erro ao buscar o prontuário completo:', error);
-      return null;
+      console.error('Erro ao gerar receita:', error);
+      throw new Error('Erro ao gerar receita.');
     }
   };
 
@@ -165,10 +237,11 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
     <MedicamentsContext.Provider
       value={{
         medications,
-        fetchMedicationsByPatient,
+        fetchDataForMedicationCalculator,
         addMedication,
-        calculateDosage,
-        fetchCompleteMedicalRecord, // Incluímos a função para buscar o prontuário completo
+        fetchMedicationsByPatient,
+        fetchMedicationsByDoctor,
+        generatePrescription,
       }}>
       {children}
     </MedicamentsContext.Provider>

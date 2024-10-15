@@ -168,7 +168,7 @@ const PacienteDetails = () => {
   const handleViewMedicamentsCard = () => {
     if (selectedPatient) {
       router.push({
-        pathname: '/medications/MedicamentosPaciente',
+        pathname: '/medications/',
         params: { patientId: selectedPatient.id },
       });
     } else {

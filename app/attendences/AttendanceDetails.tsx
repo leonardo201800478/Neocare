@@ -70,9 +70,9 @@ const AttendanceDetails: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Prontuário</Text>
-
       {/* Informações do Médico e Paciente */}
       <View style={styles.section}>
+        <Text style={styles.sectionHeader}>Informações do Médico e Paciente</Text>
         <MaterialIcons name="person-outline" size={24} color="black" />
         <Text style={styles.label}>Médico: {medicalRecord.doctorName}</Text>
         <FontAwesome5 name="user-md" size={24} color="black" />
