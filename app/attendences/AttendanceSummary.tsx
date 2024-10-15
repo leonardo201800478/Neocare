@@ -1,8 +1,18 @@
 // app/attendences/AttendanceSummary.tsx
 
-import { useRouter, useLocalSearchParams } from 'expo-router'; // Para navegação
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Para ícones
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import * as Animatable from 'react-native-animatable'; // Para animações
 
 import { useMedicalRecords } from '../context/MedicalRecordsContext';
 
@@ -19,6 +29,8 @@ const AttendanceSummary: React.FC = () => {
     }>();
 
   const { createMedicalRecord } = useMedicalRecords();
+  const [isSaved, setIsSaved] = useState(false); // Estado para controlar se o prontuário foi salvo
+  const [loading, setLoading] = useState(false); // Estado para controlar o carregamento do botão "Salvar"
 
   // Função para salvar o prontuário completo na tabela medical_records
   const handleSaveMedicalRecord = async () => {
@@ -28,21 +40,26 @@ const AttendanceSummary: React.FC = () => {
         return;
       }
 
-      const response = await createMedicalRecord(
+      setLoading(true); // Inicia o estado de carregamento
+
+      const response = await createMedicalRecord({
         attendanceId,
         vitalId,
         symptomId,
         nutritionId,
         doctorId,
         patientId
-      );
+      });
 
       if (response.error) {
         throw new Error(response.error);
       }
 
+      setIsSaved(true); // Marca o prontuário como salvo
+      setLoading(false); // Termina o carregamento
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
     } catch (error) {
+      setLoading(false); // Termina o carregamento em caso de erro
       console.error('Erro ao salvar o prontuário:', error);
       Alert.alert('Erro', 'Erro ao salvar o prontuário. Tente novamente.');
     }
@@ -50,13 +67,11 @@ const AttendanceSummary: React.FC = () => {
 
   // Função para voltar à tela de detalhes do paciente
   const handleGoToPatientDetails = () => {
-    if (patientId) {
+    if (isSaved && patientId) {
       router.push({
         pathname: '/(tabs)/patients/PacienteDetails',
         params: { patientId },
       });
-    } else {
-      Alert.alert('Erro', 'ID do paciente não encontrado.');
     }
   };
 
@@ -70,10 +85,40 @@ const AttendanceSummary: React.FC = () => {
       <Text style={styles.label}>ID dos Sintomas: {symptomId}</Text>
       <Text style={styles.label}>ID de Nutrição: {nutritionId}</Text>
 
-      {/* Botão para salvar o prontuário completo */}
       <View style={styles.buttonContainer}>
-        <Button title="Salvar Prontuário" onPress={handleSaveMedicalRecord} />
-        <Button title="Voltar aos Detalhes do Paciente" onPress={handleGoToPatientDetails} />
+        {/* Botão Salvar Prontuário */}
+        <Animatable.View animation="bounceIn">
+          <TouchableOpacity
+            style={[styles.button, styles.saveButton]}
+            onPress={handleSaveMedicalRecord}
+            disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <>
+                <Ionicons name="save-outline" size={24} color="white" />
+                <Text style={styles.buttonText}>Salvar Prontuário</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </Animatable.View>
+
+        {/* Botão Voltar aos Detalhes do Paciente */}
+        <Animatable.View animation="fadeIn" delay={500}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              isSaved ? styles.activeButton : styles.disabledButton, // Botão ativo ou desativado
+            ]}
+            onPress={handleGoToPatientDetails}
+            disabled={!isSaved} // Só habilita se o prontuário foi salvo
+          >
+            <Ionicons name="arrow-back-outline" size={24} color={isSaved ? '#fff' : '#b0b0b0'} />
+            <Text style={[styles.buttonText, { color: isSaved ? '#fff' : '#b0b0b0' }]}>
+              Voltar aos Detalhes do Paciente
+            </Text>
+          </TouchableOpacity>
+        </Animatable.View>
       </View>
     </ScrollView>
   );
@@ -96,6 +141,30 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 30,
+    alignItems: 'center',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 8,
+    width: '80%',
+    marginBottom: 20,
+  },
+  saveButton: {
+    backgroundColor: '#4caf50',
+  },
+  activeButton: {
+    backgroundColor: '#1976d2',
+  },
+  disabledButton: {
+    backgroundColor: '#e0e0e0',
+  },
+  buttonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

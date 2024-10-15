@@ -10,54 +10,48 @@ import {
   Alert,
 } from 'react-native';
 
-import { Attendance, ATTENDANCES_TABLE } from '../../powersync/AppSchema';
-import { useSystem } from '../../powersync/PowerSync';
-import { useAttendance } from '../context/AttendanceContext';
-import { useNutrition } from '../context/AttendanceNutritionContext';
-import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
-import { useAttendanceVital } from '../context/AttendanceVitalContext';
-import { useDoctor } from '../context/DoctorContext';
-import { usePatient } from '../context/PatientContext';
+import { useDoctor } from '../context/DoctorContext'; // useDoctor do contexto correto
+import { useMedicalRecords } from '../context/MedicalRecordsContext'; // useMedicalRecords do contexto correto
+import { usePatient } from '../context/PatientContext'; // usePatient do contexto correto
 
 const AttendanceList = () => {
   const { patientId } = useLocalSearchParams<{ patientId: string }>(); // Pega o patientId da URL
   const router = useRouter();
-  const { db } = useSystem();
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const { setSelectedAttendance } = useAttendance();
-  const { setVitalSigns } = useAttendanceVital();
-  const { setSymptoms } = useAttendanceSymptom();
-  const { setNutrition } = useNutrition();
-
+  const { fetchMedicalRecordsByPatient } = useMedicalRecords();
   const { fetchDoctorById } = useDoctor();
   const { fetchPatientById } = usePatient();
-
-  const [doctorNames, setDoctorNames] = useState<{ [key: string]: string }>({});
-  const [patientNames, setPatientNames] = useState<{ [key: string]: string }>({});
+  const [medicalRecords, setMedicalRecords] = useState<any[]>([]); // Tipagem como any[] para evitar conflitos
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (patientId) {
-      loadAttendances();
+      loadMedicalRecords(patientId);
     }
   }, [patientId]);
 
-  const loadAttendances = async () => {
+  // Função para carregar os prontuários médicos por paciente
+  const loadMedicalRecords = async (patientId: string) => {
     setLoading(true);
     try {
-      // Busca os prontuários relacionados ao patientId
-      const result = await db
-        .selectFrom(ATTENDANCES_TABLE)
-        .selectAll()
-        .where('patient_id', '=', patientId) // Filtra pelo patientId
-        .orderBy('updated_at', 'desc')
-        .execute();
+      const records = await fetchMedicalRecordsByPatient(patientId);
 
-      setAttendances(result);
-
-      // Carregar nomes de médicos e pacientes
-      await loadDoctorAndPatientNames(result);
+      if (records) {
+        // Carregar nomes dos médicos e pacientes
+        const recordsWithNames = await Promise.all(
+          records.map(async (record) => {
+            const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
+            const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
+            return {
+              ...record,
+              doctorName: doctor ? doctor.name : 'Médico não informado',
+              patientName: patient ? patient.name : 'Paciente não informado',
+            };
+          })
+        );
+        setMedicalRecords(recordsWithNames);
+      } else {
+        Alert.alert('Erro', 'Nenhum prontuário encontrado para este paciente.');
+      }
     } catch (error) {
       console.error('Erro ao carregar prontuários:', error);
       Alert.alert('Erro', 'Não foi possível carregar os prontuários.');
@@ -66,99 +60,25 @@ const AttendanceList = () => {
     }
   };
 
-  const loadDoctorAndPatientNames = async (attendances: Attendance[]) => {
-    try {
-      const doctorNamesMap: { [key: string]: string } = {};
-      const patientNamesMap: { [key: string]: string } = {};
-
-      for (const attendance of attendances) {
-        if (attendance.doctor_id && !doctorNamesMap[attendance.doctor_id]) {
-          const doctor = await fetchDoctorById(attendance.doctor_id);
-          if (doctor) {
-            doctorNamesMap[attendance.doctor_id] = doctor.name || 'Médico não informado';
-          }
-        }
-
-        if (attendance.patient_id && !patientNamesMap[attendance.patient_id]) {
-          const patient = await fetchPatientById(attendance.patient_id);
-          if (patient) {
-            patientNamesMap[attendance.patient_id] = patient.name || 'Paciente não informado';
-          }
-        }
-      }
-
-      setDoctorNames(doctorNamesMap);
-      setPatientNames(patientNamesMap);
-    } catch (error) {
-      console.error('Erro ao carregar nomes de médicos e pacientes:', error);
-    }
+  const handleMedicalRecordSelect = (record: any) => {
+    router.push({
+      pathname: '/attendences/AttendanceDetails',
+      params: { medicalRecordId: record.id }, // Passa o id do prontuário para a próxima tela
+    });
   };
 
-  const handleAttendanceSelect = async (attendance: Attendance) => {
-    try {
-      setSelectedAttendance(attendance);
-
-      // Carregar sinais vitais
-      try {
-        const vitals = await db
-          .selectFrom('attendance_vitals')
-          .selectAll()
-          .where('attendance_id', '=', attendance.id)
-          .execute();
-        setVitalSigns(vitals.length > 0 ? vitals[0] : null);
-      } catch (error) {
-        console.warn('Erro ao buscar sinais vitais:', (error as any).message);
-      }
-
-      // Carregar sintomas
-      try {
-        const symptoms = await db
-          .selectFrom('attendance_symptoms')
-          .selectAll()
-          .where('attendance_id', '=', attendance.id)
-          .execute();
-        setSymptoms(symptoms.length > 0 ? symptoms[0] : null);
-      } catch (error) {
-        console.warn('Erro ao buscar sintomas:', (error as any).message);
-      }
-
-      // Carregar nutrição e desenvolvimento
-      try {
-        const nutrition = await db
-          .selectFrom('attendance_nutrition_development')
-          .selectAll()
-          .where('attendance_id', '=', attendance.id)
-          .execute();
-        setNutrition(nutrition.length > 0 ? [nutrition[0]] : null);
-      } catch (error) {
-        console.warn('Erro ao buscar dados de nutrição e desenvolvimento:', (error as any).message);
-      }
-
-      // Navegar para os detalhes do atendimento
-      router.push({
-        pathname: '/attendences/AttendanceDetails',
-        params: { attendanceId: attendance.id }, // Passa o attendanceId para a próxima tela
-      });
-    } catch (error) {
-      console.error('Erro ao carregar dados do atendimento:', error);
-      Alert.alert('Erro', 'Não foi possível carregar os dados do atendimento.');
-    }
+  const renderItem = ({ item }: { item: any }) => {
+    return (
+      <TouchableOpacity style={styles.recordItem} onPress={() => handleMedicalRecordSelect(item)}>
+        <Text style={styles.text}>Paciente: {item.patientName}</Text>
+        <Text style={styles.text}>Médico: {item.doctorName}</Text>
+        <Text style={styles.text}>
+          Data: {new Date(item.created_at).toLocaleDateString('pt-BR')} -{' '}
+          {new Date(item.created_at).toLocaleTimeString('pt-BR')}
+        </Text>
+      </TouchableOpacity>
+    );
   };
-
-  const renderItem = ({ item }: { item: Attendance }) => (
-    <TouchableOpacity style={styles.attendanceItem} onPress={() => handleAttendanceSelect(item)}>
-      <Text style={styles.text}>
-        Médico: {item.doctor_id ? doctorNames[item.doctor_id] : 'Médico não informado'}
-      </Text>
-      <Text style={styles.text}>
-        Paciente: {item.patient_id ? patientNames[item.patient_id] : 'Paciente não informado'}
-      </Text>
-      <Text style={styles.text}>
-        Data:{' '}
-        {item.updated_at ? new Date(item.updated_at).toLocaleDateString() : 'Data não disponível'}
-      </Text>
-    </TouchableOpacity>
-  );
 
   if (loading) {
     return (
@@ -169,7 +89,7 @@ const AttendanceList = () => {
     );
   }
 
-  if (attendances.length === 0) {
+  if (medicalRecords.length === 0) {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Nenhum prontuário encontrado.</Text>
@@ -181,7 +101,7 @@ const AttendanceList = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Prontuários do Paciente</Text>
       <FlatList
-        data={attendances}
+        data={medicalRecords}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
@@ -211,7 +131,7 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 16,
   },
-  attendanceItem: {
+  recordItem: {
     backgroundColor: '#ffffff',
     padding: 16,
     marginBottom: 12,
