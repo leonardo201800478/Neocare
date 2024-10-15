@@ -9,24 +9,21 @@ import { GeneralSymptoms } from './types';
 import { uuid } from '../../utils/uuid';
 import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
 import { useDoctor } from '../context/DoctorContext'; // Pega o médico autenticado
-import { useMedicalRecords } from '../context/MedicalRecordsContext'; // Função para atualizar o prontuário
 import { usePatient } from '../context/PatientContext'; // Pega o paciente selecionado
 import styles from '../styles/Styles';
 
 const RegisterAttendanceStep3: React.FC = () => {
   const router = useRouter();
-  const { attendanceId, doctorId, patientId, vitalId, medicalRecordId } = useLocalSearchParams<{
+  const { attendanceId, doctorId, patientId, vitalId } = useLocalSearchParams<{
     attendanceId: string;
     doctorId: string;
     patientId: string;
     vitalId: string;
-    medicalRecordId: string;
   }>();
 
   const { createSymptom } = useAttendanceSymptom();
   const { selectedDoctor } = useDoctor();
   const { selectedPatient } = usePatient();
-  const { updateMedicalRecord } = useMedicalRecords(); // Função para atualizar o prontuário
 
   // Estado para armazenar os sintomas gerais
   const [generalSymptoms, setGeneralSymptoms] = useState<GeneralSymptoms>({
@@ -69,8 +66,8 @@ const RegisterAttendanceStep3: React.FC = () => {
 
   const handleNextStep = async () => {
     try {
-      if (!medicalRecordId) {
-        Alert.alert('Erro', 'ID do prontuário não encontrado.');
+      if (!vitalId || !attendanceId) {
+        Alert.alert('Erro', 'ID das tabelas anteriores não encontradas.');
         return;
       }
 
@@ -101,17 +98,6 @@ const RegisterAttendanceStep3: React.FC = () => {
         throw new Error(response.error);
       }
 
-      // Atualiza o medicalRecord com o UUID dos sintomas na tabela medical_records
-      const { error: updateError } = await updateMedicalRecord(medicalRecordId, {
-        symptom_id: symptomId, // Inserir o ID dos sintomas no prontuário
-      });
-
-      if (updateError) {
-        throw new Error(updateError);
-      }
-
-      Alert.alert('Sucesso', 'Sintomas registrados com sucesso!');
-
       // Navegar para a próxima etapa (por exemplo, nutrição e desenvolvimento)
       router.push({
         pathname: '/attendences/RegisterAttendanceStep4',
@@ -121,7 +107,6 @@ const RegisterAttendanceStep3: React.FC = () => {
           patientId: patientIdFinal,
           vitalId,
           symptomId,
-          medicalRecordId,
         }, // Passa os IDs necessários para a próxima tela
       });
     } catch (error) {

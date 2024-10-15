@@ -9,26 +9,22 @@ import { NutritionDevelopment } from './types';
 import { uuid } from '../../utils/uuid';
 import { useNutrition } from '../context/AttendanceNutritionContext';
 import { useDoctor } from '../context/DoctorContext';
-import { useMedicalRecords } from '../context/MedicalRecordsContext';
 import { usePatient } from '../context/PatientContext';
 import styles from '../styles/Styles';
 
 const RegisterAttendanceStep4: React.FC = () => {
   const router = useRouter();
-  const { attendanceId, doctorId, patientId, vitalId, symptomId, medicalRecordId } =
-    useLocalSearchParams<{
-      attendanceId: string;
-      doctorId: string;
-      patientId: string;
-      vitalId: string;
-      symptomId: string;
-      medicalRecordId: string;
-    }>();
+  const { attendanceId, doctorId, patientId, vitalId, symptomId } = useLocalSearchParams<{
+    attendanceId: string;
+    doctorId: string;
+    patientId: string;
+    vitalId: string;
+    symptomId: string;
+  }>();
 
   const { createNutrition } = useNutrition();
   const { selectedDoctor } = useDoctor();
   const { selectedPatient } = usePatient();
-  const { updateMedicalRecord } = useMedicalRecords();
 
   // Estado para armazenar os dados de nutrição e desenvolvimento
   const [nutritionDevelopment, setNutritionDevelopment] = useState<NutritionDevelopment>({
@@ -66,13 +62,8 @@ const RegisterAttendanceStep4: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
+  const handleNextStep = async () => {
     try {
-      if (!medicalRecordId) {
-        Alert.alert('Erro', 'ID do prontuário não encontrado.');
-        return;
-      }
-
       const doctorIdFinal = doctorId || selectedDoctor?.id;
       const patientIdFinal = patientId || selectedPatient?.id;
 
@@ -93,23 +84,9 @@ const RegisterAttendanceStep4: React.FC = () => {
         patientIdFinal
       );
 
-      if (error) {
-        throw new Error(error);
+      if (error || !nutritionId) {
+        throw new Error(error || 'Erro ao gerar ID de nutrição.');
       }
-
-      // Garante que o nutritionId seja uma string válida
-      const validNutritionId = nutritionId ?? ''; // Se nutritionId for null, usa uma string vazia
-
-      // Atualiza o medicalRecord com o UUID da nutrição
-      const { error: updateError } = await updateMedicalRecord(medicalRecordId, {
-        nutrition_id: validNutritionId,
-      });
-
-      if (updateError) {
-        throw new Error(updateError);
-      }
-
-      Alert.alert('Sucesso', 'Nutrição e desenvolvimento registrado com sucesso!');
 
       // Redireciona para a próxima tela (AttendanceSummary) com todos os IDs
       router.push({
@@ -120,9 +97,8 @@ const RegisterAttendanceStep4: React.FC = () => {
           patientId: patientIdFinal,
           vitalId,
           symptomId,
-          nutritionId: validNutritionId,
-          medicalRecordId,
-        }, // Passa todos os IDs necessários para a próxima tela
+          nutritionId, // Certifique-se de que o nutritionId não seja null
+        },
       });
     } catch (error) {
       console.error('Erro ao registrar nutrição e desenvolvimento:', error);
@@ -137,7 +113,7 @@ const RegisterAttendanceStep4: React.FC = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <NutritionDevelopmentForm data={nutritionDevelopment} onChange={handleNutritionChange} />
       <View style={styles.buttonContainer}>
-        <Button title="Concluir Registro" onPress={handleSubmit} />
+        <Button title="Próximo" onPress={handleNextStep} />
       </View>
     </ScrollView>
   );

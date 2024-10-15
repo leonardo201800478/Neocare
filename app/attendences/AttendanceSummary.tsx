@@ -1,5 +1,6 @@
-// app/attendances/AttendanceSummary.tsx
+// app/attendences/AttendanceSummary.tsx
 
+import { useRouter } from 'expo-router'; // Para navegação
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Button } from 'react-native';
 
@@ -16,6 +17,7 @@ interface AttendanceSummaryProps {
 }
 
 const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) => {
+  const router = useRouter(); // Para navegação
   const { fetchAttendanceById } = useAttendance();
   const { fetchVitalsByAttendance } = useAttendanceVital();
   const { fetchSymptomsByAttendanceId } = useAttendanceSymptom();
@@ -103,6 +105,18 @@ const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) =
     }
   };
 
+  const handleGoToPatientDetails = () => {
+    // Navega de volta para a tela de detalhes do paciente
+    if (attendance) {
+      router.push({
+        pathname: '/Patients/PatientDetails',
+        params: { patientId: attendance.id },
+      });
+    } else {
+      Alert.alert('Erro', 'Paciente não encontrado.');
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -177,6 +191,7 @@ const AttendanceSummary: React.FC<AttendanceSummaryProps> = ({ attendanceId }) =
       {/* Botão para salvar o prontuário completo */}
       <View style={styles.buttonContainer}>
         <Button title="Salvar Prontuário" onPress={handleSaveMedicalRecord} />
+        <Button title="Voltar aos Detalhes do Paciente" onPress={handleGoToPatientDetails} />
       </View>
     </ScrollView>
   );
