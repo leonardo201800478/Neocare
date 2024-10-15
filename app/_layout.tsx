@@ -11,10 +11,11 @@ import { NutritionProvider } from './context/AttendanceNutritionContext';
 import { AttendanceSymptomProvider } from './context/AttendanceSymptomContext';
 import { AttendanceVitalProvider } from './context/AttendanceVitalContext';
 import { DoctorProvider } from './context/DoctorContext';
+import { MedicalRecordsProvider } from './context/MedicalRecordsContext';
+import { MedicamentsProvider } from './context/MedicamentsContext';
 import { PatientProvider } from './context/PatientContext';
 import { VaccinationProvider } from './context/VaccinationContext';
 import { useSystem } from '../powersync/PowerSync';
-import { MedicamentsProvider } from './context/MedicamentsContext'; 
 
 const Layout = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -64,7 +65,9 @@ const Layout = () => {
                 <VaccinationProvider>
                   <AllergiesProvider>
                     <MedicamentsProvider>
-                      <Slot />
+                      <MedicalRecordsProvider>
+                        <Slot />
+                      </MedicalRecordsProvider>
                     </MedicamentsProvider>
                   </AllergiesProvider>
                 </VaccinationProvider>

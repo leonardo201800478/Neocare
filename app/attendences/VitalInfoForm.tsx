@@ -1,62 +1,17 @@
-import { useRouter } from 'expo-router';
+// app/attendences/VitalInfoForm.tsx
+
 import React from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 
 import styles from './styles/AttendanceStyles';
 import { VitalInfo } from './types';
-import { useAttendanceVital } from '../context/AttendanceVitalContext';
 
 interface VitalInfoProps {
   data: VitalInfo;
-  attendanceId: string;
-  doctorId: string;
-  patientId: string;
   onChange: (field: keyof VitalInfo, value: string) => void;
 }
 
-const VitalInfoForm: React.FC<VitalInfoProps> = ({
-  data,
-  attendanceId,
-  doctorId,
-  patientId,
-  onChange,
-}) => {
-  const { createVitalSigns } = useAttendanceVital();
-  const router = useRouter();
-
-  const handleSaveVitalInfo = async () => {
-    if (!attendanceId || !doctorId || !patientId) {
-      Alert.alert('Erro', 'IDs de atendimento, médico ou paciente não encontrados.');
-      return;
-    }
-
-    try {
-      const response = await createVitalSigns(
-        {
-          peso_kg: data.peso_kg,
-          comprimento_cm: data.comprimento_cm,
-          perimetro_cefalico_cm: data.perimetro_cefalico_cm,
-          numero_respiracoes_por_minuto: data.numero_respiracoes_por_minuto,
-        },
-        attendanceId,
-        doctorId
-      );
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      Alert.alert('Sucesso', 'Sinais vitais salvos com sucesso!');
-      router.push({
-        pathname: '/attendences/GeneralSymptomsForm',
-        params: { attendanceId, doctorId, patientId },
-      });
-    } catch (error) {
-      console.error('Erro ao salvar sinais vitais:', error);
-      Alert.alert('Erro', 'Erro ao salvar sinais vitais.');
-    }
-  };
-
+const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Peso (kg):</Text>
@@ -113,8 +68,6 @@ const VitalInfoForm: React.FC<VitalInfoProps> = ({
         }}
         keyboardType="numeric"
       />
-
-      <Button title="Salvar Sinais Vitais e Continuar" onPress={handleSaveVitalInfo} />
     </View>
   );
 };

@@ -1,6 +1,4 @@
-//app/attendences/RegisterAttendanceStep1.tsx
-
-//app/attendences/RegisterAttendanceStep1.tsx
+// app/attendences/RegisterAttendanceStep1.tsx
 
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
@@ -11,16 +9,14 @@ import { BasicInfo } from './types';
 import { uuid } from '../../utils/uuid'; // Para gerar o UUID
 import { useAttendance } from '../context/AttendanceContext'; // Importando o contexto de Atendimentos
 import { useDoctor } from '../context/DoctorContext'; // Importando o contexto de Doutores
-import { useMedicalRecords } from '../context/MedicalRecordsContext'; // Importando o contexto de Prontuários
 import { usePatient } from '../context/PatientContext'; // Importando o contexto de Pacientes
 import styles from '../styles/Styles';
 
 const RegisterAttendanceStep1: React.FC = () => {
   const router = useRouter();
-  const { createAttendance } = useAttendance(); // Função para criar atendimento no banco de dados
-  const { selectedDoctor } = useDoctor(); // Pegando o médico selecionado
-  const { selectedPatient } = usePatient(); // Pegando o paciente selecionado
-  const { createMedicalRecord } = useMedicalRecords(); // Função para criar prontuário
+  const { createAttendance } = useAttendance(); // Função para criar o atendimento no banco de dados
+  const { selectedDoctor } = useDoctor(); // Obtém o médico autenticado
+  const { selectedPatient } = usePatient(); // Obtém o paciente selecionado
 
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     motivo_consulta: '',
@@ -46,26 +42,19 @@ const RegisterAttendanceStep1: React.FC = () => {
 
   const handleNextStep = async () => {
     try {
-      const doctorId = selectedDoctor?.id;
-      const patientId = selectedPatient?.id;
+      const doctorId = selectedDoctor?.id; // ID do médico autenticado
+      const patientId = selectedPatient?.id; // ID do paciente selecionado
 
       if (!doctorId || !patientId) {
         Alert.alert('Erro', 'Médico ou paciente não encontrado.');
         return;
       }
 
-      // Gerar o UUID para o atendimento
-      const attendanceId = uuid();
-
-      // Salvar os dados do atendimento no banco de dados
+      // Criar o atendimento no banco de dados
       const response = await createAttendance(
         {
-          id: attendanceId,
-          motivo_consulta: basicInfo.motivo_consulta,
-          hipertensao: basicInfo.hipertensao,
-          diabetes: basicInfo.diabetes,
-          doenca_hepatica: basicInfo.doenca_hepatica,
-          deficiencia_g6pd: basicInfo.deficiencia_g6pd,
+          ...basicInfo,
+          id: uuid(),
         },
         doctorId,
         patientId
@@ -75,31 +64,21 @@ const RegisterAttendanceStep1: React.FC = () => {
         throw new Error(response.error);
       }
 
-      // Criar o registro médico associado ao atendimento
-      const medicalRecordResponse = await createMedicalRecord(
-        attendanceId,
-        '', // vitalId será preenchido nos steps seguintes
-        '', // symptomId será preenchido nos steps seguintes
-        '', // nutritionId será preenchido nos steps seguintes
-        doctorId,
-        patientId
-      );
-
-      if (medicalRecordResponse.error) {
-        throw new Error(medicalRecordResponse.error);
-      }
-
       // Exibir mensagem de sucesso e navegar para o próximo passo
-      Alert.alert('Sucesso', 'Prontuário criado com sucesso!');
+      Alert.alert('Sucesso', 'Atendimento registrado com sucesso!');
 
-      // Navega para o Step 2, passando o attendanceId e medicalRecordId
+      // Navega para o Step 2, passando o attendanceId, doctorId e patientId
       router.push({
         pathname: '/attendences/RegisterAttendanceStep2',
-        params: { attendanceId, medicalRecordId: medicalRecordResponse.medicalRecordId ?? '' },
+        params: {
+          attendanceId: response.attendanceId ?? '',
+          doctorId,
+          patientId,
+        }, // Passa os parâmetros corretos
       });
     } catch (error) {
-      console.error('Erro ao criar prontuário:', error);
-      Alert.alert('Erro', 'Não foi possível criar o prontuário. Tente novamente.');
+      console.error('Erro ao registrar atendimento:', error);
+      Alert.alert('Erro', 'Não foi possível registrar o atendimento. Tente novamente.');
     }
   };
 

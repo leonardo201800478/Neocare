@@ -15,10 +15,14 @@ import styles from '../styles/Styles';
 
 const RegisterAttendanceStep3: React.FC = () => {
   const router = useRouter();
-  const { attendanceId, medicalRecordId } = useLocalSearchParams<{
+  const { attendanceId, doctorId, patientId, vitalId, medicalRecordId } = useLocalSearchParams<{
     attendanceId: string;
+    doctorId: string;
+    patientId: string;
+    vitalId: string;
     medicalRecordId: string;
   }>();
+
   const { createSymptom } = useAttendanceSymptom();
   const { selectedDoctor } = useDoctor();
   const { selectedPatient } = usePatient();
@@ -65,15 +69,15 @@ const RegisterAttendanceStep3: React.FC = () => {
 
   const handleNextStep = async () => {
     try {
-      if (!attendanceId || !medicalRecordId) {
-        Alert.alert('Erro', 'ID do atendimento ou prontuário não encontrado.');
+      if (!medicalRecordId) {
+        Alert.alert('Erro', 'ID do prontuário não encontrado.');
         return;
       }
 
-      const doctorId = selectedDoctor?.id; // Pega o ID do médico autenticado
-      const patientId = selectedPatient?.id; // Pega o ID do paciente selecionado
+      const doctorIdFinal = doctorId || selectedDoctor?.id;
+      const patientIdFinal = patientId || selectedPatient?.id;
 
-      if (!doctorId || !patientId) {
+      if (!doctorIdFinal || !patientIdFinal) {
         Alert.alert('Erro', 'Médico ou paciente não encontrado.');
         return;
       }
@@ -85,12 +89,12 @@ const RegisterAttendanceStep3: React.FC = () => {
       const response = await createSymptom(
         {
           ...generalSymptoms,
-          doctor_id: doctorId,
-          patient_id: patientId,
+          doctor_id: doctorIdFinal,
+          patient_id: patientIdFinal,
           id: symptomId,
         },
-        doctorId,
-        patientId
+        doctorIdFinal,
+        patientIdFinal
       );
 
       if (response.error) {
@@ -111,7 +115,14 @@ const RegisterAttendanceStep3: React.FC = () => {
       // Navegar para a próxima etapa (por exemplo, nutrição e desenvolvimento)
       router.push({
         pathname: '/attendences/RegisterAttendanceStep4',
-        params: { attendanceId, medicalRecordId },
+        params: {
+          attendanceId,
+          doctorId: doctorIdFinal,
+          patientId: patientIdFinal,
+          vitalId,
+          symptomId,
+          medicalRecordId,
+        }, // Passa os IDs necessários para a próxima tela
       });
     } catch (error) {
       console.error('Erro ao registrar sintomas:', error);

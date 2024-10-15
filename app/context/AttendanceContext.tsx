@@ -38,25 +38,29 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     patientId: string
   ): Promise<{ attendanceId: string | null; error: any }> => {
     if (!doctorId || !patientId) {
-      throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
+      return { attendanceId: null, error: 'Doctor ID and Patient ID are required.' };
     }
 
     try {
       const attendanceId = uuid();
-      const newAttendance = {
+      const newAttendance: Attendance = {
+        ...attendance,
         id: attendanceId,
         doctor_id: doctorId,
         patient_id: patientId,
-        motivo_consulta: attendance.motivo_consulta ?? 'false',
-        hipertensao: attendance.hipertensao ?? 'false',
-        diabetes: attendance.diabetes ?? 'false',
-        doenca_hepatica: attendance.doenca_hepatica ?? 'false',
-        deficiencia_g6pd: attendance.deficiencia_g6pd ?? 'false',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        motivo_consulta: attendance.motivo_consulta ?? null,
+        hipertensao: attendance.hipertensao ?? null,
+        diabetes: attendance.diabetes ?? null,
+        doenca_hepatica: attendance.doenca_hepatica ?? null,
+        deficiencia_g6pd: attendance.deficiencia_g6pd ?? null,
       };
 
+      // Insere os dados localmente
       await db.insertInto('attendances').values(newAttendance).execute();
+
+      // Sincroniza com o Supabase
       const { error } = await supabaseConnector.client.from('attendances').insert([newAttendance]);
 
       if (error) {
@@ -90,7 +94,10 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
     };
 
     try {
+      // Insere os dados localmente
       await db.insertInto('medical_records').values(newMedicalRecord).execute();
+
+      // Sincroniza com o Supabase
       const { error } = await supabaseConnector.client
         .from('medical_records')
         .insert([newMedicalRecord]);
@@ -159,6 +166,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
   );
 };
 
+// Hook personalizado para acessar o contexto
 export const useAttendance = (): AttendanceContextType => {
   const context = useContext(AttendanceContext);
   if (!context) {

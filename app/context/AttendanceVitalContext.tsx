@@ -1,7 +1,6 @@
 // app/attendences/AttendanceVitalContext.tsx
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
 import { AttendanceVital } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
 import { uuid } from '../../utils/uuid';
@@ -15,7 +14,7 @@ type AttendanceVitalContextType = {
     patientId: string
   ) => Promise<{ vitalId: string | null; error: string | null }>;
   fetchVitalsById: (vitalId: string) => Promise<AttendanceVital | null>;
-  fetchVitalsByAttendance: (attendanceId: string) => Promise<AttendanceVital | null>; // Adicionada função para buscar por atendimento
+  fetchVitalsByAttendance: (attendanceId: string) => Promise<AttendanceVital | null>; // Nova função para buscar sinais vitais por atendimento
 };
 
 const AttendanceVitalContext = createContext<AttendanceVitalContextType | undefined>(undefined);
