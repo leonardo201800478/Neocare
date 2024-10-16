@@ -40,22 +40,28 @@ const MedicamentsList = () => {
       console.log('Prontuários encontrados:', records); // Verifica os registros retornados
 
       if (records) {
+        // Ordena os registros do mais recente para o mais antigo
+        const sortedRecords = records.sort(
+          (a, b) => new Date(b.created_at ?? '').getTime() - new Date(a.created_at ?? '').getTime()
+        );
+
         // Para cada prontuário, busca o nome do médico e do paciente de forma separada
         const recordsWithNames = await Promise.all(
-          records.map(async (record) => {
+          sortedRecords.map(async (record, index) => {
             // Busca separadamente os dados do médico e do paciente
             const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
             const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
-            
+
             // Verifica se os dados de médicos e pacientes estão sendo buscados corretamente
             console.log(`Dados do médico (${record.doctor_id}):`, doctor);
             console.log(`Dados do paciente (${record.patient_id}):`, patient);
-  
-            // Retorna o registro com os nomes adicionais
+
+            // Retorna o registro com os nomes adicionais e o número de índice
             return {
               ...record,
               doctorName: doctor ? doctor.name : 'Médico não informado',
               patientName: patient ? patient.name : 'Paciente não informado',
+              index: index + 1, // Enumera os registros com base na ordem
             };
           })
         );
@@ -71,7 +77,7 @@ const MedicamentsList = () => {
       setLoading(false);
     }
   };
-  
+
   const handleMedicalRecordSelect = (record: any) => {
     console.log('Selecionado prontuário:', record); // Verifica o prontuário selecionado
     router.push({
@@ -83,6 +89,7 @@ const MedicamentsList = () => {
   const renderItem = ({ item }: { item: any }) => {
     return (
       <TouchableOpacity style={styles.recordItem} onPress={() => handleMedicalRecordSelect(item)}>
+        <Text style={styles.text}>Prontuário #{item.index}</Text>
         <Text style={styles.text}>Paciente: {item.patientName}</Text>
         <Text style={styles.text}>Médico: {item.doctorName}</Text>
         <Text style={styles.text}>

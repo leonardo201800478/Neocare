@@ -1,13 +1,25 @@
-import { Picker } from '@react-native-picker/picker';
+// app/medications/TestScreen.tsx
+
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, Button } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  Button,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 
-import { calcularIdade } from '../../utils/idadeCalculator';
+import { calcularIdadeMesesAnos } from '../../utils/novaCalculadoraIdade';
 import { useAllergies } from '../context/AllergiesContext';
 import { useDoctor } from '../context/DoctorContext';
 import { useMedicalRecords } from '../context/MedicalRecordsContext';
 import { usePatient } from '../context/PatientContext';
+import { medicationsList } from './api/medicationsList'; // Lista de medicamentos importada
 import {
   calcularMedicamento,
   verificarContraindicacoes,
@@ -21,61 +33,23 @@ const TestScreen: React.FC = () => {
   const { fetchAllergiesByPatient } = useAllergies();
 
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
-  const [allergies, setAllergies] = useState<any>(null); // Estado para armazenar alergias
+  const [allergies, setAllergies] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedMedication, setSelectedMedication] = useState<string>(''); // Medicamento selecionado
   const [calculatedDosage, setCalculatedDosage] = useState<string>(''); // Resultado do cálculo de dosagem
-
-  // Lista de medicamentos (definida manualmente, ou pode ser dinâmica)
-  const medicationsList = [
-    { label: 'Amoxicilina', value: 'Amoxicilina' },
-    { label: 'Ibuprofeno', value: 'Ibuprofeno' },
-    { label: 'Paracetamol', value: 'Paracetamol' },
-    { label: 'Sulfato Ferroso', value: 'SulfatoFerroso' },
-    { label: 'Cotrimoxazol', value: 'Cotrimoxazol' },
-    { label: 'Eritromicina', value: 'Eritromicina' },
-    { label: 'Zinco', value: 'Zinco' },
-    { label: 'Vitamina A', value: 'VitaminaA' },
-    { label: 'Albendazol', value: 'Albendazol' },
-    { label: 'Mebendazol', value: 'Mebendazol' },
-    { label: 'Ácido Fólico', value: 'AcidoFolico' },
-    { label: 'Metronidazol', value: 'Metronidazol' },
-    { label: 'Cloroquina Primaquina', value: 'CloroquinaPrimaquina' },
-    { label: 'Salbutamol', value: 'Salbutamol' },
-    { label: 'Nistatina', value: 'Nistatina' },
-    { label: 'Permetrina Benzoato', value: 'PermetrinaBenzoato' },
-    { label: 'Cefalexina', value: 'Cefalexina' },
-    { label: 'Claritromicina', value: 'Claritromicina' },
-    { label: 'Gentamicina (Colírio)', value: 'GentamicinaColirio' },
-    { label: 'SRO', value: 'SRO' },
-    { label: 'Isotretinoína Tópica', value: 'IsotretinoinaTopica' },
-    { label: 'Vitamina D', value: 'VitaminaD' },
-    { label: 'Prednisolona', value: 'Prednisolona' },
-    { label: 'Aciclovir', value: 'Aciclovir' },
-    { label: 'Hidroxizina', value: 'Hidroxizina' },
-    { label: 'Bromoprida', value: 'Bromoprida' },
-    { label: 'Clorexidina Tópica', value: 'ClorexidinaTopica' },
-    { label: 'Tetraciclina (Pomada)', value: 'TetraciclinaPomada' },
-    { label: 'Povidona Iodada', value: 'PovidonaIodada' },
-    { label: 'Metoclopramida', value: 'Metoclopramida' },
-    { label: 'Dexametasona (Oftálmica)', value: 'DexametasonaOftalmica' },
-    { label: 'Miconazol', value: 'Miconazol' },
-    { label: 'Salicilato de Metila', value: 'SalicilatoDeMetila' },
-    { label: 'Corticosteroide Tópico', value: 'CorticosteroideTopico' },
-    { label: 'Lidocaína (Gel)', value: 'LidocainaGel' },
-    { label: 'Sulfacetamida (Colírio)', value: 'SulfacetamidaColirio' },
-    { label: 'Permetrina 1%', value: 'Permetrina1' }
-  ];
+  const [searchTerm, setSearchTerm] = useState<string>(''); // Termo de pesquisa para medicamentos
+  const [filteredMedications, setFilteredMedications] = useState<any[]>([]); // Lista filtrada de medicamentos
 
   const loadAllergies = async (patientId: string) => {
     setLoading(true);
     try {
       const patientAllergies = await fetchAllergiesByPatient(patientId);
       if (patientAllergies && patientAllergies.length > 0) {
-        setAllergies(patientAllergies[0]); // Define a primeira entrada de alergias
+        setAllergies(patientAllergies[0]);
       } else {
         setAllergies([]);
       }
+      console.log('Alergias carregadas:', patientAllergies);
     } catch (error) {
       console.error('Erro ao buscar alergias:', error);
       Alert.alert('Erro', 'Erro ao carregar alergias do paciente.');
@@ -84,7 +58,27 @@ const TestScreen: React.FC = () => {
     }
   };
 
-  const handleMedicationSelection = () => {
+  // Função para filtrar medicamentos com base no termo de pesquisa
+  const filterMedications = (text: string) => {
+    setSearchTerm(text);
+
+    if (text.length >= 3) {
+      const filtered = medicationsList.filter((medication) =>
+        medication.label.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredMedications(filtered);
+    } else {
+      setFilteredMedications([]); // Se menos de 3 caracteres, não exibe a lista
+    }
+  };
+
+  const handleMedicationSelection = (medication: string) => {
+    setSelectedMedication(medication);
+    setSearchTerm(medication); // Fixar o medicamento selecionado no campo de pesquisa
+    setFilteredMedications([]); // Esconder a lista de medicamentos após a seleção
+  };
+
+  const handleCalculateDosage = () => {
     if (!selectedMedication) {
       Alert.alert('Erro', 'Selecione um medicamento.');
       return;
@@ -95,34 +89,34 @@ const TestScreen: React.FC = () => {
       return;
     }
 
-    // Dados do paciente para o cálculo
-    const peso = medicalRecord.vitals.peso_kg;
-    const idade = medicalRecord.patientAge.split(' ')[0]; // Pegando a idade em anos
+    const peso = medicalRecord.vitals.peso_kg; // Mantendo o peso como está, sem conversão
+    console.log('Peso do paciente (em gramas):', peso);
 
-    // Verificar contraindicações usando alergias e condições clínicas
+    const idadeCalculada = calcularIdadeMesesAnos(
+      new Date(medicalRecord.patientAge),
+      medicalRecord.patientAge
+    );
+    const idade = idadeCalculada.anos + idadeCalculada.meses / 12;
+    console.log('Idade do paciente (em anos):', idade);
+
     const patientInfo = {
-      alergias: allergies || {}, // Certifique-se de que as alergias estão definidas
-      condicoesClinicas: medicalRecord.attendance || {}, // Usando os dados de condições clínicas
+      alergias: allergies || {},
+      condicoesClinicas: medicalRecord.attendance || {},
     };
 
-    // Verificar contraindicações antes do cálculo
+    console.log('Condições clínicas do paciente:', patientInfo.condicoesClinicas);
+
     const contraindications = verificarContraindicacoes(selectedMedication, patientInfo);
 
     if (contraindications.length > 0) {
-      // Se houver contraindicações, exibe a mensagem e não calcula
+      // Se houver contraindicações, exibe a mensagem
       Alert.alert('Atenção', contraindications.join('\n'));
-      return;
+    } else {
+      // Se não houver contraindicações, calcular a dosagem e exibir
+      const resultado = calcularMedicamento(selectedMedication, peso, idade, patientInfo);
+      setCalculatedDosage(resultado.dosage);
+      console.log('Resultado da dosagem calculada:', resultado.dosage);
     }
-
-    // Se não houver contraindicações, prosseguir com o cálculo da dosagem
-    const resultado = calcularMedicamento(
-      selectedMedication,
-      parseFloat(peso),
-      parseInt(idade, 10),
-      patientInfo
-    );
-
-    setCalculatedDosage(resultado.dosage);
   };
 
   useEffect(() => {
@@ -134,35 +128,26 @@ const TestScreen: React.FC = () => {
 
       setLoading(true);
       try {
-        // Buscar o prontuário completo usando o medicalRecordId
         const record = await fetchCompleteMedicalRecord(medicalRecordId);
-        console.log('Prontuário carregado:', record); // Log para verificar o prontuário
+        console.log('Prontuário carregado:', record);
 
         if (!record) throw new Error('Prontuário não encontrado.');
 
-        // Buscar o médico e paciente pelo ID
         const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
         const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
 
-        // Verificar se os dados do médico e paciente foram carregados corretamente
         console.log('Médico carregado:', doctor);
         console.log('Paciente carregado:', patient);
 
-        // Carregar as alergias do paciente, se o paciente for encontrado
         if (patient?.id) {
-          await loadAllergies(patient.id); // Chama a função de carregar alergias
+          await loadAllergies(patient.id);
         }
 
-        // Atualiza o estado do prontuário
         setMedicalRecord({
           ...record,
           doctorName: doctor ? doctor.name : 'Não informado',
           patientName: patient ? patient.name : 'Não informado',
-          patientAge: patient
-            ? patient.birth_date
-              ? calcularIdade(new Date(patient.birth_date), patient.birth_date)
-              : 'Data de nascimento não informada'
-            : 'Não informado',
+          patientAge: patient ? patient.birth_date : 'Não informado',
         });
       } catch (error) {
         console.error('Erro ao carregar prontuário:', error);
@@ -196,32 +181,52 @@ const TestScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Cálculo de Medicação</Text>
 
-      {/* Informações do Médico e Paciente */}
       <View style={styles.section}>
         <Text style={styles.label}>Médico: {medicalRecord.doctorName}</Text>
         <Text style={styles.label}>Paciente: {medicalRecord.patientName}</Text>
-        <Text style={styles.label}>Idade do Paciente: {medicalRecord.patientAge}</Text>
         <Text style={styles.label}>
-          Peso (kg): {medicalRecord.vitals?.peso_kg || 'Não informado'}
+          Idade do Paciente:{' '}
+          {
+            calcularIdadeMesesAnos(new Date(medicalRecord.patientAge), medicalRecord.patientAge)
+              .anos
+          }{' '}
+          anos e{' '}
+          {
+            calcularIdadeMesesAnos(new Date(medicalRecord.patientAge), medicalRecord.patientAge)
+              .meses
+          }{' '}
+          meses
+        </Text>
+        <Text style={styles.label}>
+          Peso (g): {medicalRecord.vitals?.peso_kg || 'Não informado'}
         </Text>
       </View>
 
-      {/* Picker para selecionar o medicamento */}
-      <View style={styles.pickerContainer}>
-        <Text style={styles.label}>Selecione o Medicamento:</Text>
-        <Picker
-          selectedValue={selectedMedication}
-          onValueChange={(itemValue) => setSelectedMedication(itemValue)}
-          style={styles.picker}>
-          {medicationsList.map((medication) => (
-            <Picker.Item key={medication.value} label={medication.label} value={medication.value} />
-          ))}
-        </Picker>
+      {/* Campo de pesquisa para medicamentos */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Digite o nome do medicamento"
+          value={searchTerm}
+          onChangeText={(text) => filterMedications(text)}
+        />
+        {filteredMedications.length > 0 && (
+          <FlatList
+            data={filteredMedications}
+            keyExtractor={(item) => item.value}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.medicationItem}
+                onPress={() => handleMedicationSelection(item.value)}>
+                <Text style={styles.medicationText}>{item.label}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        )}
       </View>
 
-      <Button title="Calcular Dosagem" onPress={handleMedicationSelection} />
+      <Button title="Calcular Dosagem" onPress={handleCalculateDosage} />
 
-      {/* Exibe o resultado do cálculo da dosagem */}
       {calculatedDosage ? (
         <View style={styles.resultContainer}>
           <Text style={styles.resultText}>Dosagem Calculada: {calculatedDosage}</Text>
@@ -274,12 +279,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  pickerContainer: {
+  searchContainer: {
     marginBottom: 20,
   },
-  picker: {
-    height: 50,
-    width: '100%',
+  searchInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingLeft: 8,
+    marginBottom: 10,
+  },
+  medicationItem: {
+    padding: 10,
+    backgroundColor: '#fff',
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+  },
+  medicationText: {
+    fontSize: 16,
   },
   resultContainer: {
     marginTop: 20,
@@ -296,11 +313,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  allergyItem: {
-    fontSize: 16,
-    color: 'red',
-    marginBottom: 5,
   },
 });
 
