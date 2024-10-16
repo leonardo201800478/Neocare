@@ -136,11 +136,17 @@ const TestScreen: React.FC = () => {
       try {
         // Buscar o prontuário completo usando o medicalRecordId
         const record = await fetchCompleteMedicalRecord(medicalRecordId);
+        console.log('Prontuário carregado:', record); // Log para verificar o prontuário
+
         if (!record) throw new Error('Prontuário não encontrado.');
 
         // Buscar o médico e paciente pelo ID
         const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
         const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
+
+        // Verificar se os dados do médico e paciente foram carregados corretamente
+        console.log('Médico carregado:', doctor);
+        console.log('Paciente carregado:', patient);
 
         // Carregar as alergias do paciente, se o paciente for encontrado
         if (patient?.id) {

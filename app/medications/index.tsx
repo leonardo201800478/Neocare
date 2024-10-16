@@ -1,3 +1,5 @@
+// app/medications/index.tsx
+
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -33,14 +35,23 @@ const MedicamentsList = () => {
   const loadMedicalRecords = async (patientId: string) => {
     setLoading(true);
     try {
+      // Busca os prontuários médicos associados ao paciente, sem join
       const records = await fetchMedicalRecordsByPatient(patientId);
+      console.log('Prontuários encontrados:', records); // Verifica os registros retornados
 
       if (records) {
-        // Carregar nomes dos médicos e pacientes
+        // Para cada prontuário, busca o nome do médico e do paciente de forma separada
         const recordsWithNames = await Promise.all(
           records.map(async (record) => {
+            // Busca separadamente os dados do médico e do paciente
             const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
             const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
+            
+            // Verifica se os dados de médicos e pacientes estão sendo buscados corretamente
+            console.log(`Dados do médico (${record.doctor_id}):`, doctor);
+            console.log(`Dados do paciente (${record.patient_id}):`, patient);
+  
+            // Retorna o registro com os nomes adicionais
             return {
               ...record,
               doctorName: doctor ? doctor.name : 'Médico não informado',
@@ -48,6 +59,7 @@ const MedicamentsList = () => {
             };
           })
         );
+        console.log('Registros com nomes atualizados:', recordsWithNames); // Verifica os registros com os nomes
         setMedicalRecords(recordsWithNames);
       } else {
         Alert.alert('Erro', 'Nenhum prontuário encontrado para este paciente.');
@@ -59,8 +71,9 @@ const MedicamentsList = () => {
       setLoading(false);
     }
   };
-
+  
   const handleMedicalRecordSelect = (record: any) => {
+    console.log('Selecionado prontuário:', record); // Verifica o prontuário selecionado
     router.push({
       pathname: '/medications/TestScreen',
       params: { medicalRecordId: record.id }, // Passa o id do prontuário para a próxima tela
@@ -99,7 +112,7 @@ const MedicamentsList = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Prontuários do Paciente</Text>
+      <Text style={styles.header}>Dados do Paciente</Text>
       <FlatList
         data={medicalRecords}
         keyExtractor={(item) => item.id}
