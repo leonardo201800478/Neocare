@@ -1,5 +1,3 @@
-// app/(tabs)/patients/index.tsx
-
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -14,6 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 
+import styles from './styles/ModernStyles'; // Novo arquivo de estilo moderno
 import CEPInput from '../../../components/CEPInput';
 import { isCPFValid } from '../../../components/CPFValidator';
 import {
@@ -27,31 +26,30 @@ import {
 import { calcularIdade } from '../../../utils/idadeCalculator';
 import { useDoctor } from '../../context/DoctorContext';
 import { usePatient } from '../../context/PatientContext';
-import styles from '../../styles/Styles';
 
-const CadastroPaciente = () => {
-  const [loading, setLoading] = useState(false);
-  const [nome, setNome] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [dataNasc, setDataNasc] = useState('');
-  const [sexo, setSexo] = useState('Feminino'); // Sexo padrão como 'Feminino'
-  const [idade, setIdade] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [codigoPais, setCodigoPais] = useState('+55'); // Código do país, default Brasil
-  const [cep, setCep] = useState('');
-  const [uf, setUf] = useState('');
-  const [cidade, setCidade] = useState('');
-  const [endereco, setEndereco] = useState('');
-  const [numero, setNumero] = useState('');
+const CadastroPaciente: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [nome, setNome] = useState<string>('');
+  const [cpf, setCpf] = useState<string>('');
+  const [dataNasc, setDataNasc] = useState<string>('');
+  const [sexo, setSexo] = useState<string>('Masculino');
+  const [idade, setIdade] = useState<string>('');
+  const [telefone, setTelefone] = useState<string>('');
+  const [codigoPais, setCodigoPais] = useState<string>('+55');
+  const [cep, setCep] = useState<string>('');
+  const [uf, setUf] = useState<string>('');
+  const [cidade, setCidade] = useState<string>('');
+  const [endereco, setEndereco] = useState<string>('');
+  const [numero, setNumero] = useState<string>('');
   const router = useRouter();
 
-  const { createPatient } = usePatient(); // Usando o contexto de pacientes
-  const { selectedDoctor } = useDoctor(); // Usando o contexto de médicos
+  const { createPatient } = usePatient();
+  const { selectedDoctor } = useDoctor();
 
   const handleCadastro = async () => {
     setLoading(true);
 
-    if (!nome || !cpf || !dataNasc) {
+    if (!nome || !cpf || !dataNasc || !cep || !endereco || !numero) {
       Alert.alert('Erro', 'Todos os campos obrigatórios devem ser preenchidos');
       setLoading(false);
       return;
@@ -63,7 +61,14 @@ const CadastroPaciente = () => {
       return;
     }
 
-    // Formatar o telefone no formato +00-00-00000-0000
+    // Validação de CEP: Certifique-se de que o CEP tem 8 dígitos
+    const cleanedCEP = removeCEPFormat(cep);
+    if (cleanedCEP.length !== 8) {
+      Alert.alert('Erro', 'CEP inválido. Deve conter 8 dígitos.');
+      setLoading(false);
+      return;
+    }
+
     const formattedPhoneNumber = formatPhoneNumber(codigoPais, telefone);
 
     try {
@@ -71,14 +76,13 @@ const CadastroPaciente = () => {
         throw new Error('Erro ao obter o ID do médico logado.');
       }
 
-      // Criar um novo paciente usando o PatientContext
       const newPatient = {
         name: nome,
         cpf: removeCPFMask(cpf),
         birth_date: formatDateForDatabase(dataNasc),
         phone_number: formattedPhoneNumber,
         gender: sexo,
-        zip_code: removeCEPFormat(cep),
+        zip_code: cleanedCEP,
         uf,
         city: cidade,
         address: `${endereco}, ${numero}`,
@@ -86,8 +90,7 @@ const CadastroPaciente = () => {
 
       console.log('Dados do paciente a serem criados:', newPatient);
 
-      // Criando paciente no contexto
-      await createPatient(newPatient, selectedDoctor.id); // Usando o doctor_id como referência válida
+      await createPatient(newPatient, selectedDoctor.id);
 
       Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
       router.replace(`/(tabs)/patients/PacienteDetails`);
@@ -104,9 +107,9 @@ const CadastroPaciente = () => {
       const formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
       setDataNasc(formattedValue);
       const birthDate = new Date(
-        parseInt(value.slice(4), 10), // ano
-        parseInt(value.slice(2, 4), 10) - 1, // mês (0-11)
-        parseInt(value.slice(0, 2), 10) // dia
+        parseInt(value.slice(4), 10),
+        parseInt(value.slice(2, 4), 10) - 1,
+        parseInt(value.slice(0, 2), 10)
       );
       const idadeCalculada = calcularIdade(birthDate, 'years');
       setIdade(idadeCalculada);
@@ -126,7 +129,6 @@ const CadastroPaciente = () => {
         )}
         <Text style={styles.header}>Cadastro do Paciente</Text>
 
-        {/* Informações Pessoais */}
         <TextInput
           placeholder="Nome Completo: (obrigatório)"
           value={nome}
@@ -152,7 +154,6 @@ const CadastroPaciente = () => {
         />
         <TextInput placeholder="Idade:" value={idade} editable={false} style={styles.input} />
 
-        {/* Campo de Sexo com Picker */}
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={sexo}
@@ -163,7 +164,6 @@ const CadastroPaciente = () => {
           </Picker>
         </View>
 
-        {/* Telefone com Código do País */}
         <View style={styles.row}>
           <View style={styles.pickerContainer}>
             <Picker
@@ -185,7 +185,6 @@ const CadastroPaciente = () => {
           />
         </View>
 
-        {/* Endereço */}
         <View style={styles.container}>
           <CEPInput
             cep={cep}
@@ -233,7 +232,6 @@ const CadastroPaciente = () => {
           />
         </View>
 
-        {/* Botões */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => router.replace('/(tabs)/home/')}>
             <Text style={styles.buttonText}>Home</Text>
