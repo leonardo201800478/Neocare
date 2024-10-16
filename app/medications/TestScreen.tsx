@@ -1,13 +1,17 @@
-import { format } from 'date-fns';
+import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, Button } from 'react-native';
 
 import { calcularIdade } from '../../utils/idadeCalculator';
 import { useAllergies } from '../context/AllergiesContext';
 import { useDoctor } from '../context/DoctorContext';
 import { useMedicalRecords } from '../context/MedicalRecordsContext';
 import { usePatient } from '../context/PatientContext';
+import {
+  calcularMedicamento,
+  verificarContraindicacoes,
+} from '../medications/api/CalculadoraMedicamentos';
 
 const TestScreen: React.FC = () => {
   const { medicalRecordId } = useLocalSearchParams<{ medicalRecordId: string }>();
@@ -19,6 +23,49 @@ const TestScreen: React.FC = () => {
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
   const [allergies, setAllergies] = useState<any>(null); // Estado para armazenar alergias
   const [loading, setLoading] = useState(true);
+  const [selectedMedication, setSelectedMedication] = useState<string>(''); // Medicamento selecionado
+  const [calculatedDosage, setCalculatedDosage] = useState<string>(''); // Resultado do cálculo de dosagem
+
+  // Lista de medicamentos (definida manualmente, ou pode ser dinâmica)
+  const medicationsList = [
+    { label: 'Amoxicilina', value: 'Amoxicilina' },
+    { label: 'Ibuprofeno', value: 'Ibuprofeno' },
+    { label: 'Paracetamol', value: 'Paracetamol' },
+    { label: 'Sulfato Ferroso', value: 'SulfatoFerroso' },
+    { label: 'Cotrimoxazol', value: 'Cotrimoxazol' },
+    { label: 'Eritromicina', value: 'Eritromicina' },
+    { label: 'Zinco', value: 'Zinco' },
+    { label: 'Vitamina A', value: 'VitaminaA' },
+    { label: 'Albendazol', value: 'Albendazol' },
+    { label: 'Mebendazol', value: 'Mebendazol' },
+    { label: 'Ácido Fólico', value: 'AcidoFolico' },
+    { label: 'Metronidazol', value: 'Metronidazol' },
+    { label: 'Cloroquina Primaquina', value: 'CloroquinaPrimaquina' },
+    { label: 'Salbutamol', value: 'Salbutamol' },
+    { label: 'Nistatina', value: 'Nistatina' },
+    { label: 'Permetrina Benzoato', value: 'PermetrinaBenzoato' },
+    { label: 'Cefalexina', value: 'Cefalexina' },
+    { label: 'Claritromicina', value: 'Claritromicina' },
+    { label: 'Gentamicina (Colírio)', value: 'GentamicinaColirio' },
+    { label: 'SRO', value: 'SRO' },
+    { label: 'Isotretinoína Tópica', value: 'IsotretinoinaTopica' },
+    { label: 'Vitamina D', value: 'VitaminaD' },
+    { label: 'Prednisolona', value: 'Prednisolona' },
+    { label: 'Aciclovir', value: 'Aciclovir' },
+    { label: 'Hidroxizina', value: 'Hidroxizina' },
+    { label: 'Bromoprida', value: 'Bromoprida' },
+    { label: 'Clorexidina Tópica', value: 'ClorexidinaTopica' },
+    { label: 'Tetraciclina (Pomada)', value: 'TetraciclinaPomada' },
+    { label: 'Povidona Iodada', value: 'PovidonaIodada' },
+    { label: 'Metoclopramida', value: 'Metoclopramida' },
+    { label: 'Dexametasona (Oftálmica)', value: 'DexametasonaOftalmica' },
+    { label: 'Miconazol', value: 'Miconazol' },
+    { label: 'Salicilato de Metila', value: 'SalicilatoDeMetila' },
+    { label: 'Corticosteroide Tópico', value: 'CorticosteroideTopico' },
+    { label: 'Lidocaína (Gel)', value: 'LidocainaGel' },
+    { label: 'Sulfacetamida (Colírio)', value: 'SulfacetamidaColirio' },
+    { label: 'Permetrina 1%', value: 'Permetrina1' }
+  ];
 
   const loadAllergies = async (patientId: string) => {
     setLoading(true);
@@ -37,7 +84,46 @@ const TestScreen: React.FC = () => {
     }
   };
 
+  const handleMedicationSelection = () => {
+    if (!selectedMedication) {
+      Alert.alert('Erro', 'Selecione um medicamento.');
+      return;
+    }
 
+    if (!medicalRecord || !medicalRecord.vitals?.peso_kg) {
+      Alert.alert('Erro', 'Dados insuficientes para calcular a dosagem.');
+      return;
+    }
+
+    // Dados do paciente para o cálculo
+    const peso = medicalRecord.vitals.peso_kg;
+    const idade = medicalRecord.patientAge.split(' ')[0]; // Pegando a idade em anos
+
+    // Verificar contraindicações usando alergias e condições clínicas
+    const patientInfo = {
+      alergias: allergies || {}, // Certifique-se de que as alergias estão definidas
+      condicoesClinicas: medicalRecord.attendance || {}, // Usando os dados de condições clínicas
+    };
+
+    // Verificar contraindicações antes do cálculo
+    const contraindications = verificarContraindicacoes(selectedMedication, patientInfo);
+
+    if (contraindications.length > 0) {
+      // Se houver contraindicações, exibe a mensagem e não calcula
+      Alert.alert('Atenção', contraindications.join('\n'));
+      return;
+    }
+
+    // Se não houver contraindicações, prosseguir com o cálculo da dosagem
+    const resultado = calcularMedicamento(
+      selectedMedication,
+      parseFloat(peso),
+      parseInt(idade, 10),
+      patientInfo
+    );
+
+    setCalculatedDosage(resultado.dosage);
+  };
 
   useEffect(() => {
     const loadMedicalRecord = async () => {
@@ -100,13 +186,9 @@ const TestScreen: React.FC = () => {
     );
   }
 
-  const renderAllergyItem = (label: string, value: string) => {
-    return value === 'yes' ? <Text style={styles.allergyItem}>{label}</Text> : null;
-  };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Informações para a tela de medicamentos</Text>
+      <Text style={styles.title}>Cálculo de Medicação</Text>
 
       {/* Informações do Médico e Paciente */}
       <View style={styles.section}>
@@ -116,61 +198,29 @@ const TestScreen: React.FC = () => {
         <Text style={styles.label}>
           Peso (kg): {medicalRecord.vitals?.peso_kg || 'Não informado'}
         </Text>
-
-        {/* Exibe a data da última atualização */}
-        {allergies?.updated_at && (
-          <Text style={styles.updateText}>
-            Última atualização: {format(new Date(allergies.updated_at), 'dd/MM/yyyy')}
-          </Text>
-        )}
-
-        {/* Verifica se o paciente possui alergias cadastradas */}
-        {allergies ? (
-          <View style={styles.allergiesContainer}>
-            <Text style={styles.sectionTitle}>Alergias</Text>
-            {renderAllergyItem('Leite e derivados', allergies.allergy_milk)}
-            {renderAllergyItem('Ovos', allergies.allergy_eggs)}
-            {renderAllergyItem('Carne bovina', allergies.allergy_beef)}
-            {renderAllergyItem('Peixe', allergies.allergy_fish)}
-            {renderAllergyItem('Crustáceos', allergies.allergy_shellfish)}
-            {renderAllergyItem('Gato', allergies.allergy_cat)}
-            {renderAllergyItem('Cachorro', allergies.allergy_dog)}
-            {renderAllergyItem('Abelha', allergies.allergy_bee)}
-            {renderAllergyItem('Formiga', allergies.allergy_ant)}
-            {renderAllergyItem('Animais peçonhentos', allergies.allergy_venomous_animals)}
-            {renderAllergyItem('Insetos', allergies.allergy_insects)}
-            {renderAllergyItem('Dipirona', allergies.allergy_dipyrone)}
-            {renderAllergyItem('Aspirina', allergies.allergy_aspirin)}
-            {renderAllergyItem('Diclofenaco', allergies.allergy_diclofenac)}
-            {renderAllergyItem('Paracetamol', allergies.allergy_paracetamol)}
-            {renderAllergyItem('Penicilina', allergies.allergy_penicillin)}
-            {renderAllergyItem('Magnésio bisulfato', allergies.allergy_magnesium_bisulphate)}
-            {renderAllergyItem('Rivaroxabana', allergies.allergy_rivaroxaban)}
-            {renderAllergyItem('Losartana', allergies.allergy_losartan_potassium)}
-            {renderAllergyItem('Metformina', allergies.allergy_metformin)}
-            {renderAllergyItem('Butilbrometo de escopolamina', allergies.allergy_butylscopolamine)}
-            {renderAllergyItem('Cefalosporina', allergies.allergy_cephalosporin)}
-            {renderAllergyItem('Salbutamol', allergies.allergy_salbutamol)}
-            {renderAllergyItem('Ácido fólico', allergies.allergy_acido_folico)}
-            {renderAllergyItem('Isotretinoína', allergies.allergy_isotretinoina)}
-          </View>
-        ) : (
-          <Text style={styles.noAllergiesText}>Nenhuma alergia cadastrada para este paciente.</Text>
-        )}
-
-        <Text style={styles.label}>
-          Hipertensão: {medicalRecord.attendance?.hipertensao === 'yes' ? 'Sim' : 'Não'}
-        </Text>
-        <Text style={styles.label}>
-          Diabetes: {medicalRecord.attendance?.diabetes === 'yes' ? 'Sim' : 'Não'}
-        </Text>
-        <Text style={styles.label}>
-          Doença Hepática: {medicalRecord.attendance?.doenca_hepatica === 'yes' ? 'Sim' : 'Não'}
-        </Text>
-        <Text style={styles.label}>
-          Deficiência G6PD: {medicalRecord.attendance?.deficiencia_g6pd === 'yes' ? 'Sim' : 'Não'}
-        </Text>
       </View>
+
+      {/* Picker para selecionar o medicamento */}
+      <View style={styles.pickerContainer}>
+        <Text style={styles.label}>Selecione o Medicamento:</Text>
+        <Picker
+          selectedValue={selectedMedication}
+          onValueChange={(itemValue) => setSelectedMedication(itemValue)}
+          style={styles.picker}>
+          {medicationsList.map((medication) => (
+            <Picker.Item key={medication.value} label={medication.label} value={medication.value} />
+          ))}
+        </Picker>
+      </View>
+
+      <Button title="Calcular Dosagem" onPress={handleMedicationSelection} />
+
+      {/* Exibe o resultado do cálculo da dosagem */}
+      {calculatedDosage ? (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>Dosagem Calculada: {calculatedDosage}</Text>
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -180,11 +230,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: 'lightgreen',
-  },
-  updateText: {
-    fontSize: 14,
-    color: '#757575',
-    marginBottom: 8,
   },
   loadingContainer: {
     flex: 1,
@@ -223,37 +268,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  allergiesContainer: {
-    backgroundColor: '#F1F8E9', // Fundo leve para o container de alergias
-    padding: 16,
-    borderRadius: 10,
+  pickerContainer: {
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#AED581', // Borda verde clara para o container
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  resultContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  noAllergiesText: {
-    fontSize: 16,
-    color: '#757575',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  sectionTitle: {
-    fontSize: 20,
+  resultText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    textAlign: 'center',
   },
   allergyItem: {
     fontSize: 16,
-    color: '#2E7D32',
-    marginBottom: 8,
-    padding: 8,
-    backgroundColor: '#A5D6A7',
-    borderRadius: 5,
+    color: 'red',
+    marginBottom: 5,
   },
 });
 

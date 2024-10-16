@@ -18,3 +18,5 @@ export const calcularMedicamento = (
 
   return { dosage, alertas };
 };
+
+export { verificarContraindicacoes };

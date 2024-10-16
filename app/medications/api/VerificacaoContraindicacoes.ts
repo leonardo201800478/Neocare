@@ -1,9 +1,7 @@
-// app/medications/api/VerificacaoContraindicacoes.ts
-
 // Tipo para armazenar informações do paciente
 export interface PacienteInfo {
-  alergias: string[];
-  condicoesClinicas: string[];
+  alergias: Record<string, string | boolean>; // As alergias vêm da tabela allergies
+  condicoesClinicas: Record<string, string | boolean>; // As condições clínicas vêm da tabela attendances
 }
 
 // Função para verificar contraindicações
@@ -17,24 +15,24 @@ export const verificarContraindicacoes = (
   // Verificação de contraindicações por medicamento
   switch (medicamento) {
     case 'SulfatoFerroso':
-      if (condicoesClinicas.includes('Hemocromatose')) {
+      if (condicoesClinicas.hemocromatose === 'yes') {
         alertas.push(
-          'Sulfato Ferroso contraindicado para pacientes com Hemocromatose (sobrecarga de ferro).'
+          'Sulfato Ferroso é contraindicado para pacientes com Hemocromatose (sobrecarga de ferro).'
         );
       }
       break;
 
     case 'Amoxicilina':
-      if (alergias.includes('Penicilina')) {
+      if (alergias.allergy_penicillin === 'yes') {
         alertas.push('Amoxicilina é contraindicado para pacientes com alergia à Penicilina.');
       }
       break;
 
     case 'Cotrimoxazol':
-      if (alergias.includes('Sulfa')) {
+      if (alergias.allergy_sulfa === 'yes') {
         alertas.push('Cotrimoxazol é contraindicado para pacientes com alergia a Sulfa.');
       }
-      if (condicoesClinicas.includes('Diabetes')) {
+      if (condicoesClinicas.diabetes === 'yes') {
         alertas.push(
           'Cuidado: Cotrimoxazol pode interferir no controle da glicose em pacientes diabéticos.'
         );
@@ -42,24 +40,24 @@ export const verificarContraindicacoes = (
       break;
 
     case 'Ibuprofeno':
-      if (condicoesClinicas.includes('Hipertensão')) {
+      if (condicoesClinicas.hipertensao === 'yes') {
         alertas.push('Ibuprofeno é contraindicado para pacientes com hipertensão.');
       }
-      if (alergias.includes('AINEs')) {
+      if (alergias.allergy_diclofenac === 'yes') {
         alertas.push(
-          'Ibuprofeno é contraindicado para pacientes com alergia a anti-inflamatórios não esteroides (AINEs).'
+          'Ibuprofeno é contraindicado para pacientes com alergia a AINEs (anti-inflamatórios não esteroides).'
         );
       }
       break;
 
     case 'Paracetamol':
-      if (condicoesClinicas.includes('Doença Hepática')) {
+      if (condicoesClinicas.doenca_hepatica === 'yes') {
         alertas.push('Paracetamol deve ser usado com cautela em pacientes com doença hepática.');
       }
       break;
 
     case 'CloroquinaPrimaquina':
-      if (condicoesClinicas.includes('Deficiência de G6PD')) {
+      if (condicoesClinicas.deficiencia_g6pd === 'yes') {
         alertas.push(
           'Cloroquina/Primaquina é contraindicado para pacientes com deficiência de G6PD.'
         );
@@ -67,24 +65,24 @@ export const verificarContraindicacoes = (
       break;
 
     case 'GentamicinaColirio':
-      if (alergias.includes('Gentamicina')) {
+      if (alergias.allergy_gentamicina === 'yes') {
         alertas.push('Gentamicina é contraindicado para pacientes com alergia à gentamicina.');
       }
       break;
 
     case 'Cefalexina':
-      if (alergias.includes('Cefalosporinas')) {
+      if (alergias.allergy_cephalosporin === 'yes') {
         alertas.push('Cefalexina é contraindicado para pacientes com alergia à cefalosporinas.');
       }
       break;
 
     case 'Prednisolona':
-      if (condicoesClinicas.includes('Hipertensão')) {
+      if (condicoesClinicas.hipertensao === 'yes') {
         alertas.push(
           'Prednisolona pode aumentar a pressão arterial e deve ser usada com cautela em hipertensos.'
         );
       }
-      if (condicoesClinicas.includes('Diabetes')) {
+      if (condicoesClinicas.diabetes === 'yes') {
         alertas.push('Prednisolona pode aumentar os níveis de glicose em pacientes diabéticos.');
       }
       break;
