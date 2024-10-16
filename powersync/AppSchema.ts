@@ -1,3 +1,5 @@
+// app/schema/AppSchema.ts
+
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Tabela de médicos

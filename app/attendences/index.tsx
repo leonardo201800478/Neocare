@@ -33,14 +33,18 @@ const AttendanceList = () => {
   const loadMedicalRecords = async (patientId: string) => {
     setLoading(true);
     try {
+      // Busca os prontuários médicos associados ao paciente, sem join
       const records = await fetchMedicalRecordsByPatient(patientId);
-
+  
       if (records) {
-        // Carregar nomes dos médicos e pacientes
+        // Para cada prontuário, busca o nome do médico e do paciente de forma separada
         const recordsWithNames = await Promise.all(
           records.map(async (record) => {
+            // Busca separadamente os dados do médico e do paciente
             const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
             const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
+  
+            // Retorna o registro com os nomes adicionais
             return {
               ...record,
               doctorName: doctor ? doctor.name : 'Médico não informado',
@@ -59,6 +63,8 @@ const AttendanceList = () => {
       setLoading(false);
     }
   };
+  
+  
 
   const handleMedicalRecordSelect = (record: any) => {
     router.push({
