@@ -1,5 +1,3 @@
-// app/context/MedicamentsContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -46,6 +44,14 @@ type Vitals = {
 
 type Allergies = Record<string, boolean | string>;
 
+type ManualData = {
+  patient?: Patient;
+  doctor?: Doctor;
+  attendance?: Attendance;
+  vitals?: Vitals;
+  allergies?: Allergies;
+};
+
 // Definição do contexto
 type MedicamentsContextType = {
   medications: Medication[];
@@ -54,6 +60,7 @@ type MedicamentsContextType = {
   fetchMedicationsByPatient: (patientId: string) => Promise<Medication[]>;
   fetchMedicationsByDoctor: (doctorId: string) => Promise<Medication[]>;
   generatePrescription: (medicationId: string) => Promise<any>;
+  provideManualData: (manualData: ManualData) => void;
 };
 
 const MedicamentsContext = createContext<MedicamentsContextType | undefined>(undefined);
@@ -61,21 +68,19 @@ const MedicamentsContext = createContext<MedicamentsContextType | undefined>(und
 export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { db, supabaseConnector } = useSystem();
   const [medications, setMedications] = useState<Medication[]>([]);
+  const [manualData, setManualData] = useState<ManualData>({});
 
   // Função para buscar os dados necessários para a calculadora de medicamentos
   const fetchDataForMedicationCalculator = async (patientId: string) => {
     try {
-      // Busca os dados do paciente
       const patientQuery = await db
         .selectFrom('patients')
         .selectAll()
         .where('id', '=', patientId)
         .execute();
-      if (!patientQuery.length) {
-        throw new Error('Paciente não encontrado');
-      }
+      if (!patientQuery.length) throw new Error('Paciente não encontrado');
+      console.log('Resultado da consulta de paciente:', patientQuery);
 
-      // Busca os atendimentos do paciente
       const attendancesQuery = await db
         .selectFrom('attendances')
         .selectAll()
@@ -83,7 +88,6 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
         .execute();
       const attendance = attendancesQuery[0] as Attendance;
 
-      // Busca os sinais vitais do paciente
       const vitalsQuery = await db
         .selectFrom('attendance_vitals')
         .selectAll()
@@ -99,7 +103,6 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
             }
           : null;
 
-      // Busca as alergias do paciente
       const allergiesQuery = await db
         .selectFrom('allergies')
         .selectAll()
@@ -107,7 +110,6 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
         .execute();
       const allergies = allergiesQuery.length > 0 ? (allergiesQuery[0] as Allergies) : {};
 
-      // Se houver um atendimento, busca o médico relacionado
       let doctor = null;
       if (attendance?.doctor_id) {
         const doctorQuery = await db
@@ -127,7 +129,9 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
       };
     } catch (error) {
       console.error('Erro ao buscar dados para a calculadora de medicamentos:', error);
-      throw new Error('Erro ao buscar dados para a calculadora.');
+      return {
+        ...manualData,
+      };
     }
   };
 
@@ -142,17 +146,18 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
         },
       ]);
 
-      if (error) {
-        throw new Error('Erro ao cadastrar o medicamento.');
-      }
+      if (error) throw new Error('Erro ao cadastrar o medicamento.');
 
-      if (data && data[0]) {
-        setMedications((prev) => [...prev, data[0]]);
-      }
+      if (data && data[0]) setMedications((prev) => [...prev, data[0]]);
     } catch (error) {
       console.error('Erro ao cadastrar medicamento:', error);
       throw error;
     }
+  };
+
+  // Função para fornecer dados manuais, caso não estejam disponíveis no banco
+  const provideManualData = (data: ManualData) => {
+    setManualData((prevData) => ({ ...prevData, ...data }));
   };
 
   // Função para buscar medicamentos por paciente
@@ -163,18 +168,16 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
         .select('*')
         .eq('patient_id', patientId);
 
-      if (error) {
-        throw new Error('Erro ao buscar medicamentos do paciente.');
-      }
+      if (error) throw new Error('Erro ao buscar medicamentos por paciente.');
 
       return data as Medication[];
     } catch (error) {
-      console.error('Erro ao buscar medicamentos do paciente:', error);
+      console.error('Erro ao buscar medicamentos por paciente:', error);
       throw error;
     }
   };
 
-  // Função para buscar medicamentos gerados por um determinado médico
+  // Função para buscar medicamentos por médico
   const fetchMedicationsByDoctor = async (doctorId: string): Promise<Medication[]> => {
     try {
       const { data, error } = await supabaseConnector.client
@@ -182,9 +185,7 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
         .select('*')
         .eq('doctor_id', doctorId);
 
-      if (error) {
-        throw new Error('Erro ao buscar medicamentos por médico.');
-      }
+      if (error) throw new Error('Erro ao buscar medicamentos por médico.');
 
       return data as Medication[];
     } catch (error) {
@@ -193,43 +194,19 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   };
 
-  // Função para gerar uma receita com os dados do paciente e do médico
-  const generatePrescription = async (medicationId: string) => {
+  // Função para gerar prescrição
+  const generatePrescription = async (medicationId: string): Promise<any> => {
     try {
-      const medicationQuery = await supabaseConnector.client
-        .from('medications')
-        .select('*')
-        .eq('id', medicationId)
-        .single();
+      const { data, error } = await supabaseConnector.client
+        .from('prescriptions')
+        .insert([{ medication_id: medicationId }]);
 
-      if (medicationQuery.error || !medicationQuery.data) {
-        throw new Error('Medicamento não encontrado');
-      }
-      const medication = medicationQuery.data;
+      if (error) throw new Error('Erro ao gerar prescrição.');
 
-      const [patientQuery, doctorQuery] = await Promise.all([
-        db.selectFrom('patients').selectAll().where('id', '=', medication.patient_id).execute(),
-        db.selectFrom('doctors').selectAll().where('id', '=', medication.doctor_id).execute(),
-      ]);
-
-      const patient = patientQuery[0];
-      const doctor = doctorQuery[0];
-
-      if (!patient || !doctor) {
-        throw new Error('Informações do paciente ou médico não encontradas');
-      }
-
-      return {
-        medicationName: medication.name,
-        dosage: medication.dosage_info,
-        patientName: patient.name,
-        birthDate: patient.birth_date,
-        cpf: patient.cpf,
-        doctorName: doctor.name,
-      };
+      return data;
     } catch (error) {
-      console.error('Erro ao gerar receita:', error);
-      throw new Error('Erro ao gerar receita.');
+      console.error('Erro ao gerar prescrição:', error);
+      throw error;
     }
   };
 
@@ -242,6 +219,7 @@ export const MedicamentsProvider: React.FC<{ children: ReactNode }> = ({ childre
         fetchMedicationsByPatient,
         fetchMedicationsByDoctor,
         generatePrescription,
+        provideManualData,
       }}>
       {children}
     </MedicamentsContext.Provider>

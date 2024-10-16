@@ -168,8 +168,8 @@ const PacienteDetails = () => {
   const handleViewMedicamentsCard = () => {
     if (selectedPatient) {
       router.push({
-        pathname: '/medications/',
-        params: { patientId: selectedPatient.id },
+        pathname: '/medications/',  // Caminho da tela de teste
+        params: { patientId: selectedPatient.id },  // Passando o patientId como parâmetro
       });
     } else {
       Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
