@@ -47,14 +47,13 @@ export default function AppTabsLayout() {
           elevation: 1,
           shadowOpacity: 1,
           height: 60, // Ajuste da altura para acomodar ícones maiores e mais espaçamento
-          paddingBottom: 10, 
+          paddingBottom: 10,
           paddingTop: 5, // Espaçamento superior para dar mais foco aos ícones
         },
         tabBarLabelStyle: {
           fontSize: 12, // Tamanho ajustado para garantir melhor visibilidade
         },
-      }}
-    >
+      }}>
       {/* Aba Paciente */}
       <Tabs.Screen
         name="patients"
@@ -133,4 +132,4 @@ export default function AppTabsLayout() {
       />
     </Tabs>
   );
-}        
+}

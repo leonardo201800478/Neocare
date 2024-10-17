@@ -126,8 +126,9 @@ const HomeScreen: React.FC = () => {
           style={[styles.button, { backgroundColor: '#28A745', marginVertical: 10 }]}
           onPress={() => {
             setShowAllPatients(true);
-            setSearchQuery(''); // Reseta a consulta de pesquisa
+            setSearchQuery('');
           }}>
+          <Ionicons name="list" size={20} color="#fff" />
           <Text style={styles.buttonText}>Listar Todos os Pacientes</Text>
         </TouchableOpacity>
 
@@ -193,9 +194,12 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 10,
+    width: '60%',
     borderRadius: 5,
+    marginLeft: '20%',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   infoContainer: {
     justifyContent: 'center',
@@ -222,6 +226,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginLeft: 8,
   },
 });
 

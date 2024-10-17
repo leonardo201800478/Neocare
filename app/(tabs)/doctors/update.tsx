@@ -1,10 +1,8 @@
-// app/(tabs)/doctors/update.tsx
-
+import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 
-import DoctorsStyles from './styles/DoctorsStyles';
 import { useDoctor } from '../../context/DoctorContext';
 
 const UpdateDoctorProfile: React.FC = () => {
@@ -41,35 +39,112 @@ const UpdateDoctorProfile: React.FC = () => {
   };
 
   return (
-    <View style={DoctorsStyles.container}>
+    <View style={styles.container}>
       {loading && (
-        <View style={DoctorsStyles.loadingOverlay}>
+        <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color="#fff" />
-          <Text style={DoctorsStyles.loadingText}>Atualizando dados...</Text>
+          <Text style={styles.loadingText}>Atualizando dados...</Text>
         </View>
       )}
-      <Text style={DoctorsStyles.header}>Atualizar Dados do Médico</Text>
+      <Text style={styles.header}>Atualizar Dados do Médico</Text>
 
       <TextInput
         placeholder="Nome Completo"
         value={name}
         onChangeText={setName}
-        style={DoctorsStyles.input}
+        style={styles.input}
         placeholderTextColor="#b0b0b0"
       />
 
       <TouchableOpacity
-        style={DoctorsStyles.button}
+        style={styles.button}
         onPress={handleUpdateDoctor}
         disabled={loading}>
-        <Text style={DoctorsStyles.buttonText}>Atualizar</Text>
+        <FontAwesome name="save" size={20} color="#fff" />
+        <Text style={styles.buttonText}>Atualizar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.replace('/(tabs)/doctors')}>
-        <Text style={DoctorsStyles.linkText}>Voltar para Perfil</Text>
+      <TouchableOpacity style={styles.buttonSecondary} onPress={() => router.replace('/(tabs)/doctors')}>
+        <FontAwesome name="arrow-left" size={20} color="#fff" />
+        <Text style={styles.buttonText}>Voltar para Perfil</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#e8f5e9',
+    justifyContent: 'center',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
+    marginTop: 10,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2E7D32',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    fontSize: 16,
+    color: '#333',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  buttonSecondary: {
+    backgroundColor: '#FF5722',
+    padding: 15,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+});
 
 export default UpdateDoctorProfile;

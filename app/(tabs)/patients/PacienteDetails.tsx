@@ -431,7 +431,7 @@ const PacienteDetails = () => {
             <Text style={styles.buttonText}>REGISTRAR VACINA</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, styles.buttonTertiary]}
+            style={[styles.button, styles.buttonQuaternary]}
             onPress={handleViewVaccinationCard}>
             <MaterialCommunityIcons name="card-account-details" size={24} color="#fff" />
             <Text style={styles.buttonText}>CARTÃO DE VACINAS</Text>
@@ -439,13 +439,13 @@ const PacienteDetails = () => {
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.button, styles.buttonTertiary]}
+            style={[styles.button, styles.buttonQuinary]}
             onPress={handleViewAllergiesCard}>
             <MaterialCommunityIcons name="alert-circle" size={24} color="#fff" />
             <Text style={styles.buttonText}>ALERGIAS</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, styles.buttonSecondary]}
+            style={[styles.button, styles.buttonSenary]}
             onPress={handleViewMedicamentsCard}>
             <MaterialCommunityIcons name="pill" size={24} color="#fff" />
             <Text style={styles.buttonText}>MEDICAMENTOS</Text>
