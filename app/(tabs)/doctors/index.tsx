@@ -1,5 +1,4 @@
 // app/(tabs)/doctors/index.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
@@ -14,7 +13,7 @@ const DoctorProfile: React.FC = () => {
   const { supabaseConnector } = useSystem();
   const [patientsCount, setPatientsCount] = useState<number>(0);
   const [recordsCount, setRecordsCount] = useState<number>(0);
-  const [vaccinesCount, setVaccinesCount] = useState<number>(0);
+  const [medicationsCount, setMedicationsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,7 +34,6 @@ const DoctorProfile: React.FC = () => {
         .from('patients')
         .select('id', { count: 'exact' })
         .eq('doctor_id', selectedDoctor!.id);
-
       if (patientsError) throw patientsError;
       setPatientsCount(patients?.length || 0);
 
@@ -43,18 +41,16 @@ const DoctorProfile: React.FC = () => {
         .from('attendances')
         .select('id', { count: 'exact' })
         .eq('doctor_id', selectedDoctor!.id);
-
       if (attendancesError) throw attendancesError;
       setRecordsCount(attendances?.length || 0);
 
-      const { data: vaccinations, error: vaccinationsError } = await client
-        .from('vaccinations')
+      const { data: medications, error: medicationsError } = await client
+        .from('medications')
         .select('id', { count: 'exact' })
         .eq('doctor_id', selectedDoctor!.id);
-
-      if (vaccinationsError) throw vaccinationsError;
-      setVaccinesCount(vaccinations?.length || 0);
-    } catch {
+      if (medicationsError) throw medicationsError;
+      setMedicationsCount(medications?.length || 0);
+    } catch (error) {
       Alert.alert('Erro', 'Erro ao carregar dados. Tente novamente mais tarde.');
     } finally {
       setLoading(false);
@@ -78,18 +74,24 @@ const DoctorProfile: React.FC = () => {
       </Text>
 
       <View style={DoctorsStyles.infoBoxContainer}>
-        <View style={DoctorsStyles.infoBox}>
+        <TouchableOpacity
+          style={DoctorsStyles.infoBox}
+          onPress={() => router.push('/(tabs)/doctors/DoctorsPatients')}>
           <Text style={DoctorsStyles.infoBoxTitle}>Pacientes</Text>
           <Text style={DoctorsStyles.infoBoxValue}>{patientsCount}</Text>
-        </View>
-        <View style={DoctorsStyles.infoBox}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={DoctorsStyles.infoBox}
+          onPress={() => router.push('/(tabs)/doctors/DoctorsRecords')}>
           <Text style={DoctorsStyles.infoBoxTitle}>Prontuários</Text>
           <Text style={DoctorsStyles.infoBoxValue}>{recordsCount}</Text>
-        </View>
-        <View style={DoctorsStyles.infoBox}>
-          <Text style={DoctorsStyles.infoBoxTitle}>Vacinas</Text>
-          <Text style={DoctorsStyles.infoBoxValue}>{vaccinesCount}</Text>
-        </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={DoctorsStyles.infoBox}
+          onPress={() => router.push('/(tabs)/doctors/DoctorsMedications')}>
+          <Text style={DoctorsStyles.infoBoxTitle}>Medicamentos</Text>
+          <Text style={DoctorsStyles.infoBoxValue}>{medicationsCount}</Text>
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity

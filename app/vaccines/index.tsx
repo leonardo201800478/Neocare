@@ -195,8 +195,10 @@ const RegisterVaccination = () => {
             </View>
           </View>
         ))}
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>SAIR</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push('/(tabs)/patients/PacienteDetails')}>
+          <Text style={styles.buttonText}>Voltar para Detalhes do Paciente</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

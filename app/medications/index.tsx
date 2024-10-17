@@ -81,7 +81,7 @@ const MedicamentsList = () => {
   const handleMedicalRecordSelect = (record: any) => {
     console.log('Selecionado prontuário:', record); // Verifica o prontuário selecionado
     router.push({
-      pathname: '/medications/TestScreen',
+      pathname: '/medications/MedicationCalc',
       params: { medicalRecordId: record.id }, // Passa o id do prontuário para a próxima tela
     });
   };

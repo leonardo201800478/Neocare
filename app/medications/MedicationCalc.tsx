@@ -1,5 +1,3 @@
-// app/medications/TestScreen.tsx
-
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -19,7 +17,8 @@ import { useAllergies } from '../context/AllergiesContext';
 import { useDoctor } from '../context/DoctorContext';
 import { useMedicalRecords } from '../context/MedicalRecordsContext';
 import { usePatient } from '../context/PatientContext';
-import { medicationsList } from './api/medicationsList'; // Lista de medicamentos importada
+import { useMedicaments } from '../context/MedicamentsContext'; // Importa o contexto de medicamentos
+import { medicationsList } from './api/medicationsList';
 import {
   calcularMedicamento,
   verificarContraindicacoes,
@@ -31,6 +30,7 @@ const TestScreen: React.FC = () => {
   const { fetchDoctorById } = useDoctor();
   const { fetchPatientById } = usePatient();
   const { fetchAllergiesByPatient } = useAllergies();
+  const { addMedication } = useMedicaments(); // Hook para adicionar medicamento
 
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
   const [allergies, setAllergies] = useState<any>(null);
@@ -44,12 +44,7 @@ const TestScreen: React.FC = () => {
     setLoading(true);
     try {
       const patientAllergies = await fetchAllergiesByPatient(patientId);
-      if (patientAllergies && patientAllergies.length > 0) {
-        setAllergies(patientAllergies[0]);
-      } else {
-        setAllergies([]);
-      }
-      console.log('Alergias carregadas:', patientAllergies);
+      setAllergies(patientAllergies?.[0] || []);
     } catch (error) {
       console.error('Erro ao buscar alergias:', error);
       Alert.alert('Erro', 'Erro ao carregar alergias do paciente.');
@@ -58,24 +53,22 @@ const TestScreen: React.FC = () => {
     }
   };
 
-  // Função para filtrar medicamentos com base no termo de pesquisa
   const filterMedications = (text: string) => {
     setSearchTerm(text);
-
     if (text.length >= 3) {
       const filtered = medicationsList.filter((medication) =>
         medication.label.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredMedications(filtered);
     } else {
-      setFilteredMedications([]); // Se menos de 3 caracteres, não exibe a lista
+      setFilteredMedications([]);
     }
   };
 
   const handleMedicationSelection = (medication: string) => {
     setSelectedMedication(medication);
-    setSearchTerm(medication); // Fixar o medicamento selecionado no campo de pesquisa
-    setFilteredMedications([]); // Esconder a lista de medicamentos após a seleção
+    setSearchTerm(medication); 
+    setFilteredMedications([]);
   };
 
   const handleCalculateDosage = () => {
@@ -89,33 +82,46 @@ const TestScreen: React.FC = () => {
       return;
     }
 
-    const peso = medicalRecord.vitals.peso_kg; // Mantendo o peso como está, sem conversão
-    console.log('Peso do paciente (em gramas):', peso);
-
+    const peso = medicalRecord.vitals.peso_kg; 
     const idadeCalculada = calcularIdadeMesesAnos(
       new Date(medicalRecord.patientAge),
       medicalRecord.patientAge
     );
     const idade = idadeCalculada.anos + idadeCalculada.meses / 12;
-    console.log('Idade do paciente (em anos):', idade);
 
     const patientInfo = {
       alergias: allergies || {},
       condicoesClinicas: medicalRecord.attendance || {},
     };
 
-    console.log('Condições clínicas do paciente:', patientInfo.condicoesClinicas);
-
     const contraindications = verificarContraindicacoes(selectedMedication, patientInfo);
-
     if (contraindications.length > 0) {
-      // Se houver contraindicações, exibe a mensagem
       Alert.alert('Atenção', contraindications.join('\n'));
     } else {
-      // Se não houver contraindicações, calcular a dosagem e exibir
       const resultado = calcularMedicamento(selectedMedication, peso, idade, patientInfo);
       setCalculatedDosage(resultado.dosage);
-      console.log('Resultado da dosagem calculada:', resultado.dosage);
+    }
+  };
+
+  const handleAddMedication = async () => {
+    if (!selectedMedication || !calculatedDosage) {
+      Alert.alert('Erro', 'Calcule a dosagem antes de registrar o medicamento.');
+      return;
+    }
+
+    try {
+      await addMedication({
+        name: selectedMedication,
+        dosage_info: calculatedDosage,
+        indication: 'Indicação específica', // Ajuste conforme necessário
+        contraindications: 'Nenhuma conhecida', // Ajuste conforme necessário
+        patient_id: medicalRecord.patient_id,
+        doctor_id: medicalRecord.doctor_id,
+      });
+      Alert.alert('Sucesso', 'Medicamento registrado com sucesso.');
+    } catch (error) {
+      console.error('Erro ao registrar medicamento:', error);
+      Alert.alert('Erro', 'Erro ao registrar o medicamento.');
     }
   };
 
@@ -129,15 +135,9 @@ const TestScreen: React.FC = () => {
       setLoading(true);
       try {
         const record = await fetchCompleteMedicalRecord(medicalRecordId);
-        console.log('Prontuário carregado:', record);
-
         if (!record) throw new Error('Prontuário não encontrado.');
-
         const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
         const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
-
-        console.log('Médico carregado:', doctor);
-        console.log('Paciente carregado:', patient);
 
         if (patient?.id) {
           await loadAllergies(patient.id);
@@ -202,7 +202,6 @@ const TestScreen: React.FC = () => {
         </Text>
       </View>
 
-      {/* Campo de pesquisa para medicamentos */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -232,6 +231,9 @@ const TestScreen: React.FC = () => {
           <Text style={styles.resultText}>Dosagem Calculada: {calculatedDosage}</Text>
         </View>
       ) : null}
+
+      {/* Botão para registrar o medicamento */}
+      <Button title="Registrar Medicamento" onPress={handleAddMedication} />
     </View>
   );
 };

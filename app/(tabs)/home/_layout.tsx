@@ -30,7 +30,7 @@ const Layout: React.FC = () => {
       <TouchableOpacity style={styles.drawerButton} onPress={() => router.push('/(tabs)/doctors/')}>
         <Text style={styles.drawerButtonText}>Perfil do Médico</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.drawerButton} onPress={() => router.push('/(tabs)/about/')}>
+      <TouchableOpacity style={styles.drawerButton} onPress={() => router.push('/about/')}>
         <Text style={styles.drawerButtonText}>Sobre o App</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.drawerButton} onPress={() => router.push('/terms/')}>

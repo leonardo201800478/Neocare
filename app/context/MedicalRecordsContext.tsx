@@ -1,4 +1,4 @@
-// MedicalRecordsContext.tsx
+// app/context/MedicalRecordsContext.tsx
 import React, { createContext, useContext, ReactNode } from 'react';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -129,77 +129,80 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
         .select('*')
         .eq('id', medicalRecordId)
         .single();
-  
+
       if (medicalRecordError || !medicalRecord) {
-        console.error('Erro ao buscar o prontuário médico no Supabase:', medicalRecordError?.message);
+        console.error(
+          'Erro ao buscar o prontuário médico no Supabase:',
+          medicalRecordError?.message
+        );
         return null;
       }
-  
+
       // Buscar dados do médico
       const { data: doctor, error: doctorError } = await supabaseConnector.client
         .from('doctors')
         .select('name')
         .eq('id', medicalRecord.doctor_id)
         .single();
-  
+
       if (doctorError) {
         console.error('Erro ao buscar o médico no Supabase:', doctorError.message);
       }
-  
+
       // Buscar dados do paciente
       const { data: patient, error: patientError } = await supabaseConnector.client
         .from('patients')
         .select('name')
         .eq('id', medicalRecord.patient_id)
         .single();
-  
+
       if (patientError) {
         console.error('Erro ao buscar o paciente no Supabase:', patientError.message);
       }
-  
+
       // Buscar dados do atendimento
       const { data: attendance, error: attendanceError } = await supabaseConnector.client
         .from('attendances')
         .select('*')
         .eq('id', medicalRecord.attendance_id)
         .single();
-  
+
       if (attendanceError) {
         console.error('Erro ao buscar o atendimento no Supabase:', attendanceError.message);
       }
-  
+
       // Buscar dados dos sinais vitais
       const { data: vitals, error: vitalsError } = await supabaseConnector.client
         .from('attendance_vitals')
         .select('*')
         .eq('id', medicalRecord.vital_id)
         .single();
-  
+
       if (vitalsError) {
         console.error('Erro ao buscar sinais vitais no Supabase:', vitalsError.message);
       }
-  
+
       // Buscar múltiplos dados de sintomas
       const { data: symptoms, error: symptomsError } = await supabaseConnector.client
         .from('attendance_symptoms')
         .select('*')
         .eq('id', medicalRecord.symptom_id); // Remove o .single() porque pode haver múltiplos registros
-  
+
       if (symptomsError) {
         console.error('Erro ao buscar sintomas no Supabase:', symptomsError.message);
       }
-  
+
       // Buscar dados de nutrição e desenvolvimento
       const { data: nutrition, error: nutritionError } = await supabaseConnector.client
         .from('attendance_nutrition_development')
         .select('*')
         .eq('id', medicalRecord.nutrition_id)
         .single();
-  
+
       if (nutritionError) {
         console.error('Erro ao buscar dados de nutrição no Supabase:', nutritionError.message);
       }
-  
+
       // Retornar todos os dados combinados
       return {
         id: medicalRecord.id,
@@ -223,7 +226,7 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
       return null;
     }
   };
-  
+
   const fetchMedicalRecordsByPatient = async (
     patientId: string
   ): Promise<MedicalRecord[] | null> => {

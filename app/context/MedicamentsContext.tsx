@@ -1,3 +1,5 @@
+// app/context/MedicamentsContext.tsx
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { useSystem } from '../../powersync/PowerSync';

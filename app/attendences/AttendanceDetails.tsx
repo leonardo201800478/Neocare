@@ -1,3 +1,5 @@
+// app/attendences/AttendanceDetails.tsx
+
 import { AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';

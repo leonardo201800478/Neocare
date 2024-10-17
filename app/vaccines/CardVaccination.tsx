@@ -143,8 +143,10 @@ const VaccinationCard = () => {
             </Text>
           </TouchableOpacity>
         ))}
-        <TouchableOpacity style={VaccinationStyles.button} onPress={() => router.back()}>
-          <Text style={VaccinationStyles.buttonText}>Retornar</Text>
+        <TouchableOpacity
+          style={VaccinationStyles.button}
+          onPress={() => router.push('/(tabs)/patients/PacienteDetails')}>
+          <Text style={VaccinationStyles.buttonText}>Voltar para Detalhes do Paciente</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

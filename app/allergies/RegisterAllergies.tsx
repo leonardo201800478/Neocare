@@ -161,7 +161,7 @@ const RegisterAllergies = () => {
     try {
       await addOrUpdateAllergy(allergyStates, selectedDoctor.id, selectedPatient.id);
       Alert.alert('Sucesso', 'Alergias registradas com sucesso!');
-    } catch (error) {
+    } catch {
       Alert.alert('Erro', 'Erro ao registrar alergias.');
     }
   };

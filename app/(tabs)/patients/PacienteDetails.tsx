@@ -1,3 +1,5 @@
+// app/(tabs)/patients/PacienteDetails.tsx
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
