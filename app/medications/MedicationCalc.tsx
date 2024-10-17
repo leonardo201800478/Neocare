@@ -1,4 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
+// app/medications/MedicationCalc.tsx
+
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -10,21 +12,22 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
 
 import { calcularIdadeMesesAnos } from '../../utils/novaCalculadoraIdade';
 import { useAllergies } from '../context/AllergiesContext';
 import { useDoctor } from '../context/DoctorContext';
 import { useMedicalRecords } from '../context/MedicalRecordsContext';
+import { useMedicaments } from '../context/MedicamentsContext';
 import { usePatient } from '../context/PatientContext';
-import { useMedicaments } from '../context/MedicamentsContext'; // Importa o contexto de medicamentos
 import { medicationsList } from './api/medicationsList';
 import {
   calcularMedicamento,
   verificarContraindicacoes,
 } from '../medications/api/CalculadoraMedicamentos';
 
-const TestScreen: React.FC = () => {
+const MedicationCalc: React.FC = () => {
   const { medicalRecordId } = useLocalSearchParams<{ medicalRecordId: string }>();
   const { fetchCompleteMedicalRecord } = useMedicalRecords();
   const { fetchDoctorById } = useDoctor();
@@ -39,19 +42,54 @@ const TestScreen: React.FC = () => {
   const [calculatedDosage, setCalculatedDosage] = useState<string>(''); // Resultado do cálculo de dosagem
   const [searchTerm, setSearchTerm] = useState<string>(''); // Termo de pesquisa para medicamentos
   const [filteredMedications, setFilteredMedications] = useState<any[]>([]); // Lista filtrada de medicamentos
+  const [dosageRecords, setDosageRecords] = useState<any[]>([]); // Registros de dosagem para a lista
+  const router = useRouter();
 
-  const loadAllergies = async (patientId: string) => {
-    setLoading(true);
-    try {
-      const patientAllergies = await fetchAllergiesByPatient(patientId);
-      setAllergies(patientAllergies?.[0] || []);
-    } catch (error) {
-      console.error('Erro ao buscar alergias:', error);
-      Alert.alert('Erro', 'Erro ao carregar alergias do paciente.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const loadAllergies = async (patientId: string) => {
+      try {
+        const allergiesData = await fetchAllergiesByPatient(patientId);
+        setAllergies(allergiesData);
+      } catch (error) {
+        console.error('Erro ao carregar alergias:', error);
+        Alert.alert('Erro', 'Não foi possível carregar as alergias do paciente.');
+      }
+    };
+
+    const loadMedicalRecord = async () => {
+      if (!medicalRecordId) {
+        Alert.alert('Erro', 'ID do prontuário não encontrado.');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const record = await fetchCompleteMedicalRecord(medicalRecordId);
+        if (!record) throw new Error('Prontuário não encontrado.');
+
+        const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
+        const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
+
+        if (patient?.id) {
+          await loadAllergies(patient.id);
+        }
+
+        setMedicalRecord({
+          ...record,
+          doctorName: doctor ? doctor.name : 'Não informado',
+          patientName: patient ? patient.name : 'Não informado',
+          patientAge: patient ? patient.birth_date : null, // Ajuste para evitar erro
+        });
+      } catch (error) {
+        console.error('Erro ao carregar prontuário:', error);
+        Alert.alert('Erro', 'Não foi possível carregar o prontuário.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMedicalRecord();
+  }, [medicalRecordId]);
 
   const filterMedications = (text: string) => {
     setSearchTerm(text);
@@ -67,7 +105,7 @@ const TestScreen: React.FC = () => {
 
   const handleMedicationSelection = (medication: string) => {
     setSelectedMedication(medication);
-    setSearchTerm(medication); 
+    setSearchTerm(medication);
     setFilteredMedications([]);
   };
 
@@ -82,24 +120,32 @@ const TestScreen: React.FC = () => {
       return;
     }
 
-    const peso = medicalRecord.vitals.peso_kg; 
-    const idadeCalculada = calcularIdadeMesesAnos(
-      new Date(medicalRecord.patientAge),
-      medicalRecord.patientAge
-    );
-    const idade = idadeCalculada.anos + idadeCalculada.meses / 12;
+    const peso = medicalRecord.vitals.peso_kg;
+    if (medicalRecord.patientAge) {
+      const idadeCalculada = calcularIdadeMesesAnos(
+        new Date(medicalRecord.patientAge),
+        medicalRecord.patientAge
+      );
+      const idade = idadeCalculada.anos + idadeCalculada.meses / 12;
 
-    const patientInfo = {
-      alergias: allergies || {},
-      condicoesClinicas: medicalRecord.attendance || {},
-    };
+      const patientInfo = {
+        alergias: allergies || {},
+        condicoesClinicas: medicalRecord.attendance || {},
+      };
 
-    const contraindications = verificarContraindicacoes(selectedMedication, patientInfo);
-    if (contraindications.length > 0) {
-      Alert.alert('Atenção', contraindications.join('\n'));
+      const contraindications = verificarContraindicacoes(selectedMedication, patientInfo);
+      if (contraindications.length > 0) {
+        Alert.alert('Atenção', contraindications.join('\n'));
+      } else {
+        const resultado = calcularMedicamento(selectedMedication, peso, idade, patientInfo);
+        setCalculatedDosage(resultado.dosage);
+        setDosageRecords((prev) => [
+          ...prev,
+          { medication: selectedMedication, dosage: resultado.dosage },
+        ]);
+      }
     } else {
-      const resultado = calcularMedicamento(selectedMedication, peso, idade, patientInfo);
-      setCalculatedDosage(resultado.dosage);
+      Alert.alert('Erro', 'Idade do paciente não informada.');
     }
   };
 
@@ -113,8 +159,8 @@ const TestScreen: React.FC = () => {
       await addMedication({
         name: selectedMedication,
         dosage_info: calculatedDosage,
-        indication: 'Indicação específica', // Ajuste conforme necessário
-        contraindications: 'Nenhuma conhecida', // Ajuste conforme necessário
+        indication: 'Indicação específica',
+        contraindications: 'Nenhuma conhecida',
         patient_id: medicalRecord.patient_id,
         doctor_id: medicalRecord.doctor_id,
       });
@@ -125,40 +171,69 @@ const TestScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const loadMedicalRecord = async () => {
-      if (!medicalRecordId) {
-        Alert.alert('Erro', 'ID do prontuário não encontrado.');
+  const handleDeleteDosageRecord = (index: number) => {
+    Alert.alert('Confirmar Exclusão', 'Deseja realmente excluir este registro de dosagem?', [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      {
+        text: 'Excluir',
+        onPress: () => setDosageRecords((prev) => prev.filter((_, i) => i !== index)),
+        style: 'destructive',
+      },
+    ]);
+  };
+
+  const handleGeneratePrescription = async () => {
+    if (!medicalRecord || !medicalRecord.patient_id || !medicalRecord.doctor_id) {
+      Alert.alert('Erro', 'Informações insuficientes para gerar a receita.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const patientDetails = await fetchPatientById(medicalRecord.patient_id);
+      const doctorDetails = await fetchDoctorById(medicalRecord.doctor_id);
+
+      if (!patientDetails || !doctorDetails) {
+        Alert.alert('Erro', 'Falha ao carregar dados do paciente ou do médico.');
         return;
       }
 
-      setLoading(true);
-      try {
-        const record = await fetchCompleteMedicalRecord(medicalRecordId);
-        if (!record) throw new Error('Prontuário não encontrado.');
-        const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
-        const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
+      const prescriptionData = {
+        patient: {
+          name: patientDetails.name,
+          cpf: patientDetails.cpf,
+          age: patientDetails.birth_date
+            ? calcularIdadeMesesAnos(new Date(patientDetails.birth_date), '').anos
+            : 'Data de nascimento não informada',
+        },
+        doctor: {
+          name: doctorDetails.name,
+        },
+        dosageRecords: dosageRecords.map((dr) => ({
+          medication: dr.medication,
+          dosage: dr.dosage,
+        })),
+      };
 
-        if (patient?.id) {
-          await loadAllergies(patient.id);
-        }
-
-        setMedicalRecord({
-          ...record,
-          doctorName: doctor ? doctor.name : 'Não informado',
-          patientName: patient ? patient.name : 'Não informado',
-          patientAge: patient ? patient.birth_date : 'Não informado',
-        });
-      } catch (error) {
-        console.error('Erro ao carregar prontuário:', error);
-        Alert.alert('Erro', 'Não foi possível carregar o prontuário.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadMedicalRecord();
-  }, [medicalRecordId]);
+      router.push({
+        pathname: '/medications/PrescriptionScreen',
+        params: {
+          patient: JSON.stringify(prescriptionData.patient),
+          doctor: JSON.stringify(prescriptionData.doctor),
+          dosageRecords: JSON.stringify(prescriptionData.dosageRecords),
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao gerar receita:', error);
+      Alert.alert('Erro', 'Não foi possível gerar a receita.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -178,7 +253,7 @@ const TestScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Cálculo de Medicação</Text>
 
       <View style={styles.section}>
@@ -186,55 +261,57 @@ const TestScreen: React.FC = () => {
         <Text style={styles.label}>Paciente: {medicalRecord.patientName}</Text>
         <Text style={styles.label}>
           Idade do Paciente:{' '}
-          {
-            calcularIdadeMesesAnos(new Date(medicalRecord.patientAge), medicalRecord.patientAge)
-              .anos
-          }{' '}
-          anos e{' '}
-          {
-            calcularIdadeMesesAnos(new Date(medicalRecord.patientAge), medicalRecord.patientAge)
-              .meses
-          }{' '}
-          meses
+          {medicalRecord.patientAge
+            ? `${calcularIdadeMesesAnos(new Date(medicalRecord.patientAge), '').anos} anos e ${
+                calcularIdadeMesesAnos(new Date(medicalRecord.patientAge), '').meses
+              } meses`
+            : 'Idade não informada'}
         </Text>
         <Text style={styles.label}>
           Peso (g): {medicalRecord.vitals?.peso_kg || 'Não informado'}
         </Text>
       </View>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Digite o nome do medicamento"
-          value={searchTerm}
-          onChangeText={(text) => filterMedications(text)}
-        />
-        {filteredMedications.length > 0 && (
-          <FlatList
-            data={filteredMedications}
-            keyExtractor={(item) => item.value}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.medicationItem}
-                onPress={() => handleMedicationSelection(item.value)}>
-                <Text style={styles.medicationText}>{item.label}</Text>
-              </TouchableOpacity>
-            )}
-          />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Digite o nome do medicamento"
+        value={searchTerm}
+        onChangeText={filterMedications}
+      />
+
+      <FlatList
+        data={filteredMedications}
+        keyExtractor={(item) => item.value}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.medicationItem}
+            onPress={() => handleMedicationSelection(item.value)}>
+            <Text style={styles.medicationText}>{item.label}</Text>
+          </TouchableOpacity>
         )}
-      </View>
+        ListHeaderComponent={
+          <View>
+            <Button title="Calcular Dosagem" onPress={handleCalculateDosage} />
+            <Button title="Registrar Medicamento" onPress={handleAddMedication} />
+            <Button title="Gerar Receita" onPress={handleGeneratePrescription} />
+          </View>
+        }
+      />
 
-      <Button title="Calcular Dosagem" onPress={handleCalculateDosage} />
-
-      {calculatedDosage ? (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultText}>Dosagem Calculada: {calculatedDosage}</Text>
-        </View>
-      ) : null}
-
-      {/* Botão para registrar o medicamento */}
-      <Button title="Registrar Medicamento" onPress={handleAddMedication} />
-    </View>
+      <FlatList
+        data={dosageRecords}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item, index }) => (
+          <TouchableOpacity
+            style={styles.dosageRecord}
+            onPress={() => handleDeleteDosageRecord(index)}>
+            <Text style={styles.dosageText}>Medicamento: {item.medication}</Text>
+            <Text style={styles.dosageText}>Dosagem: {item.dosage}</Text>
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma dosagem registrada</Text>}
+      />
+    </SafeAreaView>
   );
 };
 
@@ -281,15 +358,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  searchContainer: {
-    marginBottom: 20,
-  },
   searchInput: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     paddingLeft: 8,
     marginBottom: 10,
+    borderRadius: 10,
   },
   medicationItem: {
     padding: 10,
@@ -300,22 +375,22 @@ const styles = StyleSheet.create({
   medicationText: {
     fontSize: 16,
   },
-  resultContainer: {
-    marginTop: 20,
+  dosageRecord: {
     padding: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
+    marginVertical: 5,
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
-  resultText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  dosageText: {
+    fontSize: 16,
+  },
+  emptyText: {
     textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
   },
 });
 
-export default TestScreen;
+export default MedicationCalc;
