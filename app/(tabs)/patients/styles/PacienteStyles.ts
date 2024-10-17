@@ -58,6 +58,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
+  CardItem: {
+    fontSize: 16,
+    color: '#2E7D32',
+    marginBottom: 8,
+    padding: 8,
+    backgroundColor: '#A5D6A7',
+    borderRadius: 5,
+  },
   allergiesContainer: {
     backgroundColor: '#F1F8E9', // Fundo leve para o container de alergias
     padding: 16,
@@ -80,6 +88,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    marginTop: 7,
+  },
+  buttonContainerFinal: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
@@ -130,7 +144,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
     width: '100%',
   }
 });

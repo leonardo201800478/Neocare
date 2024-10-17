@@ -170,8 +170,8 @@ const PacienteDetails = () => {
   const handleViewMedicamentsCard = () => {
     if (selectedPatient) {
       router.push({
-        pathname: '/medications/',  // Caminho da tela de teste
-        params: { patientId: selectedPatient.id },  // Passando o patientId como parâmetro
+        pathname: '/medications/', // Caminho da tela de teste
+        params: { patientId: selectedPatient.id }, // Passando o patientId como parâmetro
       });
     } else {
       Alert.alert('Erro', 'Dados insuficientes para registrar uma vacinação.');
@@ -422,6 +422,8 @@ const PacienteDetails = () => {
             <MaterialCommunityIcons name="stethoscope" size={24} color="#fff" />
             <Text style={styles.buttonText}>PRONTUÁRIO</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, styles.buttonTertiary]}
             onPress={handleRegisterVaccination}>
@@ -448,6 +450,8 @@ const PacienteDetails = () => {
             <MaterialCommunityIcons name="pill" size={24} color="#fff" />
             <Text style={styles.buttonText}>MEDICAMENTOS</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainerFinal}>
           <TouchableOpacity style={[styles.button, styles.buttonDanger]} onPress={handleDelete}>
             <MaterialCommunityIcons name="delete-forever" size={24} color="#fff" />
             <Text style={styles.buttonText}>DELETAR PACIENTE</Text>

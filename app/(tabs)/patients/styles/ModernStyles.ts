@@ -1,49 +1,85 @@
+// app/(tabs)/patients/styles/ModernStyles.js
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F5F5',
   },
   container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 12,
+  containerCEP: {
+    width: '60%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
     marginBottom: 10,
-    fontSize: 16,
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 10,
-    height: 50, // Altura fixa para pickers
-  },
-  picker: {
-    width: '20%',
-    height: '20%', // Ocupar todo o espaço do container
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#4CAF50',
-    padding: 12,
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#FFF',
     borderRadius: 5,
-    flex: 0.48, // Ajuste para que ambos botões tenham a mesma largura
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
+    paddingHorizontal: 15,
     fontSize: 16,
-    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#DDD',
+  },
+  inputSmall: {
+    flex: 1,
+    height: 50,
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    marginRight: 10,
+  },
+  pickerContainer: {
+    width: '35%',
+    height: 50,
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    overflow: 'hidden',
+  },
+  pickerContainerSexo: {
+    width: '50%',
+    height: 50,
+    alignSelf: 'flex-start',
+    alignContent: 'flex-start',
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    overflow: 'hidden',
+  },
+  picker: {
+    width: '100%',
+    height: 50,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   loadingOverlay: {
     position: 'absolute',
@@ -59,34 +95,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#fff',
   },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  row: {
+  buttonContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: 10,
   },
-  inputSmall: {
+  button: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    height: 50,
+    backgroundColor: '#4CAF50',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 5,
-    padding: 12,
-    marginRight: 10,
-    marginBottom: 10,
-    fontSize: 16,
+    marginHorizontal: 5,
+    marginBottom: 30,
   },
-  halfInput: {
-    flex: 0.5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 12,
-    marginBottom: 10,
-    marginRight: 5,
-    fontSize: 16,
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '500',
   },
 });
 

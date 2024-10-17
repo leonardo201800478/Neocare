@@ -1,3 +1,5 @@
+// app/(tabs)/patients/index.tsx
+
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -49,7 +51,7 @@ const CadastroPaciente: React.FC = () => {
   const handleCadastro = async () => {
     setLoading(true);
 
-    if (!nome || !cpf || !dataNasc || !cep || !endereco || !numero) {
+    if (!nome || !cpf || !dataNasc) {
       Alert.alert('Erro', 'Todos os campos obrigatórios devem ser preenchidos');
       setLoading(false);
       return;
@@ -154,7 +156,7 @@ const CadastroPaciente: React.FC = () => {
         />
         <TextInput placeholder="Idade:" value={idade} editable={false} style={styles.input} />
 
-        <View style={styles.pickerContainer}>
+        <View style={styles.pickerContainerSexo}>
           <Picker
             selectedValue={sexo}
             style={styles.picker}
@@ -185,7 +187,7 @@ const CadastroPaciente: React.FC = () => {
           />
         </View>
 
-        <View style={styles.container}>
+        <View style={styles.containerCEP}>
           <CEPInput
             cep={cep}
             setCep={setCep}

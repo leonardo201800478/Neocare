@@ -1,24 +1,85 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { GestureHandlerRootView, PinchGestureHandler, State } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function GraficosMeninos0a2() {
+  const [scale, setScale] = useState(1); // Estado para controlar o zoom
   const router = useRouter();
 
+  // Função de Zoom In
+  const handleZoomIn = () => {
+    setScale((prevScale) => (prevScale < 3 ? prevScale + 0.5 : prevScale)); // Limite de zoom até 3x
+  };
+
+  // Função de Zoom Out
+  const handleZoomOut = () => {
+    setScale((prevScale) => (prevScale > 1 ? prevScale - 0.5 : prevScale)); // Limite mínimo de zoom em 1x
+  };
+
+  const handlePinchEvent = (event: any) => {
+    setScale(event.nativeEvent.scale); // Atualiza a escala durante o gesto de pinça
+  };
+
+  const handlePinchStateChange = (event: any) => {
+    if (event.nativeEvent.state === State.END) {
+      setScale(1); // Reseta o zoom ao fim do gesto de pinça
+    }
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Gráfico Meninos 0 a 2 Meses</Text>
-      <ScrollView horizontal>
-        <View style={styles.imageContainer}>
-          <Image source={require('../assets/graficos/menino0-2.jpg')} style={styles.image} />
-          <Image source={require('../assets/graficos/menino0-2_2.jpg')} style={styles.image} />
-          <Image source={require('../assets/graficos/menino0-2_3.jpg')} style={styles.image} />
+    <SafeAreaView style={styles.container}>
+      <GestureHandlerRootView style={styles.container}>
+        <Text style={styles.title}>Gráfico Meninos 0 a 2 Meses</Text>
+
+        {/* ScrollView horizontal e vertical */}
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          horizontal
+          bounces={false}
+          minimumZoomScale={1}
+          maximumZoomScale={3}>
+          <ScrollView contentContainerStyle={styles.scrollContainer} bounces={false}>
+            <PinchGestureHandler
+              onGestureEvent={handlePinchEvent}
+              onHandlerStateChange={handlePinchStateChange}>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={require('../assets/graficos/menino0-2.jpg')}
+                  style={[styles.image, { transform: [{ scale }] }]}
+                />
+                <Image
+                  source={require('../assets/graficos/menino0-2_2.jpg')}
+                  style={[styles.image, { transform: [{ scale }] }]}
+                />
+                <Image
+                  source={require('../assets/graficos/menino0-2_3.jpg')}
+                  style={[styles.image, { transform: [{ scale }] }]}
+                />
+              </View>
+            </PinchGestureHandler>
+          </ScrollView>
+        </ScrollView>
+
+        {/* Botões de Zoom e Voltar */}
+        <View style={styles.controls}>
+          <TouchableOpacity style={styles.zoomButton} onPress={handleZoomIn}>
+            <FontAwesome name="search-plus" size={20} color="#fff" />
+            <Text style={styles.zoomButtonText}>Zoom In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.zoomButton} onPress={handleZoomOut}>
+            <FontAwesome name="search-minus" size={20} color="#fff" />
+            <Text style={styles.zoomButtonText}>Zoom Out</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+            <FontAwesome name="arrow-left" size={20} color="#fff" />
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/graficos/')}>
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
 
@@ -27,27 +88,20 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     padding: 20,
-  },
-  button: {
-    backgroundColor: '#4CAF50',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 60,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    backgroundColor: '#FFFFFF',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1B5E20',
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: 'center',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageContainer: {
     flexDirection: 'row',
@@ -58,5 +112,39 @@ const styles = StyleSheet.create({
     height: 650,
     margin: 10,
     resizeMode: 'contain', // Para garantir que a imagem não seja cortada
+  },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    width: '100%',
+  },
+  zoomButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginBottom: 30,
+  },
+  zoomButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  backButton: {
+    backgroundColor: '#FF5722',
+    padding: 10,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginBottom: 30,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginLeft: 8,
   },
 });
