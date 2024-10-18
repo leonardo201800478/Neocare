@@ -40,7 +40,7 @@ const CEPInput = ({
   return (
     <TextInput
       placeholder="CEP"
-      placeholderTextColor={'#FFF'}
+      placeholderTextColor="#FFF"
       value={cep}
       style={styles.input}
       onChangeText={handleCepChange}
