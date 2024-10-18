@@ -3,7 +3,13 @@
   "version": "1.0.1",
   "main": "expo-router/entry",
   "scripts": {
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf ./build",
     "android": "expo run:android",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:e2e": "detox test",
+    "precommit": "npm run lint",
     "docs": "typedoc",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",

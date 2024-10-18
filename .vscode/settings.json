@@ -80,6 +80,7 @@
     "postgres",
     "potassica",
     "powersync",
+    "precommit",
     "refeicoes",
     "REGISTERATTENDANCE",
     "respiracoes",
