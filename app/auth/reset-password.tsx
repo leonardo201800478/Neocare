@@ -1,8 +1,7 @@
-// app/auth/reset-password.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import * as Animatable from 'react-native-animatable'; // Para animações
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { authStyles } from '../styles/AuthStyles';
@@ -20,7 +19,7 @@ const ResetPasswordPage = () => {
 
     setLoading(true);
     try {
-      // Adicione aqui a lógica de recuperação de senha (integração com Supabase ou outro serviço)
+      // Simulação de recuperação de senha - Integração com Supabase ou outro serviço aqui
       console.log('Solicitação de recuperação de senha enviada');
       Alert.alert('Sucesso', 'Email de recuperação enviado! Verifique sua caixa de entrada.');
       router.replace('/auth/');
@@ -33,7 +32,7 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <View style={authStyles.container}>
+    <Animatable.View animation="fadeIn" duration={800} style={authStyles.container}>
       {loading && (
         <View style={authStyles.loadingOverlay}>
           <ActivityIndicator size="large" color="#00ff00" />
@@ -45,7 +44,7 @@ const ResetPasswordPage = () => {
 
       {/* Campo de Email com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="envelope" size={20} color="#999" style={authStyles.icon} />
+        <Icon name="envelope" size={20} color="#A8E6CF" style={authStyles.icon} />
         <TextInput
           placeholder="Digite seu Email"
           value={email}
@@ -53,21 +52,27 @@ const ResetPasswordPage = () => {
           style={authStyles.inputField}
           keyboardType="email-address"
           autoCapitalize="none"
-          placeholderTextColor="#999"
+          placeholderTextColor="#A8E6CF"
         />
       </View>
 
       {/* Botão de Enviar com Ícone */}
       <TouchableOpacity style={authStyles.button} onPress={handleResetPassword}>
-        <Icon name="send" size={20} color="#fff" />
-        <Text style={authStyles.buttonText}>Enviar Email de Recuperação</Text>
+        <Icon name="send" size={20} color="#fff" style={{ marginRight: 10 }} />
+        <Animatable.Text
+          animation="pulse"
+          easing="ease-out"
+          iterationCount="infinite"
+          style={authStyles.buttonText}>
+          Enviar Email de Recuperação
+        </Animatable.Text>
       </TouchableOpacity>
 
       {/* Link para voltar ao login */}
       <TouchableOpacity onPress={() => router.replace('/auth/')} style={authStyles.linkButton}>
         <Text style={authStyles.linkText}>Voltar para o login</Text>
       </TouchableOpacity>
-    </View>
+    </Animatable.View>
   );
 };
 

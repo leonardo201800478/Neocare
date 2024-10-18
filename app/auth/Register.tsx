@@ -1,8 +1,7 @@
-// app/auth/register.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
+import * as Animatable from 'react-native-animatable'; // Animatable para animações
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -35,16 +34,13 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Registrar o usuário
       const { data, error } = await supabaseConnector.client.auth.signUp({ email, password });
 
       if (error) {
         throw new Error(error.message);
       }
 
-      // Confirmar que o usuário foi criado e está autenticado antes de redirecionar
       if (data.user) {
-        // Adiciona um pequeno atraso para garantir que a autenticação seja processada
         setTimeout(() => {
           router.replace('/(tabs)/doctors/register');
         }, 1000);
@@ -59,8 +55,10 @@ const Register = () => {
     }
   };
 
+  const isPasswordMatching = password === confirmPassword;
+
   return (
-    <View style={authStyles.container}>
+    <Animatable.View animation="fadeIn" duration={800} style={authStyles.container}>
       {loading && (
         <View style={authStyles.loadingOverlay}>
           <ActivityIndicator size="large" color="#fff" />
@@ -71,7 +69,7 @@ const Register = () => {
 
       {/* Campo de Email com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="envelope" size={20} color="#999" style={authStyles.icon} />
+        <Icon name="envelope" size={20} color="#A8E6CF" style={authStyles.icon} />
         <TextInput
           placeholder="Email"
           value={email}
@@ -79,46 +77,63 @@ const Register = () => {
           style={authStyles.inputField}
           keyboardType="email-address"
           autoCapitalize="none"
-          placeholderTextColor="#999"
+          placeholderTextColor="#A8E6CF"
         />
       </View>
 
       {/* Campo de Senha com Ícone */}
       <View style={authStyles.inputWrapper}>
-        <Icon name="lock" size={30} color="#999" style={authStyles.icon} />
+        <Icon name="lock" size={30} color="#A8E6CF" style={authStyles.icon} />
         <TextInput
           placeholder="Senha"
           value={password}
           onChangeText={setPassword}
           style={authStyles.inputField}
           secureTextEntry
-          placeholderTextColor="#999"
+          placeholderTextColor="#A8E6CF"
         />
       </View>
 
-      {/* Campo de Confirmação de Senha com Ícone */}
-      <View style={authStyles.inputWrapper}>
-        <Icon name="lock" size={30} color="#999" style={authStyles.icon} />
+      {/* Campo de Confirmação de Senha com Ícone - Alteração de fundo */}
+      <View
+        style={[
+          authStyles.inputWrapper,
+          {
+            backgroundColor: confirmPassword
+              ? isPasswordMatching
+                ? 'rgba(0, 255, 0, 0.3)' // Verde claro transparente para coincidência
+                : 'rgba(255, 0, 0, 0.3)' // Vermelho claro transparente para erro
+              : 'rgba(255, 255, 255, 0.2)', // Transparência padrão
+          },
+        ]}>
+        <Icon name="lock" size={30} color="#A8E6CF" style={authStyles.icon} />
         <TextInput
           placeholder="Confirmar Senha"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           style={authStyles.inputField}
           secureTextEntry
-          placeholderTextColor="#999"
+          placeholderTextColor="#A8E6CF"
         />
       </View>
 
       {/* Botão de Cadastro com Ícone */}
       <TouchableOpacity style={authStyles.button} onPress={handleRegister}>
-        <Icon name="user-plus" size={20} color="#fff" />
-        <Text style={authStyles.buttonText}>Cadastrar</Text>
+        <Icon name="user-plus" size={20} color="#fff" style={{ marginRight: 10 }} />
+        <Animatable.Text
+          animation="pulse"
+          easing="ease-out"
+          iterationCount="infinite"
+          style={authStyles.buttonText}>
+          Cadastrar
+        </Animatable.Text>
       </TouchableOpacity>
 
+      {/* Link para voltar ao login */}
       <TouchableOpacity onPress={() => router.replace('/auth/')} style={authStyles.linkButton}>
         <Text style={authStyles.linkText}>Voltar para o login</Text>
       </TouchableOpacity>
-    </View>
+    </Animatable.View>
   );
 };
 
