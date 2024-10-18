@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
+    marginTop: 30,
   },
   searchIcon: {
     marginRight: 8,

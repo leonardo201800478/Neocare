@@ -1,8 +1,9 @@
-
-
+// app/screens/ProblemasAlimentacao.tsx
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProblemasAlimentacao() {
@@ -108,6 +109,7 @@ export default function ProblemasAlimentacao() {
         </Text>
 
         <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={20} color="white" />
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -118,66 +120,28 @@ export default function ProblemasAlimentacao() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#F3E5F5', // Fundo em um tom suave
+    backgroundColor: '#E8F5E9', // Fundo em um tom suave de verde
     padding: 20,
-  },
-  scrollView: {
-    flexGrow: 1,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4A148C', // Roxo escuro para o título
+    color: '#1B5E20', // Verde escuro para o título
     textAlign: 'center',
     marginBottom: 20,
   },
   content: {
     fontSize: 16,
-    color: '#4A148C',
+    color: '#1B5E20',
     textAlign: 'justify',
     marginBottom: 10,
   },
-  table: {
-    borderWidth: 1,
-    borderColor: '#4A148C',
-    borderRadius: 5,
-    backgroundColor: '#EDE7F6', // Fundo em roxo claro para diferenciar a tabela
-    padding: 15,
+  section: {
     marginBottom: 20,
-  },
-  tableTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4A148C',
-    marginBottom: 10,
-  },
-  tableContent: {
-    fontSize: 16,
-    color: '#4A148C',
-    marginBottom: 5,
-  },
-  note: {
-    fontSize: 14,
-    color: '#D81B60', // Vermelho para avisos importantes
-    fontStyle: 'italic',
-    marginBottom: 10,
-  },
-  important: {
-    fontSize: 16,
-    color: '#C62828', // Vermelho mais escuro para alertas
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  button: {
-    backgroundColor: '#4CAF50', // Verde escuro para o botão "Voltar"
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#C8E6C9', // Fundo verde claro para as seções
     borderRadius: 10,
-    marginVertical: 20,
-    width: '90%',
-    alignItems: 'center',
-    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -185,14 +149,40 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#4A148C',
-    marginBottom: 10,
+    color: '#1B5E20',
+    marginBottom: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  important: {
+    fontSize: 16,
+    color: '#C62828', // Vermelho mais escuro para alertas importantes
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  button: {
+    flexDirection: 'row',
+    backgroundColor: '#2E7D32', // Verde escuro para o botão "Voltar"
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    opacity: 0.9,
+    marginBottom: 30,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
+    marginLeft: 10,
   },
 });

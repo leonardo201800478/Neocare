@@ -1,83 +1,99 @@
+// screens/aidpi_neonatal/indice.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View, Image, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function AIDPINeonatal() {
+export default function Indice() {
   const router = useRouter();
 
-  const data = [
-    {
-      key: '1',
-      title: 'Gráfico Meninas 0 a 2 Meses',
-      route: '/graficos_meninas_0a2/',
-    },
-    {
-      key: '2',
-      title: 'Gráfico Meninas 2 a 5 Anos',
-      route: '/graficos_meninas_2a5/',
-    },
-    {
-      key: '3',
-      title: 'Gráfico Meninos 0 a 2 Meses',
-      route: '/graficos_meninos_0a2/',
-    },
-    {
-      key: '4',
-      title: 'Gráfico Meninos 2 a 5 Anos',
-      route: '/graficos_meninos_2a5/',
-    },
-  ];
-
-  const renderButton = ({ item }: { item: { key: string; title: string; route: string } }) => (
-    <TouchableOpacity style={styles.button} onPress={() => router.push(item.route as any)}>
-      <Text style={styles.buttonText}>{item.title}</Text>
-    </TouchableOpacity>
-  );
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>AIDPI NEONATAL</Text>
-      <FlatList
-        data={data}
-        renderItem={renderButton}
-        keyExtractor={(item) => item.key}
-        contentContainerStyle={styles.flatListContainer}
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Links para as subseções */}
+        <View style={styles.linkContainer}>
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => router.push('/screens/tratarCrianca/tratamentoSintomatico/sibilancia')}>
+            <Text style={styles.linkText}>Tratar a criança com sibilância</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => router.push('/screens/tratarCrianca/tratamentoSintomatico/ouvido')}>
+            <Text style={styles.linkText}>Secar o ouvido usando mechas</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => router.push('/screens/tratarCrianca/tratamentoSintomatico/tosse')}>
+            <Text style={styles.linkText}>Aliviar a tosse com medidas caseiras</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Botão "Voltar" */}
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backText}>Voltar</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#E8F5E9', // Verde claro para o fundo da tela
+    flexGrow: 1,
+    backgroundColor: '#FFF', // Cor de fundo vermelha
     padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1B5E20', // Verde escuro para o título
-    textAlign: 'center',
+  imageContainer: {
+    alignItems: 'center',
     marginBottom: 20,
   },
-  flatListContainer: {
-    alignItems: 'center',
+  image: {
+    width: 513,
+    height: 268,
   },
-  button: {
-    backgroundColor: '#4CAF50', // Verde escuro para os botões
+  linkContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  linkButton: {
+    backgroundColor: '#4CAF50', // Verde escuro para botões
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginVertical: 10,
-    width: '90%', // Largura para espelhar visualmente os botões
+    width: '100%',
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5, // Sombreamento moderno
+    elevation: 5,
   },
-  buttonText: {
+  linkText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  backButton: {
+    backgroundColor: '#2E7D32', // Verde escuro para o botão "Voltar"
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginVertical: 20,
+    alignItems: 'center',
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  backText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',

@@ -11,20 +11,14 @@ export default function Diarreia() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Botão de Voltar Estilizado */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Voltar</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.title}>Dar Líquidos Adicionais para combater a Diarreia</Text>
+        <Text style={styles.title}>Dar Líquidos Adicionais para Combater a Diarreia</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.sectionButton}
             onPress={() => router.push('/screens/tratarCrianca/liquidosDiarreia/planoA')}>
-            <Text style={styles.buttonText}>Plano A: Tratar a Diarreia em casa</Text>
+            <Text style={styles.buttonText}>Plano A: Tratar a Diarreia em Casa</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
@@ -37,6 +31,12 @@ export default function Diarreia() {
             <Text style={styles.buttonText}>Plano C: Tratar Rapidamente a Desidratação Grave</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Botão "Voltar" */}
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+          <Text style={styles.backText}>Voltar</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
+    marginTop: 300,
     marginBottom: 20,
   },
   backText: {

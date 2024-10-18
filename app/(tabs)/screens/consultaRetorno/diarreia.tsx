@@ -1,45 +1,43 @@
-// screens/retorno/pneumonia.tsx
+// screens/retorno/diarreiaPersistente.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function RetornoPneumonia() {
+export default function DiarreiaPersistente() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>PNEUMONIA</Text>
+        <Text style={styles.title}>DIARRÉIA PERSISTENTE</Text>
 
-        <Text style={styles.content}>Depois de dois dias:</Text>
-
+        <Text style={styles.subtitle}>Depois de cinco dias:</Text>
         <Text style={styles.content}>
-          Examinar a criança quanto a sinais gerais de perigo. Avaliar a criança para determinar se
-          tem tosse ou dificuldade para respirar.
+          Avaliar a criança quanto à diarreia. Consultar o quadro <i>AVALIAR E CLASSIFICAR</i>.
         </Text>
 
-        <Text style={styles.content}>Perguntar:</Text>
-
-        <Text style={styles.bulletPoint}>- A criança está respirando mais lentamente?</Text>
-        <Text style={styles.bulletPoint}>- A febre baixou?</Text>
-        <Text style={styles.bulletPoint}>- A criança está se alimentando melhor?</Text>
+        <Text style={styles.subtitle}>Perguntar:</Text>
+        <Text style={styles.content}>
+          - A criança melhorou?{'\n'}- Quantas vezes por dia está evacuando?{'\n\n'}
+          Determinar o peso.
+        </Text>
 
         <Text style={styles.subtitle}>Tratamento:</Text>
+        <Text style={styles.content}>
+          <i>* Se a diarreia não tiver terminado</i> (a criança continua com 3 ou mais evacuações
+          amolecidas por dia), fazer nova avaliação completa da criança. Dar o tratamento necessário
+          e, se apresentar perda de peso, referir ao hospital. Caso a criança não tenha perdido
+          peso, marcar retorno em 5 dias.
+        </Text>
 
         <Text style={styles.content}>
-          - Se houver tiragem subcostal ou algum sinal geral de perigo, dar uma dose de um
-          antibiótico: Penicilina Procaína ou Cloranfenicol por via intramuscular. A seguir, referir
-          URGENTEMENTE ao hospital.
-        </Text>
-        <Text style={styles.content}>
-          - Se a frequência respiratória, a febre e a aceitação da alimentação continuam
-          inalteradas, manter ou mudar para outro antibiótico recomendado e orientar a mãe para
-          retornar em dois dias ou referir.
-        </Text>
-        <Text style={styles.content}>
-          - Se a respiração estiver mais lenta, a febre estiver baixada ou se estiver se alimentando
-          melhor, completar os sete dias de antibiótico.
+          <i>* Se a diarreia tiver melhorado</i> (a criança com evacuação amolecida menos de 3 vezes
+          ao dia), recomendar à mãe continuar a seguir as orientações para alimentação habitual para
+          a idade da criança. As crianças em convalescência devem receber suplementação de
+          polivitaminas (ácido fólico, e vitamina A caso não tenha tomado nos últimos 4 meses) e
+          sais minerais (zinco, cobre e magnésio). Completar os 10 dias de tratamento com zinco
+          oral.
         </Text>
 
         {/* Botão "Voltar" */}
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFF', // Cor vermelha para o título
+    color: '#FFF', // Cor vermelha
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -74,13 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000000', // Texto preto
     textAlign: 'justify',
-    marginBottom: 10,
-  },
-  bulletPoint: {
-    fontSize: 16,
-    color: '#000000',
-    marginLeft: 10,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#4CAF50', // Verde escuro para o botão "Voltar"

@@ -1,5 +1,4 @@
-// app/(tabs)/patients/index.tsx
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -12,9 +11,10 @@ import {
   ActivityIndicator,
   SafeAreaView,
   ScrollView,
+  Platform,
 } from 'react-native';
 
-import styles from './styles/ModernStyles'; // Novo arquivo de estilo moderno
+import styles from './styles/ModernStyles'; // Arquivo de estilo fornecido
 import CEPInput from '../../../components/CEPInput';
 import { isCPFValid } from '../../../components/CPFValidator';
 import {
@@ -33,7 +33,8 @@ const CadastroPaciente: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [nome, setNome] = useState<string>('');
   const [cpf, setCpf] = useState<string>('');
-  const [dataNasc, setDataNasc] = useState<string>('');
+  const [dataNasc, setDataNasc] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [sexo, setSexo] = useState<string>('Masculino');
   const [idade, setIdade] = useState<string>('');
   const [telefone, setTelefone] = useState<string>('');
@@ -63,7 +64,6 @@ const CadastroPaciente: React.FC = () => {
       return;
     }
 
-    // Validação de CEP: Certifique-se de que o CEP tem 8 dígitos
     const cleanedCEP = removeCEPFormat(cep);
     if (cleanedCEP.length !== 8) {
       Alert.alert('Erro', 'CEP inválido. Deve conter 8 dígitos.');
@@ -81,7 +81,7 @@ const CadastroPaciente: React.FC = () => {
       const newPatient = {
         name: nome,
         cpf: removeCPFMask(cpf),
-        birth_date: formatDateForDatabase(dataNasc),
+        birth_date: formatDateForDatabase(dataNasc!.toISOString().split('T')[0]), // Formata a data para YYYY-MM-DD
         phone_number: formattedPhoneNumber,
         gender: sexo,
         zip_code: cleanedCEP,
@@ -104,19 +104,12 @@ const CadastroPaciente: React.FC = () => {
     }
   };
 
-  const handleDataNascChange = (value: string) => {
-    if (value.length === 8) {
-      const formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
-      setDataNasc(formattedValue);
-      const birthDate = new Date(
-        parseInt(value.slice(4), 10),
-        parseInt(value.slice(2, 4), 10) - 1,
-        parseInt(value.slice(0, 2), 10)
-      );
-      const idadeCalculada = calcularIdade(birthDate, 'years');
+  const handleDataNascChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      setDataNasc(selectedDate);
+      const idadeCalculada = calcularIdade(selectedDate, 'years');
       setIdade(idadeCalculada);
-    } else {
-      setDataNasc(value);
     }
   };
 
@@ -146,15 +139,34 @@ const CadastroPaciente: React.FC = () => {
           keyboardType="numeric"
           placeholderTextColor="#ccc"
         />
+
+        {/* Campo de Data de Nascimento com DatePicker */}
+        <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+          <TextInput
+            placeholder="Data de nascimento: (obrigatório)"
+            value={dataNasc ? dataNasc.toLocaleDateString() : ''}
+            editable={false}
+            style={styles.input}
+            placeholderTextColor="#ccc"
+          />
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={dataNasc || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDataNascChange}
+            maximumDate={new Date()} // Limita a seleção de data para o presente ou passado
+          />
+        )}
+
         <TextInput
-          placeholder="Data de nascimento (ddmmaaaa): (obrigatório)"
-          value={dataNasc}
-          onChangeText={handleDataNascChange}
-          style={styles.input}
-          keyboardType="numeric"
-          placeholderTextColor="#ccc"
+          placeholder="Idade:"
+          placeholderTextColor="#FFF"
+          value={idade}
+          editable={false}
+          style={styles.inputIdade}
         />
-        <TextInput placeholder="Idade:" value={idade} editable={false} style={styles.input} />
 
         <View style={styles.pickerContainerSexo}>
           <Picker
@@ -181,7 +193,7 @@ const CadastroPaciente: React.FC = () => {
             placeholder="Telefone:"
             value={telefone}
             onChangeText={setTelefone}
-            style={styles.inputSmall}
+            style={styles.inputCel}
             keyboardType="phone-pad"
             placeholderTextColor="#ccc"
           />

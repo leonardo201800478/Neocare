@@ -8,7 +8,9 @@ import {
   ScrollView,
   SafeAreaView,
   Switch,
+  Button,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import styles from './styles/AllergiesStyles'; // Substituir este arquivo pelo novo estilo atualizado
 import { useAllergies } from '../context/AllergiesContext';
@@ -187,12 +189,15 @@ const RegisterAllergies = () => {
             />
           </View>
         ))}
-        <TouchableOpacity style={styles.button} onPress={handleRegisterAllergy}>
-          <Text style={styles.buttonText}>Registrar Alergias</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Sair</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleRegisterAllergy}>
+            <Icon name="check" size={16} color="#FFF" />
+            <Text style={styles.buttonText}>Registrar Alergias</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.exitButton} onPress={() => router.back()}>
+            <Text style={styles.exitButtonText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

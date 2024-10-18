@@ -14,15 +14,15 @@ interface VitalInfoProps {
 const VitalInfoForm: React.FC<VitalInfoProps> = ({ data, onChange }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Peso (kg):</Text>
+      <Text style={styles.label}>Peso (g):</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ex: 0.560 kg"
-        value={(Number(data.peso_kg) * 1000).toString()}
+        placeholder="Ex: 0.560 g"
+        value={(Number(data.peso_g) * 1000).toString()}
         onChangeText={(text) => {
           if (!isNaN(Number(text))) {
-            const pesoEmKg = (Number(text) / 1000).toFixed(3);
-            onChange('peso_kg', pesoEmKg);
+            const pesoEmg = (Number(text) / 1000).toFixed(3);
+            onChange('peso_g', pesoEmg);
           }
         }}
         keyboardType="numeric"

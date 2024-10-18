@@ -4,6 +4,7 @@ import { format } from 'date-fns'; // Para formatar datas
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { useAllergies } from '../context/AllergiesContext';
 import { usePatient } from '../context/PatientContext';
@@ -57,7 +58,7 @@ const AllergiesDetails = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Detalhes das Alergias</Text>
+      <Text style={styles.title}>Alergias</Text>
 
       {/* Exibe o nome do paciente */}
       {selectedPatient && <Text style={styles.patientName}>Paciente: {selectedPatient.name}</Text>}
@@ -72,7 +73,7 @@ const AllergiesDetails = () => {
       {/* Verifica se o paciente possui alergias cadastradas */}
       {allergies ? (
         <View style={styles.allergiesContainer}>
-          <Text style={styles.sectionTitle}>Alergias</Text>
+          <Text style={styles.sectionTitle}>Alergias: </Text>
           {/* Exibir apenas as alergias marcadas como 'yes' */}
           {renderAllergyItem('Leite e derivados', allergies.allergy_milk)}
           {renderAllergyItem('Ovos', allergies.allergy_eggs)}
@@ -109,13 +110,15 @@ const AllergiesDetails = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => router.push('/(tabs)/patients/PacienteDetails')}>
-          <Text style={styles.buttonText}>Voltar para Detalhes do Paciente</Text>
+          <Icon name="arrow-left" size={16} color="#FFF" />
+          <Text style={styles.buttonText}>Voltar para Paciente</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => router.push('/allergies/RegisterAllergies')}>
-          <Text style={styles.buttonText}>Cadastrar Nova Alergia</Text>
+          <Icon name="plus" size={16} color="#FFF" />
+          <Text style={styles.buttonText}>Nova Alergia</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

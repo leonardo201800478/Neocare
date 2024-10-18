@@ -1,31 +1,34 @@
-// screens/tratarCrianca/aliviarTosse.tsx
+// screens/retorno/alimentacao.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function AliviarTosse() {
+export default function ProblemaDeAlimentacao() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Aliviar a Tosse com Medidas Caseiras</Text>
+        <Text style={styles.title}>PROBLEMA DE ALIMENTAÇÃO</Text>
 
-        <View style={styles.contentBox}>
-          <Text style={styles.instructionsText}>Aumentar a oferta de líquidos:</Text>
-          <Text style={styles.instructionsText}>
-            - Para menores de 6 meses de idade, em regime exclusivo de aleitamento materno, oferecer
-            o peito mais vezes.
-          </Text>
-          <Text style={styles.instructionsText}>
-            - Mel de abelha ou outras medidas culturalmente aceitas.
-          </Text>
-          <Text style={styles.instructionsText}>Remédios nocivos a desencorajar:</Text>
-          <Text style={styles.instructionsText}>
-            - Antinflamatórios, sedativos da tosse, expectorantes.
-          </Text>
-        </View>
+        <Text style={styles.content}>
+          Depois de 5 dias:{'\n'}
+          Reavaliar a alimentação. Consultar as perguntas da parte superior do quadro ACONSELHAR À
+          MÃE OU O ACOMPANHANTE. Perguntar sobre quaisquer problemas de alimentação constatados na
+          primeira consulta.
+        </Text>
+
+        <Text style={styles.content}>
+          - Orientar à mãe com respeito a quaisquer problemas de alimentação novos ou persistentes.
+          Se foi aconselhado fazer mudanças de alimentação importantes, recomendar à mãe para voltar
+          à consulta de retorno em 5 dias.
+        </Text>
+
+        <Text style={styles.content}>
+          Nota: Criança menor de 6 meses de idade, com qualquer problema de alimentação deverá
+          retornar em 2 dias.
+        </Text>
 
         {/* Botão "Voltar" */}
         <TouchableOpacity style={styles.button} onPress={() => router.back()}>
@@ -39,29 +42,21 @@ export default function AliviarTosse() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#E8F5E9', // Fundo verde claro
+    backgroundColor: '#FFFFFF', // Fundo branco
     padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1B5E20', // Verde escuro para o título
+    color: '#FFF', // Cor vermelha
     textAlign: 'center',
     marginBottom: 20,
   },
-  contentBox: {
-    borderWidth: 1,
-    borderColor: '#000',
-    borderRadius: 5,
-    padding: 20,
-    backgroundColor: '#FFFFFF',
-    marginBottom: 20,
-  },
-  instructionsText: {
+  content: {
     fontSize: 16,
-    color: '#1B5E20',
-    marginBottom: 10,
+    color: '#000000', // Texto preto
     textAlign: 'justify',
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#4CAF50', // Verde escuro para o botão "Voltar"
@@ -69,7 +64,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginVertical: 20,
-    width: '90%',
     alignItems: 'center',
     alignSelf: 'center',
     shadowColor: '#000',

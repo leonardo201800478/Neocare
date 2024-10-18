@@ -1,5 +1,4 @@
-// screens/aidpi_neonatal/index.tsx
-import { Ionicons } from '@expo/vector-icons';
+// screens/aidpi_neonatal/medicamentos.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
@@ -11,7 +10,7 @@ export default function Medicamentos() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Administrar os medicamentos por via oral em casa</Text>
+        <Text style={styles.title}>Administrar os Medicamentos por Via Oral em Casa</Text>
 
         {/* Navegando para as subseções */}
         <View style={styles.buttonContainer}>
@@ -48,17 +47,18 @@ export default function Medicamentos() {
           <TouchableOpacity
             style={styles.sectionButton}
             onPress={() => router.push('/screens/tratarCrianca/medicamentos/polivitaminas')}>
-            <Text style={styles.buttonText}>Dar polivitaminas e sais minerais</Text>
+            <Text style={styles.buttonText}>Dar Polivitaminas e Sais Minerais</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.sectionButton}
             onPress={() => router.push('/screens/tratarCrianca/medicamentos/hipoglicemia')}>
-            <Text style={styles.buttonText}>Tratar a criança para evitar hipoglicemia</Text>
+            <Text style={styles.buttonText}>Tratar a Criança para Evitar Hipoglicemia</Text>
           </TouchableOpacity>
         </View>
+
         {/* Botão "Voltar" no Final da Página */}
         <TouchableOpacity
-          style={styles.button}
+          style={styles.backButton}
           onPress={() => router.push('/screens/tratarCrianca/')}>
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
@@ -71,49 +71,52 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#f0f0f0',
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  backText: {
-    color: 'white',
-    fontSize: 16,
-    marginLeft: 8,
+    backgroundColor: '#E8F5E9', // Fundo verde claro
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#1B5E20',
+    color: '#1B5E20', // Verde escuro
   },
   buttonContainer: {
     width: '100%',
+    marginBottom: 20,
   },
   sectionButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4CAF50', // Verde escuro para os botões de seção
     paddingVertical: 15,
-    borderRadius: 8,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     marginVertical: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  button: {
-    backgroundColor: '#4CAF50',
+  backButton: {
+    backgroundColor: '#2E7D32', // Verde escuro para o botão "Voltar"
     paddingVertical: 15,
-    borderRadius: 8,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     marginVertical: 10,
     alignItems: 'center',
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 30,
   },
   buttonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontSize: 18,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
 });

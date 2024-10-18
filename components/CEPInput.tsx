@@ -40,6 +40,7 @@ const CEPInput = ({
   return (
     <TextInput
       placeholder="CEP"
+      placeholderTextColor={'#FFF'}
       value={cep}
       style={styles.input}
       onChangeText={handleCepChange}
@@ -54,13 +55,13 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
     paddingHorizontal: 15,
     fontSize: 16,
     color: '#333',
     marginBottom: 20,
-    borderColor: '#ddd',
+    borderColor: '#333',
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },

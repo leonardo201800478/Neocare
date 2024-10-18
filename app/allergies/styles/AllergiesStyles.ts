@@ -3,97 +3,83 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#E8F5E9', // Fundo verde claro
+    padding: 20,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    color: '#2E7D32', // Verde escuro para o título
+    marginBottom: 20,
     textAlign: 'center',
-    color: '#333',
   },
   switchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
-    marginBottom: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Fundo branco com transparência
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   label: {
-    fontSize: 16,
-    color: '#333',
-    flexShrink: 1, // Garantir que o texto se adapte ao espaço disponível
+    fontSize: 18,
+    color: '#388E3C', // Verde médio
   },
   button: {
-    backgroundColor: '#28a745',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 8,
+    backgroundColor: '#2E7D32', // Verde escuro para os botões
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
     alignItems: 'center',
-    marginVertical: 20,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    width: '40%',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+  },
+  // Estilo específico para o botão Sair
+  exitButton: {
+    backgroundColor: '#FF7043', // Tom laranja-avermelhado para contrastar com o verde
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    width: '40%',
+  },
+  exitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  section: {
-    marginTop: 20,
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#444',
-    marginBottom: 10,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: '#f8f8f8',
-    marginBottom: 10,
-  },
-  submitButton: {
-    backgroundColor: '#007BFF',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    marginTop: 20,
-    paddingHorizontal: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
   },
 });
 

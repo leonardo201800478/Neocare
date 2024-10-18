@@ -1,3 +1,4 @@
+// screens/aconselharMae/liquidos/aumentarLiquidos.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
@@ -42,9 +43,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#E8F5E9', // Fundo em verde claro
     padding: 20,
-  },
-  scrollView: {
-    flexGrow: 1,
   },
   title: {
     fontSize: 24,

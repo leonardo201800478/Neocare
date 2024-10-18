@@ -15,9 +15,9 @@ const AllergiesIndex = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Alergias</Text>
+      <Text style={styles.header}>Alergias</Text>
 
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button} onPress={handleViewAllergiesDetails}>
           <Text style={styles.buttonText}>Ver Detalhes das Alergias</Text>
         </TouchableOpacity>

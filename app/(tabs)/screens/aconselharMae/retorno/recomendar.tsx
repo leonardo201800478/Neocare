@@ -1,7 +1,9 @@
+// screens/aconselharMae/retorno/recomendar.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Animatable from 'react-native-animatable';
 
 export default function SaudeMae() {
   const router = useRouter();
@@ -9,32 +11,37 @@ export default function SaudeMae() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>
+        <Animatable.Text animation="fadeInDown" style={styles.title}>
           Recomendar à Mãe ou ao Acompanhante a Respeito de Sua Própria Saúde
-        </Text>
+        </Animatable.Text>
 
-        <Text style={styles.content}>
+        <Animatable.Text animation="fadeInUp" delay={200} style={styles.content}>
           - Se a mãe estiver doente, prestar-lhe tratamento ou referi-la para atendimento.
-        </Text>
-        <Text style={styles.content}>
-          - Se tiver algum problema no seio (tais como ingurgitamento, mamilos doloridos, infecção
-          no seio), prestar-lhe tratamento ou referi-la para atendimento especializado.
-        </Text>
-        <Text style={styles.content}>
+        </Animatable.Text>
+        <Animatable.Text animation="fadeInUp" delay={300} style={styles.content}>
+          - Se tiver algum problema no seio (tais como ingurgitamento, mamilos doloridos, infecção no seio), prestar-lhe tratamento ou referi-la para atendimento especializado.
+        </Animatable.Text>
+        <Animatable.Text animation="fadeInUp" delay={400} style={styles.content}>
           - Recomendar-lhe que coma bem para manter a sua própria resistência e saúde.
-        </Text>
-        <Text style={styles.content}>
-          - Verificar a situação de imunização da mãe e, se necessário, aplicar-lhe a vacina DT
-          (contra difteria e tétano) e contra rubéola (com a rubéola monovalente ou dupla-viral -
-          contra rubéola e sarampo) - Ver calendário básico 2001/03, MS.
-        </Text>
-        <Text style={styles.content}>- Certificar-se de que ela tenha acesso a:</Text>
-        <Text style={styles.listItem}> • Recomendações sobre "Saúde Reprodutiva"</Text>
-        <Text style={styles.listItem}> • Recomendações sobre prevenção a DST e AIDS</Text>
+        </Animatable.Text>
+        <Animatable.Text animation="fadeInUp" delay={500} style={styles.content}>
+          - Verificar a situação de imunização da mãe e, se necessário, aplicar-lhe a vacina DT (contra difteria e tétano) e contra rubéola (com a rubéola monovalente ou dupla-viral - contra rubéola e sarampo) - Ver calendário básico 2001/03, MS.
+        </Animatable.Text>
+        <Animatable.Text animation="fadeInUp" delay={600} style={styles.content}>
+          - Certificar-se de que ela tenha acesso a:
+        </Animatable.Text>
+        <Animatable.Text animation="fadeInUp" delay={700} style={styles.listItem}>
+          • Recomendações sobre "Saúde Reprodutiva"
+        </Animatable.Text>
+        <Animatable.Text animation="fadeInUp" delay={800} style={styles.listItem}>
+          • Recomendações sobre prevenção a DST e AIDS
+        </Animatable.Text>
 
-        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Voltar</Text>
-        </TouchableOpacity>
+        <Animatable.View animation="fadeInUp" delay={900}>
+          <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+            <Text style={styles.buttonText}>Voltar</Text>
+          </TouchableOpacity>
+        </Animatable.View>
       </ScrollView>
     </SafeAreaView>
   );

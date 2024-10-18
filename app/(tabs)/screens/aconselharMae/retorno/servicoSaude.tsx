@@ -1,3 +1,4 @@
+// screens/aconselharMae/retorno/servicoSaude.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
@@ -165,6 +166,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    marginBottom: 30,
   },
   buttonText: {
     color: '#FFFFFF',

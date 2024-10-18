@@ -1,7 +1,10 @@
+// app/screens/TratarPesoMuitoBaixo.tsx
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import * as Animatable from 'react-native-animatable';
 
 export default function TratarPesoMuitoBaixo() {
   const router = useRouter();
@@ -9,13 +12,19 @@ export default function TratarPesoMuitoBaixo() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Tratar o Peso Muito Baixo</Text>
+        <Animatable.Text animation="fadeInDown" style={styles.title}>
+          Tratar o Peso Muito Baixo
+        </Animatable.Text>
+        
         <Text style={styles.content}>
           "Sua criança está com o peso muito baixo. Ela vai se fortalecer com dietas especiais."
         </Text>
 
+        {/* Dietas */}
         <View style={styles.table}>
-          <Text style={styles.tableTitle}>DIETA 1</Text>
+          <Text style={styles.tableTitle}>
+            <Ionicons name="nutrition-outline" size={20} color="#4A148C" /> DIETA 1
+          </Text>
           <Text style={styles.tableContent}>
             2 colheres de sopa de leite em pó integral ou 200 ml de leite fluido
           </Text>
@@ -28,7 +37,9 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <View style={styles.table}>
-          <Text style={styles.tableTitle}>DIETA 2</Text>
+          <Text style={styles.tableTitle}>
+            <Ionicons name="nutrition-outline" size={20} color="#4A148C" /> DIETA 2
+          </Text>
           <Text style={styles.tableContent}>4 colheres de sopa de arroz cozido</Text>
           <Text style={styles.tableContent}>2 colheres de chá de óleo</Text>
           <Text style={styles.tableContent}>1 colher de sopa de açúcar</Text>
@@ -38,7 +49,9 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <View style={styles.table}>
-          <Text style={styles.tableTitle}>DIETA 3</Text>
+          <Text style={styles.tableTitle}>
+            <Ionicons name="nutrition-outline" size={20} color="#4A148C" /> DIETA 3
+          </Text>
           <Text style={styles.tableContent}>4 colheres de sopa de arroz cozido</Text>
           <Text style={styles.tableContent}>1 colher de sopa de óleo</Text>
           <Text style={styles.tableContent}>1 colher de sopa de carne moída</Text>
@@ -48,7 +61,9 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <View style={styles.table}>
-          <Text style={styles.tableTitle}>DIETA 4</Text>
+          <Text style={styles.tableTitle}>
+            <Ionicons name="nutrition-outline" size={20} color="#4A148C" /> DIETA 4
+          </Text>
           <Text style={styles.tableContent}>4 colheres de sopa de arroz cozido</Text>
           <Text style={styles.tableContent}>
             4 colheres de sopa cheia de massa de feijão peneirado
@@ -60,13 +75,11 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <Text style={styles.note}>
-          OBS.: O arroz pode ser substituído por fubá, utilizando metade da quantidade do arroz
-          (veja tabela de dietas acima) e cozinhando por 3 a 4 minutos.
+          OBS.: O arroz pode ser substituído por fubá, utilizando metade da quantidade do arroz (veja tabela de dietas acima) e cozinhando por 3 a 4 minutos.
         </Text>
+        
         <Text style={styles.content}>
-          Faça estas dietas até o próximo retorno variando as refeições no mesmo dia ou de um dia
-          para o outro, para a criança não enjoar da comida. Ofereça 6 vezes ao dia, garantindo que
-          a criança coma:
+          Faça estas dietas até o próximo retorno variando as refeições no mesmo dia ou de um dia para o outro, para a criança não enjoar da comida. Ofereça 6 vezes ao dia, garantindo que a criança coma:
         </Text>
 
         <View style={styles.table}>
@@ -76,12 +89,15 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <Text style={styles.note}>
-          Dê o peito entre as refeições, sempre que a criança quiser. Um copo de 200 ml (tipo
-          requeijão e extrato de tomate).
+          Dê o peito entre as refeições, sempre que a criança quiser. Um copo de 200 ml (tipo requeijão e extrato de tomate).
         </Text>
-        <Text style={styles.important}>Voltar imediatamente se a criança recusar a comida.</Text>
+        
+        <Text style={styles.important}>
+          Voltar imediatamente se a criança recusar a comida.
+        </Text>
 
         <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={20} color="white" />
           <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -92,42 +108,44 @@ export default function TratarPesoMuitoBaixo() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#F3E5F5', // Fundo em um tom suave
+    backgroundColor: '#E8F5E9', // Fundo suave
     padding: 20,
-  },
-  scrollView: {
-    flexGrow: 1,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4A148C', // Roxo escuro para o título
+    color: '#1B5E20', // Roxo escuro
     textAlign: 'center',
     marginBottom: 20,
   },
   content: {
     fontSize: 16,
-    color: '#4A148C',
+    color: '#1B5E20',
     textAlign: 'justify',
     marginBottom: 10,
   },
   table: {
     borderWidth: 1,
-    borderColor: '#4A148C',
-    borderRadius: 5,
-    backgroundColor: '#EDE7F6', // Fundo em roxo claro para diferenciar a tabela
+    borderColor: '#1B5E20',
+    borderRadius: 10,
+    backgroundColor: '#C8E6C9', // Fundo em roxo claro
     padding: 15,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   tableTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#4A148C',
+    color: '#1B5E20',
     marginBottom: 10,
   },
   tableContent: {
     fontSize: 16,
-    color: '#4A148C',
+    color: '#1B5E20',
     marginBottom: 5,
   },
   note: {
@@ -138,29 +156,31 @@ const styles = StyleSheet.create({
   },
   important: {
     fontSize: 16,
-    color: '#C62828', // Vermelho mais escuro para alertas
+    color: '#C62828', // Vermelho escuro para alertas
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
   },
   button: {
+    flexDirection: 'row',
     backgroundColor: '#4CAF50', // Verde escuro para o botão "Voltar"
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginVertical: 20,
-    width: '90%',
     alignItems: 'center',
-    alignSelf: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    marginBottom: 30,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
+    marginLeft: 10,
   },
 });
