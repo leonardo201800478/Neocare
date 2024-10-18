@@ -1,5 +1,3 @@
-// app/index.tsx
-
 import CheckBox from '@react-native-community/checkbox';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -11,14 +9,16 @@ import {
   View,
   Alert,
   SafeAreaView,
+  ActivityIndicator, // Para mostrar indicador de carregamento
 } from 'react-native';
 
-import { useSystem } from '../powersync/PowerSync'; // Aqui está sua instância do supabaseConnector
+import { useSystem } from '../powersync/PowerSync';
 
 export default function Terms() {
   const router = useRouter();
-  const [accepted, setAccepted] = useState(false); // Estado para controlar o aceite dos termos
-  const { supabaseConnector } = useSystem(); // Acessa o conector Supabase
+  const [accepted, setAccepted] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado de carregamento
+  const { supabaseConnector } = useSystem();
 
   const handleAccept = async () => {
     if (!accepted) {
@@ -26,24 +26,34 @@ export default function Terms() {
       return;
     }
 
-    const {
-      data: { user },
-    } = await supabaseConnector.client.auth.getUser(); // Acessa o usuário autenticado
-    if (user) {
-      // Certifique-se de estar utilizando o cliente do Supabase para a consulta
+    setLoading(true); // Ativando o estado de carregamento
+
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabaseConnector.client.auth.getUser();
+
+      if (userError || !user) {
+        throw new Error('Usuário não autenticado ou erro ao buscar dados do usuário.');
+      }
+
       const { error } = await supabaseConnector.client
-        .from('doctors') // Usa a tabela 'doctors'
-        .update({ terms_accepted: '1' }) // Define '1' para indicar que os termos foram aceitos
-        .eq('auth_user_id', user.id); // Atualiza o campo com base no auth_user_id
+        .from('doctors')
+        .update({ terms_accepted: '1' })
+        .eq('auth_user_id', user.id);
 
       if (error) {
-        Alert.alert('Erro', 'Não foi possível atualizar o status de aceite dos termos.');
-      } else {
-        // Redireciona o usuário para a tela principal
-        router.push('/(tabs)/home/');
+        throw new Error('Não foi possível atualizar o status de aceite dos termos.');
       }
-    } else {
-      Alert.alert('Erro', 'Usuário não autenticado.');
+
+      // Redireciona o usuário para a tela principal após a atualização bem-sucedida
+      router.push('/(tabs)/home/');
+    } catch (error: any) {
+      // Tratar erro e exibir mensagem apropriada
+      Alert.alert('Erro', error.message || 'Erro desconhecido ao aceitar os termos.');
+    } finally {
+      setLoading(false); // Desativando o estado de carregamento
     }
   };
 
@@ -64,13 +74,19 @@ export default function Terms() {
           <Text style={styles.label}>Eu li e aceito os Termos de Consentimento</Text>
         </View>
 
-        {/* Botão de Aceitar */}
+        {/* Indicador de carregamento e botão */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.acceptButton, !accepted && styles.disabledButton]}
-            onPress={handleAccept}>
-            <Text style={styles.buttonText}>Aceitar e Continuar</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator size="large" color="#4CAF50" />
+          ) : (
+            <TouchableOpacity
+              style={[styles.acceptButton, !accepted && styles.disabledButton]}
+              onPress={handleAccept}
+              disabled={!accepted || loading} // Desabilitar o botão se não aceitar os termos ou estiver carregando
+            >
+              <Text style={styles.buttonText}>Aceitar e Continuar</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -116,7 +132,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   disabledButton: {
-    backgroundColor: '#bdbdbd', // Desativa o botão se os termos não forem aceitos
+    backgroundColor: '#bdbdbd',
   },
   buttonText: {
     color: 'white',

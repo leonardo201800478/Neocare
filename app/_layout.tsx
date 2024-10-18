@@ -1,5 +1,3 @@
-// app/_layout.tsx
-
 import { Session } from '@supabase/supabase-js';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';

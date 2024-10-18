@@ -1,5 +1,3 @@
-// app/medications/index.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {

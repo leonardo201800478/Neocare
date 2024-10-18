@@ -8,7 +8,6 @@ import {
   ScrollView,
   SafeAreaView,
   Switch,
-  Button,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -96,7 +95,7 @@ const RegisterAllergies = () => {
       const patientAllergies = await fetchAllergiesByPatient(selectedPatient.id);
 
       if (patientAllergies && patientAllergies.length > 0) {
-        const allergyData = patientAllergies[0]; // Pegamos o primeiro registro de alergias do paciente
+        const allergyData = patientAllergies[0];
         console.log('Alergias carregadas:', allergyData);
 
         // Atualiza o estado com as alergias carregadas

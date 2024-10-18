@@ -1,11 +1,17 @@
 {
   "cli": {
-    "version": ">= 12.5.1"
+    "version": ">= 12.5.1",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://rixquulpyromqkdkgcmw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpeHF1dWxweXJvbXFrZGtnY213Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcxNDczMjksImV4cCI6MjA0MjcyMzMyOX0.bmlCKjs5gwyu1ZP3NNJxqZ-R-K-I0a_SdGwf-e_CYDU",
+        "EXPO_PUBLIC_POWERSYNC_URL": "https://67014fc87337c371e06b5e73.powersync.journeyapps.com"
+      }
     },
     "preview": {
       "ios": {
@@ -14,15 +20,30 @@
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://rixquulpyromqkdkgcmw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpeHF1dWxweXJvbXFrZGtnY213Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcxNDczMjksImV4cCI6MjA0MjcyMzMyOX0.bmlCKjs5gwyu1ZP3NNJxqZ-R-K-I0a_SdGwf-e_CYDU",
+        "EXPO_PUBLIC_POWERSYNC_URL": "https://67014fc87337c371e06b5e73.powersync.journeyapps.com"
+      }
     },
     "production": {
-      "minify": false,
-      "autoIncrement": true,
-      "node": "20.17.0"
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://rixquulpyromqkdkgcmw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpeHF1dWxweXJvbXFrZGtnY213Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcxNDczMjksImV4cCI6MjA0MjcyMzMyOX0.bmlCKjs5gwyu1ZP3NNJxqZ-R-K-I0a_SdGwf-e_CYDU",
+        "EXPO_PUBLIC_POWERSYNC_URL": "https://67014fc87337c371e06b5e73.powersync.journeyapps.com",
+        "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNzE0NzMyOSwiZXhwIjoyMDQyNzIzMzI5fQ.vw66Zwg0CsP1iwr8a1tMqLzp-8FkgR9gep0UYSOl-YA"
+      },
+      "autoIncrement": true
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {},
+      "android": {}
+    }
   }
 }

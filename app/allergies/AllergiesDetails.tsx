@@ -1,6 +1,4 @@
-// app/allergies/AllergiesDetails.tsx
-
-import { format } from 'date-fns'; // Para formatar datas
+import { format } from 'date-fns'; 
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
@@ -32,9 +30,9 @@ const AllergiesDetails = () => {
     try {
       const patientAllergies = await fetchAllergiesByPatient(patientId);
       if (patientAllergies && patientAllergies.length > 0) {
-        setAllergies(patientAllergies[0]); // Assume-se que existe apenas um registro de alergias por paciente
+        setAllergies(patientAllergies[0]);
       } else {
-        setAllergies(null); // Tratar a ausência de alergias
+        setAllergies(null);
       }
     } catch (error) {
       console.error('Erro ao buscar alergias:', error);

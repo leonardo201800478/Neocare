@@ -1,7 +1,7 @@
 // Definição do tipo para armazenar informações do paciente
 export interface PacienteInfo {
-  alergias: Record<string, string | boolean>; // As alergias vêm da tabela allergies
-  condicoesClinicas: Record<string, string | boolean>; // As condições clínicas vêm da tabela attendances
+  alergias: Record<string, string | boolean>;
+  condicoesClinicas: Record<string, string | boolean>;
 }
 
 // Função para verificar contraindicações

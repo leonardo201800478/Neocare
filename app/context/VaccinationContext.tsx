@@ -1,5 +1,3 @@
-// app/context/VaccinationContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { Vaccination } from '../../powersync/AppSchema';
@@ -41,7 +39,7 @@ export const VaccinationProvider: React.FC<{ children: ReactNode }> = ({ childre
         vaccine_name: vaccination.vaccine_name,
         dose_number: vaccination.dose_number ? String(vaccination.dose_number) : '1',
         administered_at: vaccination.administered_at || new Date().toISOString(),
-        created_at: new Date().toISOString(), // Add this line to include created_at
+        created_at: new Date().toISOString(),
       };
 
       await db.insertInto('vaccinations').values(newVaccination).execute();

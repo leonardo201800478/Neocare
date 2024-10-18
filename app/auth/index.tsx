@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import * as Animatable from 'react-native-animatable'; // Adicionado Animatable para animações
+import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -27,30 +27,36 @@ const Login: React.FC = () => {
         email,
         password,
       });
-      if (error) throw new Error(error.message);
+  
+      if (error) throw new Error(error.message); // Se der erro, ele já vai para o catch
       const userId = data.user?.id;
       if (!userId) throw new Error('Erro ao obter ID do usuário.');
-
+  
+      // Buscar o médico correspondente ao usuário logado
       const { data: doctorData, error: doctorError } = await supabaseConnector.client
         .from('doctors')
         .select('*')
         .eq('auth_user_id', userId)
         .single();
+        
       if (doctorError || !doctorData) {
         Alert.alert('Erro', 'Médico não encontrado. Registrar-se.');
-        router.push('/auth/register');
+        router.push('/auth/Register');
         return;
       }
-
+  
+      // Médico encontrado com sucesso
       setSelectedDoctor(doctorData);
       router.replace('/(tabs)/home');
     } catch (error: any) {
+      // Tratar erro de login ou na busca pelo médico
       Alert.alert('Erro no login', error.message || 'Erro desconhecido.');
     } finally {
+      // O loading sempre vai parar aqui
       setLoading(false);
     }
   };
-
+  
   return (
     <Animatable.View animation="fadeIn" duration={800} style={authStyles.container}>
       {loading && (
@@ -96,7 +102,7 @@ const Login: React.FC = () => {
         </Animatable.Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/auth/register')} style={authStyles.linkButton}>
+      <TouchableOpacity onPress={() => router.push('/auth/Register')} style={authStyles.linkButton}>
         <Text style={authStyles.linkText}>Criar uma conta</Text>
       </TouchableOpacity>
 

@@ -1,15 +1,13 @@
-// app/attendances/BasicInfoForm.tsx
-
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { View, Text, ScrollView, TextInput } from 'react-native';
 
-import styles from './styles/AttendanceStyles'; // Estilização
-import { BasicInfo } from './types'; // Tipo para o formulário
+import styles from './styles/AttendanceStyles';
+import { BasicInfo } from './types';
 
 interface BasicInfoFormProps {
   data: BasicInfo;
-  onChange: (field: keyof BasicInfo, value: string) => void; // Função de alteração de estado
+  onChange: (field: keyof BasicInfo, value: string) => void;
 }
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ data, onChange }) => {

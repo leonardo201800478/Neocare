@@ -9,7 +9,6 @@ const AttendancesLayout = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Gestão de Prontuários</Text>
       </View>
-
       <View style={styles.container}>
         {/* O componente <Slot> renderiza o conteúdo da página específica de acordo com a rota */}
         <Slot />
@@ -21,23 +20,23 @@ const AttendancesLayout = () => {
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: '#e8f5e9', // Verde claro para a área de segurança
+    backgroundColor: '#e8f5e9',
   },
   header: {
     padding: 16,
-    backgroundColor: '#1b5e20', // Verde escuro para destacar a barra de navegação
+    backgroundColor: '#1b5e20',
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff', // Branco para contraste com o fundo verde escuro
+    color: '#ffffff', 
   },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#ffffff', // Branco para contraste com o fundo geral
+    backgroundColor: '#ffffff',
   },
 });
 

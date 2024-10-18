@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#E8F5E9', // Verde claro para o fundo
+    backgroundColor: '#E8F5E9',
     padding: 20,
     alignItems: 'center',
   },
@@ -16,12 +16,12 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#2E7D32', // Verde escuro
+    color: '#2E7D32',
     marginBottom: 20,
   },
   patientName: {
     fontSize: 20,
-    color: '#388E3C', // Verde médio para o nome do paciente
+    color: '#388E3C',
     marginBottom: 10,
   },
   updateText: {
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   allergiesContainer: {
     width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Fundo branco com leve transparência
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 15,
     borderRadius: 10,
     shadowColor: '#000',
@@ -44,12 +44,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1B5E20', // Verde mais escuro
+    color: '#1B5E20',
     marginBottom: 10,
   },
   allergyItem: {
     fontSize: 16,
-    color: '#4CAF50', // Verde claro para os itens de alergia confirmados
+    color: '#4CAF50', 
     marginBottom: 8,
   },
   noAllergiesText: {
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    backgroundColor: '#2E7D32', // Verde escuro para os botões
+    backgroundColor: '#2E7D32',
     padding: 15,
     borderRadius: 8,
     justifyContent: 'center',

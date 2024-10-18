@@ -1,22 +1,20 @@
-// app/attendences/RegisterAttendanceStep1.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Button, Alert, ScrollView } from 'react-native';
 
 import BasicInfoForm from './BasicInfoForm';
 import { BasicInfo } from './types';
-import { uuid } from '../../utils/uuid'; // Para gerar o UUID
-import { useAttendance } from '../context/AttendanceContext'; // Importando o contexto de Atendimentos
-import { useDoctor } from '../context/DoctorContext'; // Importando o contexto de Doutores
-import { usePatient } from '../context/PatientContext'; // Importando o contexto de Pacientes
+import { uuid } from '../../utils/uuid';
+import { useAttendance } from '../context/AttendanceContext'; 
+import { useDoctor } from '../context/DoctorContext';
+import { usePatient } from '../context/PatientContext';
 import styles from '../styles/Styles';
 
 const RegisterAttendanceStep1: React.FC = () => {
   const router = useRouter();
-  const { createAttendance } = useAttendance(); // Função para criar o atendimento no banco de dados
-  const { selectedDoctor } = useDoctor(); // Obtém o médico autenticado
-  const { selectedPatient } = usePatient(); // Obtém o paciente selecionado
+  const { createAttendance } = useAttendance();
+  const { selectedDoctor } = useDoctor();
+  const { selectedPatient } = usePatient();
 
   const [basicInfo, setBasicInfo] = useState<BasicInfo>({
     motivo_consulta: '',
@@ -42,8 +40,8 @@ const RegisterAttendanceStep1: React.FC = () => {
 
   const handleNextStep = async () => {
     try {
-      const doctorId = selectedDoctor?.id; // ID do médico autenticado
-      const patientId = selectedPatient?.id; // ID do paciente selecionado
+      const doctorId = selectedDoctor?.id;
+      const patientId = selectedPatient?.id;
 
       if (!doctorId || !patientId) {
         Alert.alert('Erro', 'Médico ou paciente não encontrado.');

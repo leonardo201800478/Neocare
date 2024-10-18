@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Animatable from 'react-native-animatable';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Alimentacao() {
   const router = useRouter();
@@ -14,7 +14,6 @@ export default function Alimentacao() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Botão de Voltar Estilizado */}
-
 
         <Animatable.Text animation="fadeInDown" style={styles.title}>
           Alimentação
@@ -50,12 +49,11 @@ export default function Alimentacao() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Voltar</Text>
-        </TouchableOpacity>
+              <Ionicons name="arrow-back" size={24} color="white" />
+              <Text style={styles.backText}>Voltar</Text>
+            </TouchableOpacity>
           </Animatable.View>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,5 +1,3 @@
-// app/schema/AppSchema.ts
-
 import { column, Schema, Table } from '@powersync/react-native';
 
 // Tabela de médicos
@@ -213,7 +211,7 @@ export const AppSchema = new Schema({
   vaccinations,
   allergies,
   medications,
-  medical_records, // Adicionando a tabela aqui
+  medical_records,
 });
 
 // Definindo o tipo Database
@@ -227,4 +225,4 @@ export type AttendanceNutritionDevelopment = Database['attendance_nutrition_deve
 export type Vaccination = Database['vaccinations'];
 export type Allergy = Database['allergies'];
 export type Medication = Database['medications'];
-export type MedicalRecord = Database['medical_records']; // Novo tipo adicionado
+export type MedicalRecord = Database['medical_records'];

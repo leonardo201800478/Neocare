@@ -1,6 +1,4 @@
-// app/attendences/AttendanceSummary.tsx
-
-import { Ionicons } from '@expo/vector-icons'; // Para ícones
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -12,7 +10,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import * as Animatable from 'react-native-animatable'; // Para animações
+import * as Animatable from 'react-native-animatable';
 
 import { useMedicalRecords } from '../context/MedicalRecordsContext';
 
@@ -29,8 +27,8 @@ const AttendanceSummary: React.FC = () => {
     }>();
 
   const { createMedicalRecord } = useMedicalRecords();
-  const [isSaved, setIsSaved] = useState(false); // Estado para controlar se o prontuário foi salvo
-  const [loading, setLoading] = useState(false); // Estado para controlar o carregamento do botão "Salvar"
+  const [isSaved, setIsSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Função para salvar o prontuário completo na tabela medical_records
   const handleSaveMedicalRecord = async () => {
@@ -40,7 +38,7 @@ const AttendanceSummary: React.FC = () => {
         return;
       }
 
-      setLoading(true); // Inicia o estado de carregamento
+      setLoading(true);
 
       const response = await createMedicalRecord({
         attendanceId,
@@ -48,18 +46,18 @@ const AttendanceSummary: React.FC = () => {
         symptomId,
         nutritionId,
         doctorId,
-        patientId
+        patientId,
       });
 
       if (response.error) {
         throw new Error(response.error);
       }
 
-      setIsSaved(true); // Marca o prontuário como salvo
-      setLoading(false); // Termina o carregamento
+      setIsSaved(true);
+      setLoading(false);
       Alert.alert('Sucesso', 'Prontuário salvo com sucesso!');
     } catch (error) {
-      setLoading(false); // Termina o carregamento em caso de erro
+      setLoading(false);
       console.error('Erro ao salvar o prontuário:', error);
       Alert.alert('Erro', 'Erro ao salvar o prontuário. Tente novamente.');
     }
@@ -106,13 +104,9 @@ const AttendanceSummary: React.FC = () => {
         {/* Botão Voltar aos Detalhes do Paciente */}
         <Animatable.View animation="fadeIn" delay={500}>
           <TouchableOpacity
-            style={[
-              styles.button,
-              isSaved ? styles.activeButton : styles.disabledButton, // Botão ativo ou desativado
-            ]}
+            style={[styles.button, isSaved ? styles.activeButton : styles.disabledButton]}
             onPress={handleGoToPatientDetails}
-            disabled={!isSaved} // Só habilita se o prontuário foi salvo
-          >
+            disabled={!isSaved}>
             <Ionicons name="arrow-back-outline" size={24} color={isSaved ? '#fff' : '#b0b0b0'} />
             <Text style={[styles.buttonText, { color: isSaved ? '#fff' : '#b0b0b0' }]}>
               Voltar aos Detalhes do Paciente

@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
-import * as Animatable from 'react-native-animatable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProblemasAlimentacao() {

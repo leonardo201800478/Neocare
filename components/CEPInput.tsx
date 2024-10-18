@@ -1,5 +1,3 @@
-// components/CepInput.tsx
-
 import React from 'react';
 import { TextInput, Alert, StyleSheet } from 'react-native';
 

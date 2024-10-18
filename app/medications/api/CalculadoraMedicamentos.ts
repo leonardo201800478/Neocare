@@ -1,5 +1,3 @@
-//app/medications/api/CalculadoraMedicamentos.ts
-
 import { calcularDosagemMedicamento } from './LogicaMedicamentos';
 import { verificarContraindicacoes, PacienteInfo } from './VerificacaoContraindicacoes';
 

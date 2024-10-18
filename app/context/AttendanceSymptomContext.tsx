@@ -1,5 +1,3 @@
-// app/attendences/AttendanceSymptomContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { AttendanceSymptom } from '../../powersync/AppSchema';
@@ -15,7 +13,7 @@ type AttendanceSymptomContextType = {
     patientId: string
   ) => Promise<{ symptomId: string | null; error: string | null }>;
   fetchSymptomById: (symptomId: string) => Promise<AttendanceSymptom | null>;
-  fetchSymptomsByAttendanceId: (attendanceId: string) => Promise<AttendanceSymptom[] | null>; // Nova função para buscar sintomas pelo ID do atendimento
+  fetchSymptomsByAttendanceId: (attendanceId: string) => Promise<AttendanceSymptom[] | null>;
 };
 
 const AttendanceSymptomContext = createContext<AttendanceSymptomContextType | undefined>(undefined);

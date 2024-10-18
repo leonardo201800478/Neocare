@@ -1,10 +1,10 @@
 // app/screens/TratarPesoMuitoBaixo.tsx
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TratarPesoMuitoBaixo() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function TratarPesoMuitoBaixo() {
         <Animatable.Text animation="fadeInDown" style={styles.title}>
           Tratar o Peso Muito Baixo
         </Animatable.Text>
-        
+
         <Text style={styles.content}>
           "Sua criança está com o peso muito baixo. Ela vai se fortalecer com dietas especiais."
         </Text>
@@ -75,11 +75,14 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <Text style={styles.note}>
-          OBS.: O arroz pode ser substituído por fubá, utilizando metade da quantidade do arroz (veja tabela de dietas acima) e cozinhando por 3 a 4 minutos.
+          OBS.: O arroz pode ser substituído por fubá, utilizando metade da quantidade do arroz
+          (veja tabela de dietas acima) e cozinhando por 3 a 4 minutos.
         </Text>
-        
+
         <Text style={styles.content}>
-          Faça estas dietas até o próximo retorno variando as refeições no mesmo dia ou de um dia para o outro, para a criança não enjoar da comida. Ofereça 6 vezes ao dia, garantindo que a criança coma:
+          Faça estas dietas até o próximo retorno variando as refeições no mesmo dia ou de um dia
+          para o outro, para a criança não enjoar da comida. Ofereça 6 vezes ao dia, garantindo que
+          a criança coma:
         </Text>
 
         <View style={styles.table}>
@@ -89,12 +92,11 @@ export default function TratarPesoMuitoBaixo() {
         </View>
 
         <Text style={styles.note}>
-          Dê o peito entre as refeições, sempre que a criança quiser. Um copo de 200 ml (tipo requeijão e extrato de tomate).
+          Dê o peito entre as refeições, sempre que a criança quiser. Um copo de 200 ml (tipo
+          requeijão e extrato de tomate).
         </Text>
-        
-        <Text style={styles.important}>
-          Voltar imediatamente se a criança recusar a comida.
-        </Text>
+
+        <Text style={styles.important}>Voltar imediatamente se a criança recusar a comida.</Text>
 
         <TouchableOpacity style={styles.button} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color="white" />

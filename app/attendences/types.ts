@@ -1,5 +1,3 @@
-// app/attendences/types.ts
-
 export interface BasicInfo {
   motivo_consulta: string;
   hipertensao: string;

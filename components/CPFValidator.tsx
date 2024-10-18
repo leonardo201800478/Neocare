@@ -1,8 +1,5 @@
-// components/CPFValidator.tsx
-
 export const isCPFValid = (cpf: string) => {
-  cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
-
+  cpf = cpf.replace(/[^\d]+/g, '');
   if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
   let soma = 0;

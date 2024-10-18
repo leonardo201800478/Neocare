@@ -1,5 +1,3 @@
-// app/attendences/AttendanceContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { Attendance } from '../../powersync/AppSchema';
@@ -120,7 +118,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({ children
         .select('*')
         .eq('patient_id', patientId)
         .order('created_at', { ascending: false })
-        .limit(1); // Busca o último atendimento
+        .limit(1);
 
       if (error || !data || data.length === 0) {
         return null;

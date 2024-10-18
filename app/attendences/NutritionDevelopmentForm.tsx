@@ -2,7 +2,7 @@ import { Picker } from '@react-native-picker/picker';
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
 
-import styles from './styles/AttendanceStyles'; // Importando a estilização separada
+import styles from './styles/AttendanceStyles'; 
 import { NutritionDevelopment } from './types';
 
 interface NutritionDevelopmentProps {
@@ -18,7 +18,7 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Amamentando (Sim/Não) */}
       <Text style={styles.label}>Amamentando:</Text>
       <Picker
-        selectedValue={data.amamentando ?? 'no'} // Valor padrão "Não"
+        selectedValue={data.amamentando ?? 'no'}
         onValueChange={(value) => onChange('amamentando', value)}
         style={styles.picker}>
         <Picker.Item label="Sim" value="yes" />
@@ -42,7 +42,7 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Amamenta à Noite (Sim/Não) */}
       <Text style={styles.label}>Amamenta à Noite:</Text>
       <Picker
-        selectedValue={data.amamenta_noite ?? 'no'} // Valor padrão "Não"
+        selectedValue={data.amamenta_noite ?? 'no'}
         onValueChange={(value) => onChange('amamenta_noite', value)}
         style={styles.picker}>
         <Picker.Item label="Sim" value="yes" />
@@ -52,7 +52,7 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Recebe outros Líquidos/Alimentos? */}
       <Text style={styles.label}>Recebe Outros Líquidos/Alimentos:</Text>
       <Picker
-        selectedValue={data.alimentos_liquidos ?? 'no'} // Valor padrão "Não"
+        selectedValue={data.alimentos_liquidos ?? 'no'}
         onValueChange={(value) => onChange('alimentos_liquidos', value)}
         style={styles.picker}>
         <Picker.Item label="Sim" value="yes" />
@@ -85,7 +85,7 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Mudou a Alimentação Recentemente? */}
       <Text style={styles.label}>Mudou a Alimentação Recentemente:</Text>
       <Picker
-        selectedValue={data.mudou_alimentacao ?? 'no'} // Valor padrão "Não"
+        selectedValue={data.mudou_alimentacao ?? 'no'}
         onValueChange={(value) => onChange('mudou_alimentacao', value)}
         style={styles.picker}>
         <Picker.Item label="Sim" value="yes" />
@@ -105,7 +105,7 @@ const NutritionDevelopmentForm: React.FC<NutritionDevelopmentProps> = ({ data, o
       {/* Perda de Peso na Primeira Semana >10% */}
       <Text style={styles.label}>Perda de Peso na Primeira Semana &gt;10%:</Text>
       <Picker
-        selectedValue={data.perda_peso_primeira_semana ?? 'no'} // Valor padrão "Não"
+        selectedValue={data.perda_peso_primeira_semana ?? 'no'}
         onValueChange={(value) => onChange('perda_peso_primeira_semana', value)}
         style={styles.picker}>
         <Picker.Item label="Sim" value="yes" />
