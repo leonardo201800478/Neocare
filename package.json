@@ -6,6 +6,7 @@
     "type-check": "tsc --noEmit",
     "clean": "rimraf ./build",
     "android": "expo run:android",
+    "production": "npx expo start --no-dev --minify",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "detox test",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "@azure/core-asynciterator-polyfill": "^1.0.2",
+    "@expo/config-types": "^51.0.3",
     "@expo/vector-icons": "^14.0.0",
     "@journeyapps/react-native-quick-sqlite": "^1.1.5",
     "@powersync/attachments": "^2.1.2",

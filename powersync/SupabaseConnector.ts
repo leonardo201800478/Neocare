@@ -7,10 +7,12 @@ import {
   PowerSyncBackendConnector,
   UpdateType,
 } from '@powersync/react-native';
+import Constants from 'expo-constants'; // Para acessar variáveis de ambiente no Expo
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
-const powersyncUrl = process.env.EXPO_PUBLIC_POWERSYNC_URL as string;
+// Acessando as variáveis de ambiente a partir de Constants.expoConfig
+const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl;
+const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey;
+const powersyncUrl = Constants.expoConfig?.extra?.powersyncUrl;
 
 // Definindo códigos de resposta fatais que não podem ser recuperados por meio de novas tentativas
 const FATAL_RESPONSE_CODES = [
@@ -23,35 +25,48 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
   client: SupabaseClient;
 
   constructor() {
+    // Verificando se as variáveis de ambiente estão disponíveis
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Supabase URL or Anon Key is not defined');
+    }
+
+    console.log('Initializing Supabase client...');
+    // Inicializando o cliente Supabase com AsyncStorage para armazenar a sessão
     this.client = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         storage: AsyncStorage,
       },
     });
+    console.log('Supabase client initialized successfully.');
   }
 
+  // Função para login utilizando o e-mail e senha do usuário
   async login(username: string, password: string) {
+    console.log(`Attempting login for user: ${username}`);
     const { error } = await this.client.auth.signInWithPassword({
       email: username,
       password,
     });
 
     if (error) {
+      console.error('Login failed:', error.message);
       throw error;
     }
+
+    console.log('Login successful');
   }
 
+  // Obtém as credenciais de autenticação do Supabase
   async fetchCredentials() {
-    const {
-      data: { session },
-      error,
-    } = await this.client.auth.getSession();
+    console.log('Fetching Supabase credentials...');
+    const { data: { session }, error } = await this.client.auth.getSession();
 
     if (!session || error) {
-      throw new Error(`Could not fetch Supabase credentials: ${error}`);
+      console.error('Could not fetch Supabase credentials:', error);
+      throw new Error(`Could not fetch Supabase credentials: ${error?.message}`);
     }
 
-    console.debug('session expires at', session.expires_at);
+    console.debug('Session expires at', session.expires_at);
 
     return {
       client: this.client,
@@ -62,10 +77,13 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     };
   }
 
+  // Função para fazer upload dos dados (sincronização) com o PowerSync e Supabase
   async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
+    console.log('Starting data upload...');
     const transaction = await database.getNextCrudTransaction();
 
     if (!transaction) {
+      console.log('No pending transactions to upload.');
       return;
     }
 
@@ -75,6 +93,8 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         lastOp = op;
         const table = this.client.from(op.table);
         let result: any = null;
+
+        console.log(`Uploading operation: ${op.op} on table: ${op.table}`);
         switch (op.op) {
           case UpdateType.PUT:
             const record = { ...op.opData, id: op.id };
@@ -89,13 +109,15 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         }
 
         if (result.error) {
-          throw new Error(`Could not ${op.op} data to Supabase. Error: ${JSON.stringify(result)}`);
+          console.error(`Failed to ${op.op} data to Supabase:`, result.error.message);
+          throw new Error(`Could not ${op.op} data to Supabase. Error: ${JSON.stringify(result.error)}`);
         }
       }
 
+      console.log('Data upload completed successfully.');
       await transaction.complete();
     } catch (ex: any) {
-      console.debug(ex);
+      console.error('Error during data upload:', ex.message);
       if (
         typeof ex.code === 'string' &&
         FATAL_RESPONSE_CODES.some((regex) => regex.test(ex.code))
