@@ -1,10 +1,10 @@
 // app/screens/index.tsx
-import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React from 'react';
 import { Text, TouchableOpacity, StyleSheet, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Animatable from 'react-native-animatable';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeAidpi() {
   const router = useRouter();

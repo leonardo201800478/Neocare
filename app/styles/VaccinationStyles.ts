@@ -1,5 +1,3 @@
-// app/styles/VaccinationStyles.ts
-
 import { StyleSheet } from 'react-native';
 
 const VaccinationStyles = StyleSheet.create({

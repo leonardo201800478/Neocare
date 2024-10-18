@@ -1,5 +1,3 @@
-//app/medications/api/CalculadoraMedicamentos.ts
-
 import { PowerSyncContext } from '@powersync/react-native';
 import { ReactNode, useMemo } from 'react';
 

@@ -1,5 +1,3 @@
-// app/attendences/RegisterAttendanceStep4.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Button, Alert, ScrollView } from 'react-native';

@@ -10,17 +10,16 @@ import {
   Alert,
 } from 'react-native';
 
-import { useDoctor } from '../context/DoctorContext'; // useDoctor do contexto correto
-import { useMedicalRecords } from '../context/MedicalRecordsContext'; // useMedicalRecords do contexto correto
-import { usePatient } from '../context/PatientContext'; // usePatient do contexto correto
-
+import { useDoctor } from '../context/DoctorContext';
+import { useMedicalRecords } from '../context/MedicalRecordsContext';
+import { usePatient } from '../context/PatientContext';
 const AttendanceList = () => {
-  const { patientId } = useLocalSearchParams<{ patientId: string }>(); // Pega o patientId da URL
+  const { patientId } = useLocalSearchParams<{ patientId: string }>();
   const router = useRouter();
   const { fetchMedicalRecordsByPatient } = useMedicalRecords();
   const { fetchDoctorById } = useDoctor();
   const { fetchPatientById } = usePatient();
-  const [medicalRecords, setMedicalRecords] = useState<any[]>([]); // Tipagem como any[] para evitar conflitos
+  const [medicalRecords, setMedicalRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,7 +34,7 @@ const AttendanceList = () => {
     try {
       // Busca os prontuários médicos associados ao paciente, sem join
       const records = await fetchMedicalRecordsByPatient(patientId);
-  
+
       if (records) {
         // Para cada prontuário, busca o nome do médico e do paciente de forma separada
         const recordsWithNames = await Promise.all(
@@ -43,7 +42,7 @@ const AttendanceList = () => {
             // Busca separadamente os dados do médico e do paciente
             const doctor = record.doctor_id ? await fetchDoctorById(record.doctor_id) : null;
             const patient = record.patient_id ? await fetchPatientById(record.patient_id) : null;
-  
+
             // Retorna o registro com os nomes adicionais
             return {
               ...record,
@@ -63,13 +62,11 @@ const AttendanceList = () => {
       setLoading(false);
     }
   };
-  
-  
 
   const handleMedicalRecordSelect = (record: any) => {
     router.push({
       pathname: '/attendences/AttendanceDetails',
-      params: { medicalRecordId: record.id }, // Passa o id do prontuário para a próxima tela
+      params: { medicalRecordId: record.id },
     });
   };
 

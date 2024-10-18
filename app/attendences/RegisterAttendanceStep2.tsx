@@ -1,5 +1,3 @@
-// app/attendences/RegisterAttendanceStep2.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Button, Alert, ScrollView } from 'react-native';
@@ -67,7 +65,7 @@ const RegisterAttendanceStep2: React.FC = () => {
       const response = await createVitalSigns(
         {
           ...vitalInfo,
-          id: uuid(), // Gera um UUID único para os sinais vitais
+          id: uuid(),
         },
         doctorId,
         patientId

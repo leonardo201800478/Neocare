@@ -6,19 +6,19 @@ export const authStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#e6f7e1', // Fundo verde claro
+    backgroundColor: '#e6f7e1',
   },
   header: {
     fontSize: 30,
     textAlign: 'center',
-    marginBottom: 30, // Reduzi o espaçamento para acomodar o subtítulo de forma mais coesa
+    marginBottom: 30,
     color: '#006400',
     fontWeight: 'bold',
   },
   subHeader: {
     fontSize: 18,
     textAlign: 'center',
-    marginBottom: 30, // Espaçamento adequado para separar do campo de entrada
+    marginBottom: 30,
     color: '#006400',
     fontWeight: '400',
   },
@@ -61,7 +61,7 @@ export const authStyles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
-    paddingLeft: 10, // Para separar o texto do ícone
+    paddingLeft: 10,
   },
   linkButton: {
     marginVertical: 10,
@@ -77,7 +77,7 @@ export const authStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escuro semitransparente para dar destaque ao carregamento
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   loadingText: {
     color: '#fff',

@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import * as Animatable from 'react-native-animatable'; // Para animações
+import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { authStyles } from '../styles/AuthStyles';

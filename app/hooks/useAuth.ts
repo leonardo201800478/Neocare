@@ -1,15 +1,13 @@
-// app/hooks/useAuth.ts
-
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
-import { useSystem } from '../../powersync/PowerSync'; // Acessar Supabase e Powersync
-import { useDoctor } from '../context/DoctorContext'; // Acessar o contexto de médicos
+import { useSystem } from '../../powersync/PowerSync';
+import { useDoctor } from '../context/DoctorContext';
 
 export const useAuth = () => {
   const { supabaseConnector } = useSystem();
   const router = useRouter();
-  const { createOrUpdateDoctor } = useDoctor(); // Função para criar ou atualizar médico no contexto
+  const { createOrUpdateDoctor } = useDoctor();
 
   useEffect(() => {
     const checkUserAndRedirect = async () => {
@@ -51,13 +49,13 @@ export const useAuth = () => {
         // Verificar se o médico já preencheu o nome
         if (!doctorData?.name) {
           console.log('Médico sem nome. Redirecionando para cadastro de nome...');
-          router.replace('/(tabs)/doctors/register'); // Redirecionar para cadastro de nome do médico
+          router.replace('/(tabs)/doctors/register');
         } else if (doctorData.terms_accepted !== 1) {
           console.log('Termos de aceite não aceitos. Redirecionando...');
-          router.replace('/terms/'); // Redirecionar para tela de termos de aceite
+          router.replace('/terms/');
         } else {
           console.log('Tudo certo. Redirecionando para Home...');
-          router.replace('/(tabs)/home'); // Redirecionar para a tela principal
+          router.replace('/(tabs)/home');
         }
       } catch (e) {
         console.error('Erro ao verificar a autenticação e status do médico:', e);

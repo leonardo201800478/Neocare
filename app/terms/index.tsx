@@ -1,4 +1,3 @@
-// app/terms/index.tsx
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from '@react-native-community/checkbox';
 import { useRouter } from 'expo-router';
@@ -11,7 +10,7 @@ import { useSystem } from '../../powersync/PowerSync';
 export default function Terms() {
   const router = useRouter();
   const [accepted, setAccepted] = useState(false);
-  const { supabaseConnector } = useSystem(); // Acessa o conector Supabase
+  const { supabaseConnector } = useSystem();
 
   const handleAccept = async () => {
     if (!accepted) {
@@ -21,13 +20,13 @@ export default function Terms() {
 
     const {
       data: { user },
-    } = await supabaseConnector.client.auth.getUser(); // Acessa o usuário autenticado
+    } = await supabaseConnector.client.auth.getUser();
     if (user) {
       // Atualiza o campo 'terms_accepted' na tabela 'doctors'
       const { error } = await supabaseConnector.client
         .from('doctors')
-        .update({ terms_accepted: '1' }) // '1' para indicar que os termos foram aceitos
-        .eq('auth_user_id', user.id); // Baseado no ID do usuário autenticado
+        .update({ terms_accepted: '1' })
+        .eq('auth_user_id', user.id);
 
       if (error) {
         Alert.alert('Erro', 'Não foi possível atualizar o status de aceite dos termos.');
@@ -170,8 +169,7 @@ export default function Terms() {
           <TouchableOpacity
             style={[styles.acceptButton, !accepted && styles.disabledButton]}
             onPress={handleAccept}
-            disabled={!accepted} // Desativa o botão se o termo não for aceito
-          >
+            disabled={!accepted}>
             <Text style={styles.buttonText}>Aceitar e Continuar</Text>
           </TouchableOpacity>
         </View>
@@ -255,7 +253,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   disabledButton: {
-    backgroundColor: '#bdbdbd', // Desativa o botão se os termos não forem aceitos
+    backgroundColor: '#bdbdbd',
   },
   buttonText: {
     color: 'white',

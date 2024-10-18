@@ -1,5 +1,3 @@
-// app/medications/api/medicationsList.ts
-
 export const medicationsList = [
   { label: 'Amoxicilina', value: 'Amoxicilina' },
   { label: 'Ibuprofeno', value: 'Ibuprofeno' },

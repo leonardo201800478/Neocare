@@ -1,4 +1,3 @@
-// app/attendences/styles/AttendanceStyles.ts
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({

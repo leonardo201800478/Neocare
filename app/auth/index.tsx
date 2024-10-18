@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import * as Animatable from 'react-native-animatable'; // Adicionado Animatable para animações
+import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -38,7 +38,7 @@ const Login: React.FC = () => {
         .single();
       if (doctorError || !doctorData) {
         Alert.alert('Erro', 'Médico não encontrado. Registrar-se.');
-        router.push('/auth/register');
+        router.push('/auth/Register');
         return;
       }
 
@@ -96,7 +96,7 @@ const Login: React.FC = () => {
         </Animatable.Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/auth/register')} style={authStyles.linkButton}>
+      <TouchableOpacity onPress={() => router.push('/auth/Register')} style={authStyles.linkButton}>
         <Text style={authStyles.linkText}>Criar uma conta</Text>
       </TouchableOpacity>
 

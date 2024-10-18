@@ -1,6 +1,4 @@
-// app/medications/PrescriptionScreen.tsx
-
-import { useLocalSearchParams } from 'expo-router'; // Correção: useLocalSearchParams para acessar os parâmetros
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 

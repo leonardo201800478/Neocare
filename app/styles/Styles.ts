@@ -3,23 +3,23 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   safeAreaView: {
     flex: 1,
-    backgroundColor: '#E8F5E9', // Verde claro para a área segura
+    backgroundColor: '#E8F5E9',
   },
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#E8F5E9', // Verde claro para o fundo principal
+    backgroundColor: '#E8F5E9',
   },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#2E7D32', // Verde escuro para o título
+    color: '#2E7D32',
     textAlign: 'center',
     marginBottom: 30,
   },
   sectionTitle: {
     fontSize: 20,
-    color: '#388E3C', // Verde médio para subtítulos
+    color: '#388E3C',
     marginBottom: 10,
     fontWeight: 'bold',
   },
@@ -27,35 +27,35 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 15,
     padding: 15,
-    backgroundColor: '#FFFFFF', // Branco para o campo de entrada
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    color: '#2E7D32', // Verde escuro para o texto
+    color: '#2E7D32',
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#A5D6A7', // Verde suave para as bordas dos inputs
+    borderColor: '#A5D6A7',
   },
   inputSmall: {
     flex: 1,
     marginBottom: 15,
     padding: 15,
-    backgroundColor: '#FFFFFF', // Branco para campos de entrada pequenos
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    color: '#2E7D32', // Verde escuro para o texto
+    color: '#2E7D32',
     fontSize: 16,
     marginHorizontal: 5,
     borderWidth: 1,
-    borderColor: '#A5D6A7', // Verde suave para bordas
+    borderColor: '#A5D6A7',
   },
   inputMultiline: {
     width: '100%',
     marginBottom: 20,
     padding: 15,
-    backgroundColor: '#F1F8E9', // Verde muito claro para diferenciar campos multilinha
+    backgroundColor: '#F1F8E9',
     borderRadius: 12,
-    color: '#2E7D32', // Verde escuro para o texto
+    color: '#2E7D32',
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#81C784', // Verde para as bordas dos inputs multilinha
+    borderColor: '#81C784',
     textAlignVertical: 'top',
   },
   pickerContainer: {
@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     padding: 15,
-    backgroundColor: '#4CAF50', // Verde para os botões principais
+    backgroundColor: '#4CAF50',
     borderRadius: 10,
     alignItems: 'center',
     marginHorizontal: 5,
   },
   buttonText: {
-    color: '#FFFFFF', // Branco para o texto dos botões
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -103,23 +103,23 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(46, 125, 50, 0.5)', // Transparência verde para o overlay de carregamento
+    backgroundColor: 'rgba(46, 125, 50, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: '#FFFFFF', // Branco para o texto de carregamento
+    color: '#FFFFFF',
     marginTop: 10,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#C8E6C9', // Verde muito claro para o fundo de carregamento
+    backgroundColor: '#C8E6C9',
   },
   attendanceContainer: {
     padding: 20,
-    backgroundColor: '#A5D6A7', // Verde suave para o container de atendimento
+    backgroundColor: '#A5D6A7',
     borderRadius: 12,
     marginBottom: 20,
     borderWidth: 1,
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginBottom: 20,
     padding: 20,
-    backgroundColor: '#C8E6C9', // Verde claro para o container de informações
+    backgroundColor: '#C8E6C9',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#81C784',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     marginBottom: 20,
     padding: 20,
-    backgroundColor: '#C8E6C9', // Verde claro para o container de detalhes
+    backgroundColor: '#C8E6C9',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#81C784',
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#2E7D32', // Verde escuro para o título
+    color: '#2E7D32',
     marginBottom: 15,
   },
   scrollViewContainer: {
@@ -160,20 +160,20 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   buttonDelete: {
-    backgroundColor: '#D32F2F', // Vermelho escuro para o botão de exclusão
+    backgroundColor: '#D32F2F',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 10,
   },
   buttonConsulta: {
-    backgroundColor: '#388E3C', // Verde médio para o botão de consulta
+    backgroundColor: '#388E3C',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
   },
   buttonVaccine: {
-    backgroundColor: '#FFA000', // Laranja para o botão de vacinação
+    backgroundColor: '#FFA000',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   detailItem: {
     fontSize: 18,
-    color: '#2E7D32', // Verde escuro para itens de detalhe
+    color: '#2E7D32',
     marginBottom: 10,
   },
 });

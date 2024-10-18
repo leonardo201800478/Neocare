@@ -1,5 +1,3 @@
-// app/attendences/RegisterAttendanceStep3.tsx
-
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Button, Alert, ScrollView } from 'react-native';
@@ -8,8 +6,8 @@ import GeneralSymptomsForm from './GeneralSymptomsForm';
 import { GeneralSymptoms } from './types';
 import { uuid } from '../../utils/uuid';
 import { useAttendanceSymptom } from '../context/AttendanceSymptomContext';
-import { useDoctor } from '../context/DoctorContext'; // Pega o médico autenticado
-import { usePatient } from '../context/PatientContext'; // Pega o paciente selecionado
+import { useDoctor } from '../context/DoctorContext'; 
+import { usePatient } from '../context/PatientContext';
 import styles from '../styles/Styles';
 
 const RegisterAttendanceStep3: React.FC = () => {
@@ -52,7 +50,7 @@ const RegisterAttendanceStep3: React.FC = () => {
   useEffect(() => {
     if (!selectedPatient?.id || !selectedDoctor?.id) {
       Alert.alert('Erro', 'Paciente ou médico não encontrado.');
-      router.back(); // Retorna à tela anterior se não houver paciente ou médico
+      router.back();
     }
   }, [selectedPatient, selectedDoctor]);
 

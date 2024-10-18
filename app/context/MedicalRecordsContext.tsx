@@ -1,4 +1,3 @@
-// app/context/MedicalRecordsContext.tsx
 import React, { createContext, useContext, ReactNode } from 'react';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -38,7 +37,7 @@ type MedicalRecordsContextType = {
 const MedicalRecordsContext = createContext<MedicalRecordsContextType | undefined>(undefined);
 
 export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { supabaseConnector } = useSystem(); // Acessando o Supabase via Powersync
+  const { supabaseConnector } = useSystem();
 
   const createMedicalRecord = async (
     args: Record<string, string>
@@ -55,7 +54,7 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
     }
 
     try {
-      const medicalRecordId = uuid(); // Gera o ID para o novo prontuário
+      const medicalRecordId = uuid();
 
       const newMedicalRecord = {
         id: medicalRecordId,
@@ -65,8 +64,8 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
         nutrition_id: nutritionId,
         doctor_id: doctorId,
         patient_id: patientId,
-        created_at: new Date().toISOString(), // Define a data de criação
-        updated_at: new Date().toISOString(), // Define a data de atualização
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       // Insere o novo prontuário no Supabase
@@ -186,7 +185,7 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
       const { data: symptoms, error: symptomsError } = await supabaseConnector.client
         .from('attendance_symptoms')
         .select('*')
-        .eq('id', medicalRecord.symptom_id); // Remove o .single() porque pode haver múltiplos registros
+        .eq('id', medicalRecord.symptom_id);
 
       if (symptomsError) {
         console.error('Erro ao buscar sintomas no Supabase:', symptomsError.message);
@@ -218,7 +217,7 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
         patient: { name: patient?.name || undefined },
         attendance: attendance || {},
         vitals: vitals || {},
-        symptoms: symptoms || [], // Retorna uma lista de sintomas
+        symptoms: symptoms || [],
         nutrition: nutrition || {},
       };
     } catch (error) {
@@ -234,7 +233,7 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
       // Buscar os registros médicos sem joins
       const { data: medicalRecords, error } = await supabaseConnector.client
         .from('medical_records')
-        .select('*') // Apenas os dados da tabela medical_records
+        .select('*')
         .eq('patient_id', patientId);
 
       if (error) {
@@ -290,10 +289,10 @@ export const MedicalRecordsProvider: React.FC<{ children: ReactNode }> = ({ chil
         updated_at: record.updated_at,
         doctor: { name: record.doctors?.[0]?.name || undefined },
         patient: { name: record.patients?.[0]?.name || undefined },
-        attendance: {}, // Add appropriate data if available
-        vitals: {}, // Add appropriate data if available
-        symptoms: {}, // Add appropriate data if available
-        nutrition: {}, // Add appropriate data if available
+        attendance: {},
+        vitals: {},
+        symptoms: {},
+        nutrition: {},
       }));
     } catch (error) {
       console.error('Erro ao buscar prontuários médicos por médico:', error);

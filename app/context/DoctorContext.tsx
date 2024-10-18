@@ -1,5 +1,3 @@
-// app/context/DoctorContext.tsx
-
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 
 import { useSystem } from '../../powersync/PowerSync';
@@ -20,7 +18,7 @@ type DoctorContextType = {
   selectedDoctor: Doctor | null;
   setSelectedDoctor: (doctor: Doctor | null) => void;
   createOrUpdateDoctor: (doctor: Partial<Doctor>) => Promise<void>;
-  fetchDoctorById: (doctorId: string) => Promise<Doctor | null>; // Adicionando função para buscar médico pelo ID
+  fetchDoctorById: (doctorId: string) => Promise<Doctor | null>;
 };
 
 // Inicializando o contexto
@@ -28,7 +26,7 @@ const DoctorContext = createContext<DoctorContextType | undefined>(undefined);
 
 export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const { supabaseConnector } = useSystem(); // Acessando Supabase através de Powersync
+  const { supabaseConnector } = useSystem();
 
   // Função para criar ou atualizar o médico verificando duplicidade
   const createOrUpdateDoctor = async (doctor: Partial<Doctor>) => {
@@ -83,7 +81,7 @@ export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           `[INFO] Médico com auth_user_id=${doctor.auth_user_id} não encontrado. Criando novo registro...`
         );
         const { error: insertError } = await client.from('doctors').insert({
-          id: uuid(), // Gerando um UUID
+          id: uuid(),
           created_at: new Date().toISOString(),
           ...doctor,
         });
@@ -124,8 +122,7 @@ export const DoctorProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   return (
     <DoctorContext.Provider
-      value={{ selectedDoctor, setSelectedDoctor, createOrUpdateDoctor, fetchDoctorById }}
-    >
+      value={{ selectedDoctor, setSelectedDoctor, createOrUpdateDoctor, fetchDoctorById }}>
       {children}
     </DoctorContext.Provider>
   );

@@ -1,16 +1,14 @@
-// app/context/PatientContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-import { Patient } from '../../powersync/AppSchema'; // Tipagem para os pacientes
-import { useSystem } from '../../powersync/PowerSync'; // Importando a integração com Supabase via Powersync
-import { uuid } from '../../utils/uuid'; // Gerador de UUID
+import { Patient } from '../../powersync/AppSchema';
+import { useSystem } from '../../powersync/PowerSync';
+import { uuid } from '../../utils/uuid';
 
 type PatientContextType = {
   selectedPatient: Patient | null;
   setSelectedPatient: (patient: Patient | null) => void;
   createPatient: (patient: Partial<Patient>, doctorId: string) => Promise<void>;
-  fetchPatientById: (patientId: string) => Promise<Patient | null>; // Adicionando a função de buscar paciente
+  fetchPatientById: (patientId: string) => Promise<Patient | null>;
 };
 
 // Inicializando o contexto de pacientes
@@ -19,7 +17,7 @@ const PatientContext = createContext<PatientContextType | undefined>(undefined);
 // Provedor de contexto que envolve a aplicação
 export const PatientProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const { supabaseConnector } = useSystem(); // Acessando o Supabase via Powersync
+  const { supabaseConnector } = useSystem();
 
   /**
    * Função para criar um paciente
@@ -61,7 +59,7 @@ export const PatientProvider: React.FC<{ children: ReactNode }> = ({ children })
       }
 
       console.log('Paciente cadastrado com sucesso no Supabase:', data);
-      setSelectedPatient(newPatient); // Atualizar o paciente selecionado
+      setSelectedPatient(newPatient);
     } catch (error) {
       console.error('Erro ao criar o paciente:', error);
       throw new Error('Ocorreu um erro ao cadastrar o paciente.');

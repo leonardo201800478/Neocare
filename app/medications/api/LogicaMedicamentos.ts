@@ -1,5 +1,3 @@
-//app/medications/api/LogicaMedicamentos.ts
-
 // Funções de cálculo para cada medicamento
 
 export const calculateSRODosage = (peso: number): string => {

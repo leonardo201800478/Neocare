@@ -1,5 +1,3 @@
-// app/attendences/AttendanceNutritionContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { AttendanceNutritionDevelopment } from '../../powersync/AppSchema';
@@ -17,7 +15,7 @@ type AttendanceNutritionContextType = {
   fetchNutritionById: (nutritionId: string) => Promise<AttendanceNutritionDevelopment | null>;
   fetchNutritionByAttendanceId: (
     attendanceId: string
-  ) => Promise<AttendanceNutritionDevelopment[] | null>; // Nova função para buscar registros de nutrição pelo ID do atendimento
+  ) => Promise<AttendanceNutritionDevelopment[] | null>;
 };
 
 const NutritionContext = createContext<AttendanceNutritionContextType | undefined>(undefined);
@@ -145,7 +143,7 @@ export const NutritionProvider: React.FC<{ children: ReactNode }> = ({ children 
         setNutrition,
         createNutrition,
         fetchNutritionById,
-        fetchNutritionByAttendanceId, // Nova função adicionada ao contexto
+        fetchNutritionByAttendanceId,
       }}>
       {children}
     </NutritionContext.Provider>

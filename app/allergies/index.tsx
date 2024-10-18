@@ -1,5 +1,3 @@
-// app/allergies/index.tsx
-
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';

@@ -3,13 +3,13 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E8F5E9', // Fundo verde claro
+    backgroundColor: '#E8F5E9',
     padding: 20,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2E7D32', // Verde escuro para o título
+    color: '#2E7D32',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Fundo branco com transparência
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: '#388E3C', // Verde médio
+    color: '#388E3C',
   },
   button: {
-    backgroundColor: '#2E7D32', // Verde escuro para os botões
+    backgroundColor: '#2E7D32',
     padding: 15,
     borderRadius: 10,
     marginTop: 10,
@@ -56,9 +56,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  // Estilo específico para o botão Sair
   exitButton: {
-    backgroundColor: '#FF7043', // Tom laranja-avermelhado para contrastar com o verde
+    backgroundColor: '#FF7043', 
     padding: 15,
     borderRadius: 10,
     marginTop: 10,

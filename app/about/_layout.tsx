@@ -1,17 +1,16 @@
-// app/(tabs)/about/_layout.tsx
 import { Stack } from 'expo-router';
 import React from 'react';
 
-export default function Layout() {
+export default function About() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true, // Exibir o cabeçalho para navegação
+        headerShown: false,
         title: 'Sobre o Neocare',
         headerStyle: {
-          backgroundColor: '#4CAF50', // Cor do cabeçalho
+          backgroundColor: '#4CAF50', 
         },
-        headerTintColor: '#fff', // Cor do texto no cabeçalho
+        headerTintColor: '#fff',
         headerTitleStyle: {
           fontWeight: 'bold',
         },

@@ -5,13 +5,13 @@ export const authStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#002B36', // Verde escuro
+    backgroundColor: '#002B36',
     padding: 20,
   },
   header: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#A8E6CF', // Verde claro
+    color: '#A8E6CF',
     marginBottom: 10,
   },
   subHeader: {
@@ -22,11 +22,11 @@ export const authStyles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparência no fundo do campo
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 25,
     marginVertical: 10,
     paddingHorizontal: 15,
-    shadowColor: '#000', // Sombra para destaque
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -40,12 +40,12 @@ export const authStyles = StyleSheet.create({
   },
   inputField: {
     flex: 1,
-    color: '#FFF', // Texto branco
+    color: '#FFF',
     paddingVertical: 10,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#00695C', // Verde mais escuro para contraste
+    backgroundColor: '#00695C',
     paddingVertical: 15,
     paddingHorizontal: 80,
     borderRadius: 25,

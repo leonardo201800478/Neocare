@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 
-import { useMedicaments } from '../app/context/MedicamentsContext'; // Certifique-se de ajustar o caminho conforme necessário
+import { useMedicaments } from '../app/context/MedicamentsContext';
 
 const ManualDataForm = () => {
-  const { provideManualData } = useMedicaments(); // Puxa a função do contexto para enviar os dados manuais
+  const { provideManualData } = useMedicaments();
 
   const [patientName, setPatientName] = useState('');
   const [patientBirthDate, setPatientBirthDate] = useState('');
@@ -22,7 +22,7 @@ const ManualDataForm = () => {
       .map((item) => item.trim())
       .reduce(
         (acc, alergia) => {
-          acc[alergia] = true; // Define cada alergia como true
+          acc[alergia] = true;
           return acc;
         },
         {} as Record<string, boolean>
@@ -30,20 +30,20 @@ const ManualDataForm = () => {
 
     provideManualData({
       patient: {
-        id: 'manual-patient-id', // Pode ser gerado de forma dinâmica se necessário
+        id: 'manual-patient-id',
         name: patientName,
         birth_date: patientBirthDate,
         cpf: patientCpf,
       },
       doctor: {
-        id: 'manual-doctor-id', // Pode ser gerado de forma dinâmica se necessário
+        id: 'manual-doctor-id',
         name: doctorName,
       },
       vitals: {
         peso_kg: parseFloat(peso),
         comprimento_cm: parseFloat(altura),
       },
-      allergies: alergiasMap, // Agora as alergias são passadas como um objeto
+      allergies: alergiasMap,
       attendance: {
         hipertensao: condicoesClinicas.includes('Hipertensão') ? 'Sim' : 'Não',
       },

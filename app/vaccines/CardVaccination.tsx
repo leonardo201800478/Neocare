@@ -1,5 +1,3 @@
-// app/vaccines/CardVaccination.tsx
-
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Alert, TouchableOpacity, SafeAreaView } from 'react-native';

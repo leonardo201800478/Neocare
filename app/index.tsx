@@ -1,5 +1,3 @@
-// app/index.tsx
-
 import CheckBox from '@react-native-community/checkbox';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -13,12 +11,12 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-import { useSystem } from '../powersync/PowerSync'; // Aqui está sua instância do supabaseConnector
+import { useSystem } from '../powersync/PowerSync';
 
 export default function Terms() {
   const router = useRouter();
-  const [accepted, setAccepted] = useState(false); // Estado para controlar o aceite dos termos
-  const { supabaseConnector } = useSystem(); // Acessa o conector Supabase
+  const [accepted, setAccepted] = useState(false);
+  const { supabaseConnector } = useSystem();
 
   const handleAccept = async () => {
     if (!accepted) {
@@ -28,13 +26,13 @@ export default function Terms() {
 
     const {
       data: { user },
-    } = await supabaseConnector.client.auth.getUser(); // Acessa o usuário autenticado
+    } = await supabaseConnector.client.auth.getUser();
     if (user) {
       // Certifique-se de estar utilizando o cliente do Supabase para a consulta
       const { error } = await supabaseConnector.client
-        .from('doctors') // Usa a tabela 'doctors'
-        .update({ terms_accepted: '1' }) // Define '1' para indicar que os termos foram aceitos
-        .eq('auth_user_id', user.id); // Atualiza o campo com base no auth_user_id
+        .from('doctors') 
+        .update({ terms_accepted: '1' })
+        .eq('auth_user_id', user.id);
 
       if (error) {
         Alert.alert('Erro', 'Não foi possível atualizar o status de aceite dos termos.');
@@ -116,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   disabledButton: {
-    backgroundColor: '#bdbdbd', // Desativa o botão se os termos não forem aceitos
+    backgroundColor: '#bdbdbd',
   },
   buttonText: {
     color: 'white',

@@ -1,9 +1,7 @@
-// app/vaccines/RegisterVaccination.tsx
-
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView, SafeAreaView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Para os ícones de incremento e decremento
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { VACCINATIONS_TABLE } from '../../powersync/AppSchema';
 import { useSystem } from '../../powersync/PowerSync';
@@ -26,7 +24,7 @@ const vaccineSchedule: VaccineSchedule = {
   'Pneumocócica conjugada': 3,
   'Meningocócica conjugada C': 3,
   'Meningocócica B': 3,
-  Influenza: 999, // Vacinação contínua anual
+  Influenza: 999,
   'Febre Amarela': 2,
   'Hepatite A': 2,
   'Tríplice viral (SCR)': 2,
@@ -39,7 +37,7 @@ const vaccineSchedule: VaccineSchedule = {
 const RegisterVaccination = () => {
   const router = useRouter();
   const { selectedPatient } = usePatient();
-  const { selectedDoctor } = useDoctor(); // Obtemos o médico selecionado
+  const { selectedDoctor } = useDoctor();
   const { supabaseConnector } = useSystem();
   const [vaccines, setVaccines] = useState<{ [key: string]: number }>({});
 
@@ -98,7 +96,7 @@ const RegisterVaccination = () => {
     try {
       const { error } = await supabaseConnector.client.from(VACCINATIONS_TABLE).insert({
         patient_id: selectedPatient.id,
-        doctor_id: selectedDoctor.id, // Usando o ID do médico selecionado
+        doctor_id: selectedDoctor.id,
         vaccine_name: vaccineName,
         dose_number: dose,
         administered_at: new Date().toISOString(),
