@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   inputIdade: {
-    width: '50%',
+    width: '70%',
     backgroundColor: 'rgba(255, 255, 255, 0.2)', // Fundo translúcido
     padding: 15,
     marginVertical: 10,
