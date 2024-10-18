@@ -9,7 +9,6 @@ export interface BasicInfo {
 }
 
 export interface VitalInfo {
-  peso_g(peso_g: any): unknown;
   peso_kg: string;
   comprimento_cm: string;
   perimetro_cefalico_cm: string;
