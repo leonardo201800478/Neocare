@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import MedicationPicker from './MedicationPicker'; // Componente para selecionar o medicamento
 import MedicationResult from './MedicationResult'; // Componente para exibir o resultado

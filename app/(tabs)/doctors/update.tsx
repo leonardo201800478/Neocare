@@ -1,7 +1,15 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+} from 'react-native';
 
 import { useDoctor } from '../../context/DoctorContext';
 
@@ -56,15 +64,14 @@ const UpdateDoctorProfile: React.FC = () => {
         placeholderTextColor="#b0b0b0"
       />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleUpdateDoctor}
-        disabled={loading}>
+      <TouchableOpacity style={styles.button} onPress={handleUpdateDoctor} disabled={loading}>
         <FontAwesome name="save" size={20} color="#fff" />
         <Text style={styles.buttonText}>Atualizar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonSecondary} onPress={() => router.replace('/(tabs)/doctors')}>
+      <TouchableOpacity
+        style={styles.buttonSecondary}
+        onPress={() => router.replace('/(tabs)/doctors')}>
         <FontAwesome name="arrow-left" size={20} color="#fff" />
         <Text style={styles.buttonText}>Voltar para Perfil</Text>
       </TouchableOpacity>

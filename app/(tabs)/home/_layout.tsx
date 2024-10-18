@@ -6,7 +6,7 @@ import { GestureHandlerRootView, DrawerLayout } from 'react-native-gesture-handl
 
 import { useSystem } from '../../../powersync/PowerSync';
 
-const Layout: React.FC = () => {
+const HomeLayout: React.FC = () => {
   const { supabaseConnector, powersync } = useSystem();
   const drawerRef = useRef<DrawerLayout>(null);
 
@@ -127,4 +127,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Layout;
+export default HomeLayout;

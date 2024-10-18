@@ -33,16 +33,15 @@ const MedicationCalc: React.FC = () => {
   const { fetchDoctorById } = useDoctor();
   const { fetchPatientById } = usePatient();
   const { fetchAllergiesByPatient } = useAllergies();
-  const { addMedication } = useMedicaments(); // Hook para adicionar medicamento
-
+  const { addMedication } = useMedicaments();
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
   const [allergies, setAllergies] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedMedication, setSelectedMedication] = useState<string>(''); // Medicamento selecionado
-  const [calculatedDosage, setCalculatedDosage] = useState<string>(''); // Resultado do cálculo de dosagem
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Termo de pesquisa para medicamentos
-  const [filteredMedications, setFilteredMedications] = useState<any[]>([]); // Lista filtrada de medicamentos
-  const [dosageRecords, setDosageRecords] = useState<any[]>([]); // Registros de dosagem para a lista
+  const [selectedMedication, setSelectedMedication] = useState<string>(''); 
+  const [calculatedDosage, setCalculatedDosage] = useState<string>(''); 
+  const [searchTerm, setSearchTerm] = useState<string>(''); 
+  const [filteredMedications, setFilteredMedications] = useState<any[]>([]);
+  const [dosageRecords, setDosageRecords] = useState<any[]>([]); 
   const router = useRouter();
 
   useEffect(() => {
@@ -78,7 +77,7 @@ const MedicationCalc: React.FC = () => {
           ...record,
           doctorName: doctor ? doctor.name : 'Não informado',
           patientName: patient ? patient.name : 'Não informado',
-          patientAge: patient ? patient.birth_date : null, // Ajuste para evitar erro
+          patientAge: patient ? patient.birth_date : null,
         });
       } catch (error) {
         console.error('Erro ao carregar prontuário:', error);

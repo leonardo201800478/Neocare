@@ -12,17 +12,16 @@ import {
   Alert,
 } from 'react-native';
 
-import { useDoctor } from '../context/DoctorContext'; // useDoctor do contexto correto
-import { useMedicalRecords } from '../context/MedicalRecordsContext'; // useMedicalRecords do contexto correto
-import { usePatient } from '../context/PatientContext'; // usePatient do contexto correto
-
+import { useDoctor } from '../context/DoctorContext';
+import { useMedicalRecords } from '../context/MedicalRecordsContext';
+import { usePatient } from '../context/PatientContext';
 const MedicamentsList = () => {
-  const { patientId } = useLocalSearchParams<{ patientId: string }>(); // Pega o patientId da URL
+  const { patientId } = useLocalSearchParams<{ patientId: string }>(); 
   const router = useRouter();
   const { fetchMedicalRecordsByPatient } = useMedicalRecords();
   const { fetchDoctorById } = useDoctor();
   const { fetchPatientById } = usePatient();
-  const [medicalRecords, setMedicalRecords] = useState<any[]>([]); // Tipagem como any[] para evitar conflitos
+  const [medicalRecords, setMedicalRecords] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ const MedicamentsList = () => {
     try {
       // Busca os prontuários médicos associados ao paciente, sem join
       const records = await fetchMedicalRecordsByPatient(patientId);
-      console.log('Prontuários encontrados:', records); // Verifica os registros retornados
+      console.log('Prontuários encontrados:', records); 
 
       if (records) {
         // Ordena os registros do mais recente para o mais antigo
@@ -61,11 +60,11 @@ const MedicamentsList = () => {
               ...record,
               doctorName: doctor ? doctor.name : 'Médico não informado',
               patientName: patient ? patient.name : 'Paciente não informado',
-              index: index + 1, // Enumera os registros com base na ordem
+              index: index + 1, 
             };
           })
         );
-        console.log('Registros com nomes atualizados:', recordsWithNames); // Verifica os registros com os nomes
+        console.log('Registros com nomes atualizados:', recordsWithNames); 
         setMedicalRecords(recordsWithNames);
       } else {
         Alert.alert('Erro', 'Nenhum prontuário encontrado para este paciente.');
@@ -79,10 +78,10 @@ const MedicamentsList = () => {
   };
 
   const handleMedicalRecordSelect = (record: any) => {
-    console.log('Selecionado prontuário:', record); // Verifica o prontuário selecionado
+    console.log('Selecionado prontuário:', record); 
     router.push({
       pathname: '/medications/MedicationCalc',
-      params: { medicalRecordId: record.id }, // Passa o id do prontuário para a próxima tela
+      params: { medicalRecordId: record.id }, 
     });
   };
 

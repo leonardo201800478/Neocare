@@ -1,7 +1,19 @@
-//app/medications/_layout.tsx
+// app/allergies/_layout.tsx
 
 import { Stack } from 'expo-router';
+import React from 'react';
 
-export default function Layout() {
-  return <Stack />;
+export default function Medicacoes() {
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false, 
+        headerTitle: 'Medicações',
+        headerStyle: {
+          backgroundColor: '#e9ecef', 
+        },
+        headerTintColor: '#333', 
+      }}
+    />
+  );
 }
