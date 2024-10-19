@@ -1,0 +1,114 @@
+ESTRUTURA DOS DADOS DO APP:
+
+app/
+  (tabs)/
+    about/
+      _layout.tsx
+      index.tsx
+  allergies/
+    styles/
+      AllergiesDetailStyles.ts
+      AllergiesStyles.ts
+    _layout.tsx
+    AllergiesDetails.tsx
+    RegisterAllergies.tsx
+    index.tsx
+  attendances/
+    styles/
+      AttendanceStyles.ts
+    _layout.tsx
+    AttendanceDetails.tsx
+    AttendanceSummary.tsx
+    BasicInfoForm.tsx
+    GeneralSymptomsForm.tsx
+    NutritionDevelopmentForm.tsx
+    RegisterAttendanceStep1.tsx
+    RegisterAttendanceStep2.tsx
+    RegisterAttendanceStep3.tsx
+    RegisterAttendanceStep4.tsx
+    VitalInfoForm.tsx
+    types.ts
+  auth/
+    styles/
+      authStyles.ts
+    _layout.tsx
+    index.tsx
+    Register.tsx
+    reset-password.tsx
+  context/
+    AllergiesContext.tsx
+    AttendanceContext.tsx
+    AttendanceNutritionContext.tsx
+    AttendanceSymptomContext.tsx
+    AttendanceVitalContext.tsx
+    DoctorContext.tsx
+    MedicalRecordsContext.tsx
+    MedicationsContext.tsx
+    PatientContext.tsx
+    VaccinationContext.tsx
+  hooks/
+    useAuth.ts
+  medications/
+    api/
+      CalculadoraMedicamentos.ts
+      LogicaMedicamentos.ts
+      medicationsList.ts
+      VerificacaoContraindicacoes.ts
+    _layout.tsx
+    index.tsx
+    MedicationCalc.tsx
+    MedicationResult.tsx
+    PrescriptionScreen.tsx
+    styles/
+      Styles.ts
+  terms/
+    _layout.tsx
+    index.tsx
+  vaccines/
+    layout.tsx
+    CardVaccination.tsx
+    index.tsx
+    SplashScreen.tsx
+assets/
+  adaptive-icon.png
+  Banner.png
+  favicon.png
+  icon.png
+  splash.png
+components/
+  CEPInput.tsx
+  CPFValidator.tsx
+  LoadingOverlay.tsx
+  ManualDataForm.tsx
+  MedicationCalculator.tsx
+  MedicationPicker.tsx
+  MedicationResult.tsx
+  PatientInputForm.tsx
+  SwipeableRow.tsx
+docs/
+node_modules/
+powersync/
+  AppSchema.ts
+  PowerSync.tsx
+  PowerSyncProvider.tsx
+  SupabaseConnector.ts
+server/
+  addDoctorIfNotExists.ts
+utils/
+  formatUtils.ts
+  idadeCalculator.ts
+  novaCalculadoraIdade.ts
+  uuid.ts
+.gitignore
+app.config.ts
+babel.config.js
+eas.json
+expo-env.d.ts
+LICENSE
+metro.config.js
+package-lock.json
+package.json
+prettier.config.js
+process-env.d.ts
+tsconfig.json
+typedoc.json
