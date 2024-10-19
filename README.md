@@ -9,108 +9,134 @@ NEOCARE é uma aplicação mobile desenvolvida para facilitar o atendimento neon
 ## Imagens das Telas do Produto
 
 ### Cadastro de Alergias
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/alergias_cadastro.png" alt="Cadastro de Alergias" width="25%" />
+</div>
 
 ### Detalhes de Alergias
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/alergias_detalhes.png" alt="Detalhes de Alergias" width="25%" />
+</div>
 
 ### Cadastro de Prontuário - Tela 1
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_1.png" alt="Cadastro de Prontuário - Tela 1" width="25%" />
+</div>
 
 ### Cadastro de Prontuário - Tela 2
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_2.png" alt="Cadastro de Prontuário - Tela 2" width="25%" />
+</div>
 
 ### Cadastro de Prontuário - Tela 3
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_3.png" alt="Cadastro de Prontuário - Tela 3" width="25%" />
+</div>
 
 ### Cadastro de Prontuário - Tela 4
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_4.png" alt="Cadastro de Prontuário - Tela 4" width="25%" />
+</div>
 
 ### Criação de Conta
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/criacao_conta.png" alt="Criação de Conta" width="25%" />
+</div>
 
 ### Criação de Perfil Médico
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/criacao_perfil_medico.png" alt="Criação de Perfil Médico" width="25%" />
+</div>
 
 ### Detalhes do Paciente
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/detalhes_paciente.png" alt="Detalhes do Paciente" width="25%" />
+</div>
 
 ### Funções do Paciente
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/funcoes_paciente.png" alt="Funções do Paciente" width="25%" />
+</div>
 
 ### Gráficos Detalhados
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/graficos_detalhes.png" alt="Gráficos Detalhados" width="25%" />
+</div>
 
 ### Gráficos
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/graficos.png" alt="Gráficos" width="25%" />
+</div>
 
 ### Histórico de Prontuário
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/historico_prontuario.png" alt="Histórico de Prontuário" width="25%" />
+</div>
 
 ### Home Drawer
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/home_drawer.png" alt="Home Drawer" width="25%" />
+</div>
 
 ### Home
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/home.png" alt="Home" width="25%" />
+</div>
 
 ### Instruções para Tratar Criança
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/instrucoes_tratar_crianca.png" alt="Instruções para Tratar Criança" width="25%" />
+</div>
 
 ### Medicamentos - Cadastro do Paciente
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/medicamentos_cadastro_paciente.png" alt="Medicamentos - Cadastro do Paciente" width="25%" />
+</div>
 
 ### Cadastro de Paciente
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/paciente_cadastro.png" alt="Cadastro de Paciente" width="25%" />
+</div>
 
 ### Pesquisa de Paciente
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/pesquisa_paciente.png" alt="Pesquisa de Paciente" width="25%" />
+</div>
 
 ### Redefinição de Senha
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/redefinicao_senha.png" alt="Redefinição de Senha" width="25%" />
+</div>
 
 ### Splash Screen
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/splash_screen.png" alt="Splash Screen" width="25%" />
+</div>
 
 ### Tela de Login
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/tela_login.png" alt="Tela de Login" width="25%" />
+</div>
 
 ### Termos de Aceite
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/termos_aceite.png" alt="Termos de Aceite" width="25%" />
+</div>
 
 ### Vacinas - Cadastro
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/vacinas_cadastro.png" alt="Vacinas - Cadastro" width="25%" />
+</div>
 
 ### Vacinas - Cartão
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/vacinas_cartao.png" alt="Vacinas - Cartão" width="25%" />
+</div>
 
 ### Visualização de Prontuário
-
+<div style="display: flex; justify-content: space-around;">
 <img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/visualizacao_prontuario.png" alt="Visualização de Prontuário" width="25%" />
+</div>
 
 ## Requisitos do Projeto
 
