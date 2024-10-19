@@ -6,125 +6,90 @@ NEOCARE é uma aplicação mobile desenvolvida para facilitar o atendimento neon
 
 ## Estrutura do Projeto
 
-```text
-app/
-  (tabs)/
-    about/
-      _layout.tsx
-      index.tsx
-  allergies/
-    styles/
-      AllergiesDetailStyles.ts
-      AllergiesStyles.ts
-    _layout.tsx
-    AllergiesDetails.tsx
-    RegisterAllergies.tsx
-    index.tsx
-  attendances/
-    styles/
-      AttendanceStyles.ts
-    _layout.tsx
-    AttendanceDetails.tsx
-    AttendanceSummary.tsx
-    BasicInfoForm.tsx
-    GeneralSymptomsForm.tsx
-    NutritionDevelopmentForm.tsx
-    RegisterAttendanceStep1.tsx
-    RegisterAttendanceStep2.tsx
-    RegisterAttendanceStep3.tsx
-    RegisterAttendanceStep4.tsx
-    VitalInfoForm.tsx
-    types.ts
-  auth/
-    styles/
-      authStyles.ts
-    _layout.tsx
-    index.tsx
-    Register.tsx
-    reset-password.tsx
-  context/
-    AllergiesContext.tsx
-    AttendanceContext.tsx
-    AttendanceNutritionContext.tsx
-    AttendanceSymptomContext.tsx
-    AttendanceVitalContext.tsx
-    DoctorContext.tsx
-    MedicalRecordsContext.tsx
-    MedicationsContext.tsx
-    PatientContext.tsx
-    VaccinationContext.tsx
-  hooks/
-    useAuth.ts
-  medications/
-    api/
-      CalculadoraMedicamentos.ts
-      LogicaMedicamentos.ts
-      medicationsList.ts
-      VerificacaoContraindicacoes.ts
-    _layout.tsx
-    index.tsx
-    MedicationCalc.tsx
-    MedicationResult.tsx
-    PrescriptionScreen.tsx
-    styles/
-      Styles.ts
-  terms/
-    _layout.tsx
-    index.tsx
-  vaccines/
-    layout.tsx
-    CardVaccination.tsx
-    index.tsx
-    SplashScreen.tsx
-assets/
-  adaptive-icon.png
-  Banner.png
-  favicon.png
-  icon.png
-  splash.png
-components/
-  CEPInput.tsx
-  CPFValidator.tsx
-  LoadingOverlay.tsx
-  ManualDataForm.tsx
-  MedicationCalculator.tsx
-  MedicationPicker.tsx
-  MedicationResult.tsx
-  PatientInputForm.tsx
-  SwipeableRow.tsx
-docs/
-node_modules/
-powersync/
-  AppSchema.ts
-  PowerSync.tsx
-  PowerSyncProvider.tsx
-  SupabaseConnector.ts
-server/
-  addDoctorIfNotExists.ts
-utils/
-  formatUtils.ts
-  idadeCalculator.ts
-  novaCalculadoraIdade.ts
-  uuid.ts
-.gitignore
-app.config.ts
-babel.config.js
-eas.json
-expo-env.d.ts
-LICENSE
-metro.config.js
-package-lock.json
-package.json
-prettier.config.js
-process-env.d.ts
-tsconfig.json
-typedoc.json
-```
+## Imagens das Telas do Produto
+
+### Cadastro de Alergias
+![Cadastro de Alergias](https://github.com/usuario/neocare/raw/main/assets/prints/alergias_cadastro.png)
+
+### Detalhes de Alergias
+![Detalhes de Alergias](https://github.com/usuario/neocare/raw/main/assets/prints/alergias_detalhes.png)
+
+### Cadastro de Prontuário - Tela 1
+![Cadastro de Prontuário - Tela 1](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_1.png)
+
+### Cadastro de Prontuário - Tela 2
+![Cadastro de Prontuário - Tela 2](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_2.png)
+
+### Cadastro de Prontuário - Tela 3
+![Cadastro de Prontuário - Tela 3](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_3.png)
+
+### Cadastro de Prontuário - Tela 4
+![Cadastro de Prontuário - Tela 4](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_4.png)
+
+### Criação de Conta
+![Criação de Conta](https://github.com/usuario/neocare/raw/main/assets/prints/criacao_conta.png)
+
+### Criação de Perfil Médico
+![Criação de Perfil Médico](https://github.com/usuario/neocare/raw/main/assets/prints/criacao_perfil_medico.png)
+
+### Detalhes do Paciente
+![Detalhes do Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/detalhes_paciente.png)
+
+### Funções do Paciente
+![Funções do Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/funcoes_paciente.png)
+
+### Gráficos Detalhados
+![Gráficos Detalhados](https://github.com/usuario/neocare/raw/main/assets/prints/graficos_detalhes.png)
+
+### Gráficos
+![Gráficos](https://github.com/usuario/neocare/raw/main/assets/prints/graficos.png)
+
+### Histórico de Prontuário
+![Histórico de Prontuário](https://github.com/usuario/neocare/raw/main/assets/prints/historico_prontuario.png)
+
+### Home Drawer
+![Home Drawer](https://github.com/usuario/neocare/raw/main/assets/prints/home_drawer.png)
+
+### Home
+![Home](https://github.com/usuario/neocare/raw/main/assets/prints/home.png)
+
+### Instruções para Tratar Criança
+![Instruções para Tratar Criança](https://github.com/usuario/neocare/raw/main/assets/prints/instrucoes_tratar_crianca.png)
+
+### Medicamentos - Cadastro do Paciente
+![Medicamentos - Cadastro do Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/medicamentos_cadastro_paciente.png)
+
+### Cadastro de Paciente
+![Cadastro de Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/paciente_cadastro.png)
+
+### Pesquisa de Paciente
+![Pesquisa de Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/pesquisa_paciente.png)
+
+### Redefinição de Senha
+![Redefinição de Senha](https://github.com/usuario/neocare/raw/main/assets/prints/redefinicao_senha.png)
+
+### Splash Screen
+![Splash Screen](https://github.com/usuario/neocare/raw/main/assets/prints/splash_screen.png)
+
+### Tela de Login
+![Tela de Login](https://github.com/usuario/neocare/raw/main/assets/prints/tela_login.png)
+
+### Termos de Aceite
+![Termos de Aceite](https://github.com/usuario/neocare/raw/main/assets/prints/termos_aceite.png)
+
+### Vacinas - Cadastro
+![Vacinas - Cadastro](https://github.com/usuario/neocare/raw/main/assets/prints/vacinas_cadastro.png)
+
+### Vacinas - Cartão
+![Vacinas - Cartão](https://github.com/usuario/neocare/raw/main/assets/prints/vacinas_cartao.png)
+
+### Visualização de Prontuário
+![Visualização de Prontuário](https://github.com/usuario/neocare/raw/main/assets/prints/visualizacao_prontuario.png)
 
 ## Requisitos do Projeto
 
 - **Node.js** v14+
-- **Expo SDK50**
+- **Expo CLI**
 - **Supabase** para autenticação e banco de dados
 - **React Native** para desenvolvimento mobile
 - **TypeScript** para tipagem estática
@@ -133,28 +98,11 @@ typedoc.json
 
 1. Clone o repositório:
 
-   ```bash
-   git clone https://github.com/usuario/neocare.git
-   cd neocare
-   ```
-
 2. Instale as dependências:
-
-   ```bash
-   npm install
-   ```
 
 3. Instale o Expo CLI globalmente (caso não esteja instalado):
 
-   ```bash
-   npm install -g expo-cli
-   ```
-
 4. Inicie o servidor de desenvolvimento:
-
-   ```bash
-   npx expo run:android
-   ```
 
 ## Estrutura de Pastas
 
@@ -202,5 +150,6 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](./LI
 
 Para qualquer dúvida ou sugestão, entre em contato:
 
-- **Autor**: Leonardo da Silva Paiva
-- **Email**: <paivaleonard@gmail.com>
+- **Autor**: Eduardo Fernandes Portes
+- **Email**: [eduardo.portes@email.com](mailto:eduardo.portes@email.com)
+
