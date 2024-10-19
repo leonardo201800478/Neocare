@@ -9,82 +9,82 @@ NEOCARE é uma aplicação mobile desenvolvida para facilitar o atendimento neon
 ## Imagens das Telas do Produto
 
 ### Cadastro de Alergias
-![Cadastro de Alergias](https://github.com/usuario/neocare/raw/main/assets/prints/alergias_cadastro.png)
+![Cadastro de Alergias](https://github.com/usuario/Neocare/blob/main/assets/prints/alergias_cadastro.png)
 
 ### Detalhes de Alergias
-![Detalhes de Alergias](https://github.com/usuario/neocare/raw/main/assets/prints/alergias_detalhes.png)
+![Detalhes de Alergias](https://github.com/usuario/Neocare/blob/main/assets/prints/alergias_detalhes.png)
 
 ### Cadastro de Prontuário - Tela 1
-![Cadastro de Prontuário - Tela 1](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_1.png)
+![Cadastro de Prontuário - Tela 1](https://github.com/usuario/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_1.png)
 
 ### Cadastro de Prontuário - Tela 2
-![Cadastro de Prontuário - Tela 2](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_2.png)
+![Cadastro de Prontuário - Tela 2](https://github.com/usuario/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_2.png)
 
 ### Cadastro de Prontuário - Tela 3
-![Cadastro de Prontuário - Tela 3](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_3.png)
+![Cadastro de Prontuário - Tela 3](https://github.com/usuario/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_3.png)
 
 ### Cadastro de Prontuário - Tela 4
-![Cadastro de Prontuário - Tela 4](https://github.com/usuario/neocare/raw/main/assets/prints/cadastro_prontuario_tela_4.png)
+![Cadastro de Prontuário - Tela 4](https://github.com/usuario/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_4.png)
 
 ### Criação de Conta
-![Criação de Conta](https://github.com/usuario/neocare/raw/main/assets/prints/criacao_conta.png)
+![Criação de Conta](https://github.com/usuario/Neocare/blob/main/assets/prints/criacao_conta.png)
 
 ### Criação de Perfil Médico
-![Criação de Perfil Médico](https://github.com/usuario/neocare/raw/main/assets/prints/criacao_perfil_medico.png)
+![Criação de Perfil Médico](https://github.com/usuario/Neocare/blob/main/assets/prints/criacao_perfil_medico.png)
 
 ### Detalhes do Paciente
-![Detalhes do Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/detalhes_paciente.png)
+![Detalhes do Paciente](https://github.com/usuario/Neocare/blob/main/assets/prints/detalhes_paciente.png)
 
 ### Funções do Paciente
-![Funções do Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/funcoes_paciente.png)
+![Funções do Paciente](https://github.com/usuario/Neocare/blob/main/assets/prints/funcoes_paciente.png)
 
 ### Gráficos Detalhados
-![Gráficos Detalhados](https://github.com/usuario/neocare/raw/main/assets/prints/graficos_detalhes.png)
+![Gráficos Detalhados](https://github.com/usuario/Neocare/blob/main/assets/prints/graficos_detalhes.png)
 
 ### Gráficos
-![Gráficos](https://github.com/usuario/neocare/raw/main/assets/prints/graficos.png)
+![Gráficos](https://github.com/usuario/Neocare/blob/main/assets/prints/graficos.png)
 
 ### Histórico de Prontuário
-![Histórico de Prontuário](https://github.com/usuario/neocare/raw/main/assets/prints/historico_prontuario.png)
+![Histórico de Prontuário](https://github.com/usuario/Neocare/blob/main/assets/prints/historico_prontuario.png)
 
 ### Home Drawer
-![Home Drawer](https://github.com/usuario/neocare/raw/main/assets/prints/home_drawer.png)
+![Home Drawer](https://github.com/usuario/Neocare/blob/main/assets/prints/home_drawer.png)
 
 ### Home
-![Home](https://github.com/usuario/neocare/raw/main/assets/prints/home.png)
+![Home](https://github.com/usuario/Neocare/blob/main/assets/prints/home.png)
 
 ### Instruções para Tratar Criança
-![Instruções para Tratar Criança](https://github.com/usuario/neocare/raw/main/assets/prints/instrucoes_tratar_crianca.png)
+![Instruções para Tratar Criança](https://github.com/usuario/Neocare/blob/main/assets/prints/instrucoes_tratar_crianca.png)
 
 ### Medicamentos - Cadastro do Paciente
-![Medicamentos - Cadastro do Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/medicamentos_cadastro_paciente.png)
+![Medicamentos - Cadastro do Paciente](https://github.com/usuario/Neocare/blob/main/assets/prints/medicamentos_cadastro_paciente.png)
 
 ### Cadastro de Paciente
-![Cadastro de Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/paciente_cadastro.png)
+![Cadastro de Paciente](https://github.com/usuario/Neocare/blob/main/assets/prints/paciente_cadastro.png)
 
 ### Pesquisa de Paciente
-![Pesquisa de Paciente](https://github.com/usuario/neocare/raw/main/assets/prints/pesquisa_paciente.png)
+![Pesquisa de Paciente](https://github.com/usuario/Neocare/blob/main/assets/prints/pesquisa_paciente.png)
 
 ### Redefinição de Senha
-![Redefinição de Senha](https://github.com/usuario/neocare/raw/main/assets/prints/redefinicao_senha.png)
+![Redefinição de Senha](https://github.com/usuario/Neocare/blob/main/assets/prints/redefinicao_senha.png)
 
 ### Splash Screen
-![Splash Screen](https://github.com/usuario/neocare/raw/main/assets/prints/splash_screen.png)
+![Splash Screen](https://github.com/usuario/Neocare/blob/main/assets/prints/splash_screen.png)
 
 ### Tela de Login
-![Tela de Login](https://github.com/usuario/neocare/raw/main/assets/prints/tela_login.png)
+![Tela de Login](https://github.com/usuario/Neocare/blob/main/assets/prints/tela_login.png)
 
 ### Termos de Aceite
-![Termos de Aceite](https://github.com/usuario/neocare/raw/main/assets/prints/termos_aceite.png)
+![Termos de Aceite](https://github.com/usuario/Neocare/blob/main/assets/prints/termos_aceite.png)
 
 ### Vacinas - Cadastro
-![Vacinas - Cadastro](https://github.com/usuario/neocare/raw/main/assets/prints/vacinas_cadastro.png)
+![Vacinas - Cadastro](https://github.com/usuario/Neocare/blob/main/assets/prints/vacinas_cadastro.png)
 
 ### Vacinas - Cartão
-![Vacinas - Cartão](https://github.com/usuario/neocare/raw/main/assets/prints/vacinas_cartao.png)
+![Vacinas - Cartão](https://github.com/usuario/Neocare/blob/main/assets/prints/vacinas_cartao.png)
 
 ### Visualização de Prontuário
-![Visualização de Prontuário](https://github.com/usuario/neocare/raw/main/assets/prints/visualizacao_prontuario.png)
+![Visualização de Prontuário](https://github.com/usuario/Neocare/blob/main/assets/prints/visualizacao_prontuario.png)
 
 ## Requisitos do Projeto
 
