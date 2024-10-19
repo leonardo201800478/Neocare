@@ -150,6 +150,5 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](./LI
 
 Para qualquer dúvida ou sugestão, entre em contato:
 
-- **Autor**: Eduardo Fernandes Portes
-- **Email**: [eduardo.portes@email.com](mailto:eduardo.portes@email.com)
-
+- **Autor**: Leonardo da Silva Paiva
+- **Email**: [paivaleonard@gmail.com](mailto:paivaleonard@gmail.com)
