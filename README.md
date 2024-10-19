@@ -9,82 +9,108 @@ NEOCARE é uma aplicação mobile desenvolvida para facilitar o atendimento neon
 ## Imagens das Telas do Produto
 
 ### Cadastro de Alergias
-![Cadastro de Alergias](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/alergias_cadastro.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/alergias_cadastro.png" alt="Cadastro de Alergias" width="25%" />
 
 ### Detalhes de Alergias
-![Detalhes de Alergias](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/alergias_detalhes.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/alergias_detalhes.png" alt="Detalhes de Alergias" width="25%" />
 
 ### Cadastro de Prontuário - Tela 1
-![Cadastro de Prontuário - Tela 1](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_1.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_1.png" alt="Cadastro de Prontuário - Tela 1" width="25%" />
 
 ### Cadastro de Prontuário - Tela 2
-![Cadastro de Prontuário - Tela 2](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_2.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_2.png" alt="Cadastro de Prontuário - Tela 2" width="25%" />
 
 ### Cadastro de Prontuário - Tela 3
-![Cadastro de Prontuário - Tela 3](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_3.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_3.png" alt="Cadastro de Prontuário - Tela 3" width="25%" />
 
 ### Cadastro de Prontuário - Tela 4
-![Cadastro de Prontuário - Tela 4](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_4.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/cadastro_prontuario_tela_4.png" alt="Cadastro de Prontuário - Tela 4" width="25%" />
 
 ### Criação de Conta
-![Criação de Conta](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/criacao_conta.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/criacao_conta.png" alt="Criação de Conta" width="25%" />
 
 ### Criação de Perfil Médico
-![Criação de Perfil Médico](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/criacao_perfil_medico.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/criacao_perfil_medico.png" alt="Criação de Perfil Médico" width="25%" />
 
 ### Detalhes do Paciente
-![Detalhes do Paciente](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/detalhes_paciente.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/detalhes_paciente.png" alt="Detalhes do Paciente" width="25%" />
 
 ### Funções do Paciente
-![Funções do Paciente](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/funcoes_paciente.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/funcoes_paciente.png" alt="Funções do Paciente" width="25%" />
 
 ### Gráficos Detalhados
-![Gráficos Detalhados](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/graficos_detalhes.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/graficos_detalhes.png" alt="Gráficos Detalhados" width="25%" />
 
 ### Gráficos
-![Gráficos](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/graficos.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/graficos.png" alt="Gráficos" width="25%" />
 
 ### Histórico de Prontuário
-![Histórico de Prontuário](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/historico_prontuario.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/historico_prontuario.png" alt="Histórico de Prontuário" width="25%" />
 
 ### Home Drawer
-![Home Drawer](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/home_drawer.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/home_drawer.png" alt="Home Drawer" width="25%" />
 
 ### Home
-![Home](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/home.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/home.png" alt="Home" width="25%" />
 
 ### Instruções para Tratar Criança
-![Instruções para Tratar Criança](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/instrucoes_tratar_crianca.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/instrucoes_tratar_crianca.png" alt="Instruções para Tratar Criança" width="25%" />
 
 ### Medicamentos - Cadastro do Paciente
-![Medicamentos - Cadastro do Paciente](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/medicamentos_cadastro_paciente.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/medicamentos_cadastro_paciente.png" alt="Medicamentos - Cadastro do Paciente" width="25%" />
 
 ### Cadastro de Paciente
-![Cadastro de Paciente](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/paciente_cadastro.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/paciente_cadastro.png" alt="Cadastro de Paciente" width="25%" />
 
 ### Pesquisa de Paciente
-![Pesquisa de Paciente](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/pesquisa_paciente.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/pesquisa_paciente.png" alt="Pesquisa de Paciente" width="25%" />
 
 ### Redefinição de Senha
-![Redefinição de Senha](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/redefinicao_senha.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/redefinicao_senha.png" alt="Redefinição de Senha" width="25%" />
 
 ### Splash Screen
-![Splash Screen](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/splash_screen.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/splash_screen.png" alt="Splash Screen" width="25%" />
 
 ### Tela de Login
-![Tela de Login](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/tela_login.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/tela_login.png" alt="Tela de Login" width="25%" />
 
 ### Termos de Aceite
-![Termos de Aceite](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/termos_aceite.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/termos_aceite.png" alt="Termos de Aceite" width="25%" />
 
 ### Vacinas - Cadastro
-![Vacinas - Cadastro](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/vacinas_cadastro.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/vacinas_cadastro.png" alt="Vacinas - Cadastro" width="25%" />
 
 ### Vacinas - Cartão
-![Vacinas - Cartão](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/vacinas_cartao.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/vacinas_cartao.png" alt="Vacinas - Cartão" width="25%" />
 
 ### Visualização de Prontuário
-![Visualização de Prontuário](https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/visualizacao_prontuario.png)
+
+<img src="https://github.com/leonardo201800478/Neocare/blob/main/assets/prints/visualizacao_prontuario.png" alt="Visualização de Prontuário" width="25%" />
 
 ## Requisitos do Projeto
 
@@ -150,5 +176,5 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](./LI
 
 Para qualquer dúvida ou sugestão, entre em contato:
 
-- **Autor**: Eduardo Fernandes Portes
-- **Email**: [eduardo.portes@email.com](mailto:eduardo.portes@email.com)
+- **Autor**: Leonardo da Silva Paiva
+- **Email**: [paivaleonard@gmail.com](mailto:paivaleonard@gmail.com)
