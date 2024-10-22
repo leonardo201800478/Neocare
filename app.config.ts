@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig, ConfigContext } from '@expo/config';
 
 interface CustomExpoConfig extends ExpoConfig {
   extra: {
@@ -12,7 +12,7 @@ interface CustomExpoConfig extends ExpoConfig {
   };
 }
 
-export default ({ config }: { config: ExpoConfig }): CustomExpoConfig => {
+export default ({ config }: ConfigContext): CustomExpoConfig => {
   // Definindo as chaves diretamente no arquivo para produção
   const supabaseUrl = 'https://rixquulpyromqkdkgcmw.supabase.co';
   const supabaseAnonKey =
