@@ -51,7 +51,7 @@
     "expo-secure-store": "~12.8.1",
     "expo-status-bar": "~1.11.1",
     "expo-system-ui": "~2.9.3",
-    "expo-updates": "^0.25.27",
+    "expo-updates": "~0.24.13",
     "expo-web-browser": "~12.8.2",
     "postgres": "^3.4.4",
     "powersync": "^0.6.0",
